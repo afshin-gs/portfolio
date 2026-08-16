@@ -1,0 +1,49 @@
+{
+  // ---- LaTeX (CV) ----------------------------------------------------------
+  // No TeX distribution is installed on this machine. Every LaTeX invocation
+  // goes through cv/build.sh, which runs latexmk inside the afshin-cv-latex
+  // Docker image. Save cv/main.tex and the PDF rebuilds and refreshes in the
+  // tab viewer.
+
+  "latex-workshop.latex.tools": [
+    {
+      "name": "docker-latexmk",
+      "command": "%WORKSPACE_FOLDER%/cv/build.sh",
+      "args": [],
+      "env": {}
+    }
+  ],
+  "latex-workshop.latex.recipes": [
+    {
+      "name": "CV (latexmk in Docker)",
+      "tools": ["docker-latexmk"]
+    }
+  ],
+
+  // Must mirror build.sh: -outdir=output and -jobname=cv.
+  "latex-workshop.latex.outDir": "%DIR%/output",
+  "latex-workshop.latex.jobname": "cv",
+
+  // Build on save rather than on every keystroke — each build spawns a
+  // container, so debouncing keystrokes is not enough.
+  "latex-workshop.latex.autoBuild.run": "onSave",
+  "latex-workshop.latex.autoClean.run": "never",
+
+  // cv/template.tex also carries a \documentclass; without this the extension
+  // offers it as a second root and picks the wrong one.
+  "latex-workshop.latex.search.rootFiles.include": ["cv/main.tex"],
+  "latex-workshop.latex.rootFile.doNotPrompt": true,
+
+  "latex-workshop.view.pdf.viewer": "tab",
+  "latex-workshop.message.badbox.show": false,
+
+  // The aux files are build output, not source.
+  "files.exclude": {
+    "cv/output/*.aux": true,
+    "cv/output/*.fdb_latexmk": true,
+    "cv/output/*.fls": true,
+    "cv/output/*.log": true,
+    "cv/output/*.out": true,
+    "cv/output/*.synctex.gz": true
+  }
+}

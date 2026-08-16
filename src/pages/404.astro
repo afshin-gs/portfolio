@@ -1,0 +1,60 @@
+---
+import PageLayout from '../layouts/PageLayout.astro'
+import Button from '../components/ui/Button.astro'
+import { site } from '../data/site'
+
+// Required by wrangler's not_found_handling: "404-page" — without a built
+// 404.html the worker falls back to a bare Cloudflare error page.
+---
+
+<PageLayout title="Not found" indexable={false} width="narrow">
+  <div class="wrap">
+    <p class="code">404</p>
+    <h1>Not found</h1>
+    <p class="lede">That page doesn&rsquo;t exist, or it moved.</p>
+
+    <nav aria-label="Suggested pages">
+      <Button href="/" variant="secondary" size="sm">Home</Button>
+      {
+        site.nav.map((item) => (
+          <Button href={item.href} variant="secondary" size="sm">
+            {item.label}
+          </Button>
+        ))
+      }
+    </nav>
+  </div>
+</PageLayout>
+
+<style>
+  .wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+    padding-block: var(--space-9) var(--space-10);
+  }
+
+  .code {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    letter-spacing: var(--tracking-widest);
+    color: var(--accent);
+  }
+
+  h1 {
+    font-size: var(--text-3xl);
+  }
+
+  .lede {
+    color: var(--muted);
+    font-size: var(--text-lg);
+  }
+
+  nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-top: var(--space-4);
+  }
+</style>

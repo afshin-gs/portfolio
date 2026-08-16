@@ -1,0 +1,333 @@
+---
+import { Image } from 'astro:assets'
+import Card from '../ui/Card.astro'
+import Tag from '../ui/Tag.astro'
+import Badge from '../ui/Badge.astro'
+import Button from '../ui/Button.astro'
+import type { ContentCollection, Item } from '../../lib/content'
+
+/**
+ * One entry from either collection. D5 — blog and projects differ in metadata,
+ * not in machinery, so this renders both and branches only where the data
+ * genuinely differs (`status`, `repo`).
+ *
+ * Whole-card linking uses Card's `card-link` overlay, so the tag pills inside
+ * remain independently clickable.
+ *
+ * THE DATA ATTRIBUTES ARE LOAD-BEARING. The filter island (src/lib/filter)
+ * reads `data-entry`, `data-tags` and `data-date` off these cards and hides
+ * non-matching ones in place. It deliberately does NOT re-render the list from
+ * a JSON index — the prerendered HTML stays the single source of what is on the
+ * page, so filtering cannot drift from what the server sent, and there is no
+ * second copy of every title and excerpt shipped alongside the first.
+ */
+type Orientation = 'row' | 'stack'
+
+interface Props {
+  item: Item<ContentCollection>
+  collection: ContentCollection
+  /** Heading level, so the card fits under whatever precedes it. */
+  level?: 2 | 3
+  /** `row` puts the thumbnail beside the text on wide screens; `stack` always
+   *  puts it on top, for narrow grid columns where a side image would crush
+   *  the excerpt to two words a line. */
+  orientation?: Orientation
+}
+
+const { item, collection, level = 2, orientation = 'row' } = Astro.props
+const { data } = item.entry
+const Heading = `h${level}` as 'h2' | 'h3'
+
+const banner = 'banner' in data ? data.banner : undefined
+const bannerAlt = ('bannerAlt' in data ? data.bannerAlt : undefined) ?? ''
+
+// timeZone: 'UTC' is REQUIRED, not cosmetic. Frontmatter dates are date-only,
+// which zod coerces to midnight UTC. Formatting that in a timezone west of UTC
+// renders the PREVIOUS day — so a post authored 2026-07-26 displayed as "25 Jul"
+// while the filter matched it on the 26th. Same instant, two answers.
+const formatted = data.date.toLocaleDateString('en-GB', {
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric',
+  timeZone: 'UTC',
+})
+// The island compares these as plain strings; no Date, no timezone.
+const dateKey = data.date.toISOString().slice(0, 10)
+---
+
+<Card
+  as="li"
+  interactive={item.hasDetail}
+  padding="none"
+  class:list={['entry', orientation, { 'has-media': !!banner }]}
+  data-entry={item.slug}
+  data-tags={data.tags.join(',')}
+  data-date={dateKey}
+>
+  {
+    banner && (
+      <div class="media">
+        <Image
+          src={banner}
+          alt={bannerAlt}
+          widths={[320, 640]}
+          sizes="(min-width: 48rem) 12rem, 100vw"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+    )
+  }
+
+  <div class="body">
+    <p class="meta">
+      <time datetime={data.date.toISOString()}>{formatted}</time>
+      <span class="spacer"></span>
+      {'status' in data && data.status && <Badge tone="neutral">{data.status}</Badge>}
+      {/* Reading time only means something when there IS something to read —
+          a list-only project (§7 hasDetail) has no body to spend a minute on. */}
+      {item.hasDetail && <span class="reading">{item.readingTime} min</span>}
+    </p>
+
+    <Heading class="title">
+      {
+        item.hasDetail ? (
+          <a class="card-link" href={item.uri}>
+            {data.title}
+          </a>
+        ) : (
+          <span>{data.title}</span>
+        )
+      }
+    </Heading>
+
+    <p class="excerpt">{data.excerpt}</p>
+
+    <div class="foot">
+      <p class="tags">
+        {data.tags.map((tag) => <Tag href={`/${collection}/tag/${tag}`}>{tag}</Tag>)}
+        {
+          'repo' in data && data.repo && (
+            <Tag href={data.repo} tone="accent">
+              repo ↗
+            </Tag>
+          )
+        }
+      </p>
+
+      {/* Only when there IS more to read (§7 hasDetail) — a list-only entry
+          has no page to send anyone to. `decorative` so this is a <span>, not
+          a second link competing with the title; the card overlay takes the
+          click. */}
+      {item.hasDetail && (
+        <Button decorative variant="accent" size="sm" icon="→" class="read-more">
+          Read More
+        </Button>
+      )}
+    </div>
+  </div>
+</Card>
+
+<style>
+  /* The card carries no padding of its own so the thumbnail can sit flush in
+   * its corner. All inset lives on .body.
+   *
+   * container-type makes the card a query container so the excerpt can size
+   * itself against the CARD's width rather than the viewport's — which is what
+   * makes the clamp below correct inside a narrow column, a wide page, or a
+   * rotated phone without any of those being special-cased. */
+  .entry {
+    display: grid;
+    overflow: hidden;
+    container-type: inline-size;
+  }
+
+  .media {
+    /* Flush to the card edge on every side it touches — no gap between the
+     * image and the frame around it. The separating hairline is a border on
+     * the image itself, so the thumbnail reads as bordered without doubling
+     * up against the card's own border. */
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .media :global(img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    /* cover, never contain or fill: the image is cropped to the box, so it can
+     * never be stretched out of proportion whatever the box turns out to be. */
+    object-fit: cover;
+    /* A full-width SQUARE is enormous on a phone. Square is the wide-screen
+     * treatment; stacked uses a banner ratio. */
+    aspect-ratio: 16 / 9;
+  }
+
+  .body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-5);
+    min-width: 0;
+    min-height: 0;
+  }
+
+  .meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--muted);
+  }
+  .spacer {
+    flex: 1;
+  }
+  .reading {
+    opacity: 0.75;
+  }
+
+  .title {
+    font-size: var(--text-lg);
+    line-height: var(--leading-snug);
+    letter-spacing: var(--tracking-snug);
+    /* Bounded so the space left for the excerpt is predictable. Without this a
+     * long title could push the body past the image and the row would grow. */
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+  }
+  .title a {
+    color: var(--fg);
+    text-decoration: none;
+    transition: color var(--dur-fast) var(--ease);
+  }
+  .entry:hover .title a {
+    color: var(--accent);
+  }
+
+  /* flex: 1 is what produces the "dynamic gap": the excerpt BOX absorbs all
+   * leftover height, so the tag row below it is pushed to the bottom of the
+   * card and a short excerpt simply leaves air between the two. */
+  .excerpt {
+    flex: 1;
+    min-height: 0;
+    color: var(--muted);
+    font-size: var(--text-base);
+  }
+
+  .foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+    /* Belt and braces with .excerpt's flex:1 — the row stays pinned to the
+     * bottom even if the excerpt is ever removed. */
+    margin-top: auto;
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    min-width: 0;
+  }
+
+  /* NARROW CARD (the default): the button drops below the chips and fills the
+   * content width. width:100% is also what forces the wrap — the flex line
+   * cannot hold a full-width item beside anything else, so no separate
+   * flex-basis rule is needed to push it onto its own row. */
+  .foot :global(.read-more) {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /*
+   * WIDE CARD: chips left, button hard right, one row.
+   *
+   * @container, not @media. The home page renders these same cards in ~19rem
+   * grid columns, where a viewport-width media query would report "desktop"
+   * and jam the button against the chips in a column far too narrow for it.
+   * .entry is already an inline-size container (for the excerpt clamp), and
+   * .foot is a descendant, so this asks the only question that matters: how
+   * wide is THIS card?
+   */
+  /* The button is a <span>, so it has no hover of its own — the card drives it,
+   * which is honest: the whole card is the click target. */
+  .entry:hover :global(.read-more) {
+    border-color: var(--accent);
+  }
+
+  @container (min-width: 30rem) {
+    .foot {
+      flex-wrap: nowrap;
+    }
+    .tags {
+      /* Grows to take the slack; wraps internally rather than shoving the
+       * button off the edge when there are many tags. */
+      flex: 1 1 auto;
+    }
+    .foot :global(.read-more) {
+      width: auto;
+      flex: none;
+      /* Pins the button right regardless of how much room the chips take —
+       * space-between would collapse the moment .tags grew to fill the line. */
+      margin-left: auto;
+    }
+  }
+
+  /* ---- row: thumbnail beside the text once there is room for both ---- */
+  @media (min-width: 40rem) {
+    .row.has-media {
+      /* minmax(0, …) rather than a bare 30%: without the 0 minimum a long
+       * unbroken word in the body can force the track wider than its share. */
+      grid-template-columns: minmax(0, 30%) 1fr;
+    }
+    .row .media {
+      border-bottom: 0;
+      border-right: 1px solid var(--border);
+      height: 100%;
+    }
+    .row .media :global(img) {
+      /* Square, so the media height is 30% of the card width — the figure the
+       * excerpt clamp below is derived from. */
+      aspect-ratio: 1;
+    }
+
+    /*
+     * FLUID LINE CLAMP — the excerpt truncates with an ellipsis at whatever
+     * line count actually fits beside a square thumbnail, with no fixed number
+     * of lines and no JavaScript.
+     *
+     *   30cqw  the media height: 30% of the CARD's width, in container units.
+     *   1lh    one line box of THIS element, tracking its computed line-height.
+     *
+     * Dividing gives the number of lines that fit. Both terms are live: cqw
+     * follows the card's real width (window size, rotation, a narrower column),
+     * and lh follows the computed line-height (a larger default font size, or
+     * a page zoom that scales type). So the count re-derives itself instead of
+     * being a magic number that is only right at one size.
+     *
+     * --card-chrome is everything in .body that is NOT the excerpt. It is
+     * deliberately a slight OVERestimate: guessing high costs one line of
+     * excerpt, guessing low lets the body outgrow the image and the thumbnail
+     * stops being square.
+     */
+    .row.has-media .excerpt {
+      --card-chrome: calc(
+        2 * var(--space-5) + 3 * var(--space-3) + 1.6rem + 1.7rem + 2 * 1.3 *
+          var(--text-lg)
+      );
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      /* The -0.5lh turns calc()'s round-to-nearest into a round-DOWN: without
+       * it a remainder of 0.6 of a line asks for a whole extra line and the
+       * body outgrows the square by exactly the amount this is meant to
+       * prevent. The floor of 2 is a readability minimum — on a mid-width card
+       * the fixed chrome eats most of the square, and a one-line excerpt is
+       * worse than letting the card run a little past the image. */
+      -webkit-line-clamp: max(2, calc((30cqw - var(--card-chrome) - 0.5lh) / 1lh));
+      overflow: hidden;
+    }
+  }
+</style>

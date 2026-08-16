@@ -1,0 +1,81 @@
+---
+import Eyebrow from './Eyebrow.astro'
+
+/**
+ * The <h1> block at the top of an interior page (/blog, /projects, /apps,
+ * /resume, /about-me, a tag facet).
+ *
+ * One component so every interior page shares the same top spacing and type
+ * scale. The home page does NOT use this — its hero is a distinct treatment,
+ * and forcing both through one component would mean a pile of flags.
+ */
+interface Props {
+  title: string
+  /** Coloured with flat --accent. The gradient belongs to the hero only. */
+  titleAccent?: string
+  eyebrow?: string
+  lede?: string
+  /** A "← back" style link rendered above the title. */
+  back?: { label: string; href: string }
+  class?: string
+}
+
+const { title, titleAccent, eyebrow, lede, back, class: className } = Astro.props
+---
+
+<header class:list={['page-header', className]}>
+  {
+    back && (
+      <p class="back">
+        <a href={back.href}>
+          <span aria-hidden="true">←</span> {back.label}
+        </a>
+      </p>
+    )
+  }
+  {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
+  <h1>
+    {title}
+    {titleAccent && <span class="accent"> {titleAccent}</span>}
+  </h1>
+  {lede && <p class="lede">{lede}</p>}
+</header>
+
+<style>
+  .page-header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    padding-block: var(--space-7) var(--space-6);
+  }
+  @media (min-width: 48rem) {
+    .page-header {
+      padding-block: var(--space-9) var(--space-7);
+    }
+  }
+
+  .back {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+  }
+  .back a {
+    color: var(--muted);
+    text-decoration: none;
+  }
+  .back a:hover {
+    color: var(--accent);
+  }
+
+  h1 {
+    font-size: var(--text-3xl);
+  }
+  .accent {
+    color: var(--accent);
+  }
+
+  .lede {
+    color: var(--muted);
+    font-size: var(--text-lg);
+    max-width: 56ch;
+  }
+</style>

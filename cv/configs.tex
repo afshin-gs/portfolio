@@ -1,0 +1,126 @@
+% !TEX root = main.tex
+%---- Page setup, section styling, and the commands main.tex is written in ----
+
+%---- Colour -----------------------------------------------------------------
+% Headings and rules stay black: this document gets printed as often as it gets
+% read on screen, and a colour heading is the first thing a laser printer ruins.
+% The single accent is reserved for links, where colour carries meaning.
+\definecolor{cvlink}{HTML}{123A70}
+\definecolor{cvmuted}{HTML}{4A4A4A}
+
+%---- Page --------------------------------------------------------------------
+\geometry{
+  a4paper,
+  left=1.8cm, right=1.8cm,
+  top=1.15cm, bottom=1.45cm,
+  footskip=0.8cm,
+}
+
+% A CV that runs to two pages must survive being printed and separated, so every
+% page carries the name and an "of N" count.
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+\fancyfoot[L]{\footnotesize\color{cvmuted}\name}
+\fancyfoot[R]{\footnotesize\color{cvmuted}Page \thepage\ of \pageref{LastPage}}
+
+% Coloured links, no boxes. The border box is what makes an unstyled LaTeX CV
+% look unfinished when it is opened in a browser rather than printed.
+\hypersetup{
+  colorlinks=true,
+  urlcolor=cvlink,
+  linkcolor=cvlink,
+  pdfborder={0 0 0},
+}
+
+% No single line of an entry left behind at a page break.
+\widowpenalty=10000
+\clubpenalty=10000
+
+\urlstyle{same}
+\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\tabcolsep}{0in}
+
+%---- Sections ----------------------------------------------------------------
+% Small caps + a full-width rule. Loud enough to scan in two seconds, quiet
+% enough not to compete with the entries underneath.
+% NOTE the braces around the [after-code]. Without them LaTeX's optional-argument
+% scanner stops at the FIRST ']', which is \titlerule's own, and the stray
+% trailing ']' then lands in the preamble as text.
+% The rule needs clearance below the baseline or it strikes through the
+% descenders of "Research & Course Projects".
+\titleformat{\section}{\large\scshape\bfseries\raggedright}{}{0em}{}[{\vspace{1.2pt}\titlerule[0.9pt]}]
+\titlespacing*{\section}{0pt}{2.6mm}{1.3mm}
+
+%---- Entry lists -------------------------------------------------------------
+\newcommand{\cvListStart}{\begin{itemize}[leftmargin=*, labelsep=0mm, label={}, topsep=0pt, parsep=0pt, itemsep=0.8mm]}
+\newcommand{\cvListEnd}{\end{itemize}\vspace{0.4mm}}
+
+% Two-column entry headers. Both columns are p-columns rather than l/r with
+% \extracolsep{\fill}: an `l' column cannot wrap, so a long project title runs
+% straight into the tool name on the right instead of breaking.
+\newlength{\cvRightCol}\setlength{\cvRightCol}{4.0cm}
+\newlength{\cvColGap}\setlength{\cvColGap}{3mm}
+% \Needspace stops a break between an entry header and the bullets that explain
+% it; a heading stranded at the foot of a page reads as a formatting accident.
+\newcommand{\cvHeaderRows}[4]{%
+  \Needspace*{5\baselineskip}%
+  \begin{tabular}[t]{@{}>{\raggedright\arraybackslash}p{\dimexpr\textwidth-\cvRightCol-\cvColGap\relax}@{\hspace{\cvColGap}}>{\raggedleft\arraybackslash}p{\cvRightCol}@{}}
+    \textbf{#1} & \textit{\small #2} \\[0.2mm]
+    \textit{\small #3} & {\small #4}
+  \end{tabular}%
+  \vspace{-1.4mm}%
+}
+
+% {institution}{location}{role}{dates}
+%   Institution ...................... dates
+%   role ......................... location
+\newcommand{\cvEntry}[4]{\item\cvHeaderRows{#1}{#4}{#3}{#2}}
+
+% {title}{context: course, or how it came about}{tools}{note, e.g. a grade}
+\newcommand{\cvProject}[4]{\item\cvHeaderRows{#1}{#3}{#2}{#4}}
+
+% A one-line entry: {lead}{detail}{date}
+% p-columns, not `l': an honour with a sentence of context has to wrap, and an
+% `l' column silently runs off the page instead.
+\newlength{\cvDateCol}\setlength{\cvDateCol}{2.6cm}
+\newcommand{\cvLine}[3]{%
+\item
+  \begin{tabular}[t]{@{}>{\raggedright\arraybackslash}p{\dimexpr\textwidth-\cvDateCol-2mm\relax}@{\hspace{2mm}}>{\raggedleft\arraybackslash}p{\cvDateCol}@{}}
+    \textbf{#1}#2 & \textit{\small #3}
+  \end{tabular}%
+  \vspace{-1.4mm}%
+}
+
+%---- Bullets -----------------------------------------------------------------
+\renewcommand{\labelitemi}{\raisebox{0.25ex}{\tiny$\bullet$}}
+
+\newcommand{\cvBulletsStart}{\begin{justify}\begin{itemize}[leftmargin=3.4ex, rightmargin=0.5ex, labelsep=1.4mm, topsep=0.6mm, parsep=0pt, itemsep=0.3mm]\small}
+\newcommand{\cvBulletsEnd}{\end{itemize}\end{justify}\vspace{-1.6mm}}
+
+%---- Skills table ------------------------------------------------------------
+% A fixed label column so the five categories line up; without it the eye has to
+% re-find the start of each value.
+%
+% Deliberately `tabular` and not `tabularx`: tabularx absorbs its own body while
+% looking for \end{tabularx}, so it cannot be opened in one macro and closed in
+% another. The value column is therefore sized by hand.
+\newlength{\cvSkillLabel}\setlength{\cvSkillLabel}{5.4cm}
+\newlength{\cvSkillGap}\setlength{\cvSkillGap}{2.5mm}
+\newcommand{\cvSkillsStart}{%
+  \small
+  \begin{tabular}{@{}>{\bfseries\raggedright\arraybackslash}p{\cvSkillLabel}@{\hspace{\cvSkillGap}}>{\raggedright\arraybackslash}p{\dimexpr\textwidth-\cvSkillLabel-\cvSkillGap\relax}@{}}%
+}
+\newcommand{\cvSkillsEnd}{\end{tabular}\vspace{0.8mm}}
+\newcommand{\cvSkill}[2]{#1 & #2 \\[0.6mm]}
+
+%---- Masthead ----------------------------------------------------------------
+% Identity left, contact right, as in template.tex. Used once, in main.tex:
+% tabularx cannot be split across a start/end macro pair (see the note above).
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+
+%---- Compact two-column lists (languages, certifications) --------------------
+\newcommand{\cvPlainListStart}{\begin{itemize}[leftmargin=3.4ex, labelsep=1.4mm, topsep=0.6mm, parsep=0pt, itemsep=0.4mm]\small}
+\newcommand{\cvPlainListEnd}{\end{itemize}\vspace{0.4mm}}

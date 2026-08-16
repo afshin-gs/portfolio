@@ -1,0 +1,32 @@
+---
+/**
+ * Named component, usable in any post with NO import statement — it is supplied
+ * through the components map at render time (§8).
+ *   <Callout type="warning">…</Callout>
+ */
+interface Props { type?: 'note' | 'tip' | 'warning' | 'danger'; title?: string }
+const { type = 'note', title } = Astro.props
+const icons = { note: 'ℹ', tip: '✦', warning: '⚠', danger: '✖' } as const
+---
+<aside class:list={['callout', type]}>
+  <p class="callout-title"><span aria-hidden="true">{icons[type]}</span>{title ?? type.toUpperCase()}</p>
+  <div class="callout-body"><slot /></div>
+</aside>
+
+<style>
+  .callout {
+    margin: 1.5rem 0; padding: 0.875rem 1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--surface); border-radius: 0 4px 4px 0;
+  }
+  .callout-title {
+    margin: 0 0 0.375rem; font-weight: 600; font-size: 0.8125rem;
+    letter-spacing: 0.04em; text-transform: uppercase; color: var(--accent);
+  }
+  .callout-title span { margin-right: 0.4em; }
+  .callout-body :global(> :last-child) { margin-bottom: 0; }
+  .warning { border-left-color: #b7791f; }
+  .warning .callout-title { color: #b7791f; }
+  .danger { border-left-color: #c53030; }
+  .danger .callout-title { color: #c53030; }
+</style>

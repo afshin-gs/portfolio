@@ -1,0 +1,49 @@
+---
+/**
+ * `a` override (§8). External links get rel/target and a marker;
+ * internal links pass through untouched.
+ *
+ * NOTE: this override also catches anchors created by OTHER rehype plugins —
+ * notably rehype-autolink-headings. It must MERGE any incoming class rather
+ * than replace it, or heading anchors silently lose their styling hook and
+ * every heading renders as a blue link.
+ */
+interface Props {
+  href?: string
+  class?: string
+  className?: string
+}
+const { href = '', class: klass, className } = Astro.props
+const incoming = [klass, className].filter(Boolean).join(' ')
+const isHeadingAnchor = incoming.includes('heading-anchor')
+const isExternal =
+  /^https?:\/\//.test(href) && !href.includes('iamafshin.me') && !isHeadingAnchor
+---
+
+<a
+  href={href}
+  {...isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {}}
+  class:list={[incoming, { 'post-link': !isHeadingAnchor, external: isExternal }]}
+><slot /></a>
+
+<style>
+  .post-link {
+    color: var(--accent);
+    text-underline-offset: 2px;
+  }
+  .external::after {
+    content: '↗';
+    font-size: 0.75em;
+    margin-left: 0.15em;
+    vertical-align: super;
+  }
+  /* Heading anchors must read as heading text, not as links */
+  .heading-anchor {
+    color: inherit;
+    text-decoration: none;
+  }
+  .heading-anchor:hover {
+    text-decoration: underline;
+    text-decoration-color: var(--muted);
+  }
+</style>

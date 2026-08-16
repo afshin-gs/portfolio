@@ -1,0 +1,113 @@
+---
+import Grid from '../ui/Grid.astro'
+import Card from '../ui/Card.astro'
+import Tag from '../ui/Tag.astro'
+import Badge from '../ui/Badge.astro'
+import type { AppRecord } from '../../lib/apps'
+
+/**
+ * The /apps launcher grid, also used for the home page preview.
+ *
+ * Takes an already-filtered list rather than calling getApps() itself, so the
+ * caller decides what is shown (all live apps, the first three, only
+ * internal ones) without this component growing a flag per case.
+ */
+interface Props {
+  apps: readonly AppRecord[]
+  level?: 2 | 3
+}
+
+const { apps, level = 2 } = Astro.props
+const Heading = `h${level}` as 'h2' | 'h3'
+
+const SOURCE_HINT: Record<AppRecord['source'], string> = {
+  external: 'Separate repository, deployed as its own Worker',
+  internal: 'Built inside the website repository',
+}
+---
+
+{/*
+  maxColumns is derived from the COUNT, not fixed at 3. auto-fit stretches the
+  tracks it has, so a single app would otherwise become one card the full width
+  of the page. Capping the grid to the width its content actually wants keeps a
+  one-app list and a nine-app list looking like the same component.
+*/}
+<Grid as="ul" min="18rem" gap="lg" maxColumns={Math.min(apps.length, 3)}>
+  {
+    apps.map((app) => (
+      <Card as="li" interactive padding="md" class="app">
+        <p class="top">
+          {app.status === 'wip' && <Badge tone="warn">wip</Badge>}
+          <span class="spacer" />
+          <span class="source" title={SOURCE_HINT[app.source]}>
+            {app.source}
+          </span>
+        </p>
+
+        <Heading class="title">
+          <a class="card-link" href={app.href}>
+            {app.title}
+          </a>
+        </Heading>
+
+        <p class="description">{app.description}</p>
+
+        <p class="foot">
+          {app.tags?.map((tag) => <Tag>{tag}</Tag>)}
+          {app.repo && (
+            <Tag href={app.repo} tone="accent">
+              repo ↗
+            </Tag>
+          )}
+        </p>
+      </Card>
+    ))
+  }
+</Grid>
+
+<style>
+  .app {
+    gap: var(--space-3);
+  }
+
+  .top {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+  .spacer {
+    flex: 1;
+  }
+  .source {
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    color: var(--muted);
+    opacity: 0.7;
+    cursor: help;
+  }
+
+  .title {
+    font-size: var(--text-lg);
+    letter-spacing: var(--tracking-snug);
+  }
+  .title a {
+    color: var(--fg);
+    text-decoration: none;
+    transition: color var(--dur-fast) var(--ease);
+  }
+  .app:hover .title a {
+    color: var(--accent);
+  }
+
+  .description {
+    flex: 1;
+    color: var(--muted);
+    font-size: var(--text-base);
+  }
+
+  .foot {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+</style>

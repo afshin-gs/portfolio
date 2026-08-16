@@ -1,0 +1,35 @@
+---
+title: Computational McCabe–Thiele Simulator
+excerpt: A modular MATLAB implementation of the McCabe–Thiele method for multi-section columns with arbitrary feeds, side streams, and subcooled reflux.
+date: 2026-08-16
+tags: [separations, matlab, simulation]
+status: active
+stack: [MATLAB, JavaScript, HTML]
+---
+
+The textbook McCabe–Thiele construction is usually taught as something you do
+once, by hand, on graph paper, for one column with one feed. That is fine for
+learning the geometry and useless the moment the column has a side stream.
+
+This is the same method written as software: a set of reusable MATLAB functions
+behind a single execution script, so the same code applies across a range of
+Unit Operations problems rather than one assigned case.
+
+## What it solves
+
+- Multi-section columns with **arbitrary feeds and side streams**, including
+  subcooled reflux.
+- Section-wise material balances, q-lines, and operating lines.
+- Vapour–liquid equilibrium fitting and interpolation from tabulated data.
+- Curve-intersection detection, so the operating-line and equilibrium
+  intersections are found rather than eyeballed.
+- **Murphree efficiency** with a pseudo-equilibrium correction.
+- Automated stage stepping.
+
+## The browser version
+
+Once the MATLAB model was validated, I ported it to a browser-based
+JavaScript/HTML implementation, so the construction can be driven interactively
+without a MATLAB licence.
+
+Built for Unit Operations, self-directed.

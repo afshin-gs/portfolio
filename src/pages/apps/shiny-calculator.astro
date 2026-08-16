@@ -1,0 +1,11 @@
+---
+// One thin entrypoint per internal app. See AppShell.astro for why this cannot
+// be auto-generated. Adding an app = this file + src/apps/<slug>/.
+import AppShell from '../../layouts/AppShell.astro'
+import App from '../../apps/shiny-calculator/App'
+import { meta } from '../../apps/shiny-calculator/meta'
+---
+
+<AppShell app={meta}>
+  <App client:only="react" />
+</AppShell>

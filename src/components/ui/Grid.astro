@@ -1,0 +1,76 @@
+---
+import type { HTMLAttributes } from 'astro/types'
+import type { GridGap } from './types'
+
+/**
+ * Responsive grid with no breakpoints.
+ *
+ * `auto-fit` + `minmax(min, 1fr)` re-columns on the CONTAINER's width, so it
+ * behaves correctly on a phone, on rotation, on a resized window, and inside a
+ * narrow column — none of which a media-query grid handles without being told
+ * about each case separately.
+ *
+ * `min(<min>, 100%)` is the part that is easy to miss: without it, a track
+ * whose minimum exceeds the viewport overflows and the whole page scrolls
+ * sideways on a small phone.
+ */
+
+interface Props extends HTMLAttributes<'div'> {
+  as?: 'div' | 'ul' | 'ol' | 'section'
+  /** Minimum comfortable track width, any CSS length. */
+  min?: string
+  gap?: GridGap
+  /** Hard cap on columns, so a 4-item row never becomes 6 on an ultrawide. */
+  maxColumns?: number
+}
+
+const {
+  as: Tag = 'div',
+  min = '17rem',
+  gap = 'md',
+  maxColumns,
+  class: className,
+  ...rest
+} = Astro.props
+
+const style = {
+  '--grid-min': min,
+  ...(maxColumns ? { '--grid-max-columns': String(maxColumns) } : {}),
+}
+---
+
+<Tag
+  class:list={['grid', `gap-${gap}`, { capped: !!maxColumns }, className]}
+  style={style}
+  {...rest}
+>
+  <slot />
+</Tag>
+
+<style>
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(var(--grid-min), 100%), 1fr));
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .gap-sm {
+    gap: var(--space-3);
+  }
+  .gap-md {
+    gap: var(--space-4);
+  }
+  .gap-lg {
+    gap: var(--space-5);
+  }
+
+  /* Cap by bounding the container, not by fixing a column count — the grid
+   * stays fluid below the cap and simply stops growing above it. */
+  .capped {
+    max-width: calc(
+      var(--grid-max-columns) * 24rem + (var(--grid-max-columns) - 1) * var(--space-5)
+    );
+  }
+</style>

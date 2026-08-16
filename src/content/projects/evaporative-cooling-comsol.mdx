@@ -1,0 +1,35 @@
+---
+title: Coupled Transport Modelling of Evaporative Cooling
+excerpt: A three-dimensional COMSOL model coupling turbulent airflow, heat transfer, and evaporative mass transfer, built to find out how much the latent-heat term is worth.
+date: 2026-08-15
+tags: [comsol, transport, simulation]
+status: active
+stack: [COMSOL Multiphysics]
+---
+
+A liquid-filled ceramic vessel cooling in still-ish air is the kind of problem
+that looks like a heat transfer question and is not. The question I wanted a
+number for: how much of the cooling is evaporation, and how much is everything
+else?
+
+## The model
+
+Three-dimensional, coupling turbulent airflow, heat transfer, and evaporative
+mass transfer. A stationary turbulent-flow field is solved first, then transient
+heat and moisture transport runs on top of it.
+
+From there I swept the parameters that plausibly matter: **ambient temperature,
+relative humidity, and latent heat of vaporisation**.
+
+## The result
+
+Neglecting latent heat shifted the predicted ten-minute liquid temperature by
+roughly **14 percent**. Relative humidity, over the range tested, produced a
+substantially smaller effect.
+
+That is the useful part of the exercise. The evaporative term is not a
+correction you can drop for convenience, and the sensitivity to humidity is
+small enough that the ambient condition you cannot control matters less than the
+physics you might be tempted to leave out.
+
+Mass Transfer course project.

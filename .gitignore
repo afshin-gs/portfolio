@@ -1,0 +1,36 @@
+legacy/
+
+# build output
+dist/
+# latexmk aux files. The compiled PDF itself IS committed: CI has no Docker
+# step, so the deployed PDF has to come from the repo. public/cv.pdf is then
+# DERIVED from it at build time by cv/publish.sh, so it is not tracked.
+cv/output/*
+!cv/output/.gitkeep
+!cv/output/cv.pdf
+public/cv.pdf
+# generated types
+.astro/
+
+# dependencies
+node_modules/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+
+# environment variables
+.env
+.env.production
+
+# macOS-specific files
+.DS_Store
+
+# jetbrains setting folder
+.idea/
+
+# wrangler local state
+.wrangler/

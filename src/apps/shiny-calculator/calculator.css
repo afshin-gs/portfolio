@@ -1,0 +1,114 @@
+/* Only theme-contract custom properties (§12) — no hardcoded colours, so this
+   re-themes with the rest of the site and with any future app. */
+
+.calc {
+  max-width: 22rem;
+  margin: 0 auto;
+}
+
+.screen {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+  padding: 1rem 1.15rem;
+  margin-bottom: 0.75rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  min-height: 5.25rem;
+  justify-content: flex-end;
+}
+
+.history {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  color: var(--muted);
+  min-height: 1.2em;
+  letter-spacing: 0.02em;
+}
+
+.display {
+  font-family: var(--font-mono);
+  font-size: clamp(1.75rem, 7vw, 2.25rem);
+  line-height: 1.1;
+  color: var(--fg);
+  overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums;
+}
+
+.display.error {
+  font-size: 1rem;
+  color: #c53030;
+}
+
+.pad {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+}
+
+.pad button {
+  font: inherit;
+  font-size: 1.0625rem;
+  padding: 0.85rem 0;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--fg);
+  cursor: pointer;
+  transition:
+    border-color 0.12s ease,
+    background 0.12s ease,
+    transform 0.06s ease;
+}
+
+.pad button:hover {
+  border-color: var(--accent);
+}
+
+.pad button:active {
+  transform: translateY(1px);
+}
+
+.pad button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.pad .op,
+.pad .eq {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--bg);
+  font-weight: 600;
+}
+
+.pad .op:hover,
+.pad .eq:hover {
+  filter: brightness(1.1);
+}
+
+.pad .fn {
+  background: var(--surface);
+  color: var(--muted);
+}
+
+.pad .wide {
+  grid-column: span 2;
+}
+
+.hint {
+  margin: 1rem 0 0;
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+.hint kbd {
+  font-family: var(--font-mono);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 0.05em 0.35em;
+  font-size: 0.95em;
+}

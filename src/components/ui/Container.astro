@@ -1,0 +1,43 @@
+---
+import type { HTMLAttributes } from 'astro/types'
+import type { ContainerSize } from './types'
+
+/**
+ * The one place horizontal page rhythm is defined.
+ *
+ * Nothing else should set a max-width plus its own padding — that is how two
+ * pages end up a few pixels apart and how a gutter gets forgotten on mobile.
+ * Widths and the gutter come from tokens, and the gutter is fluid, so rotating
+ * a phone re-flows continuously instead of stepping at a breakpoint.
+ */
+
+interface Props extends HTMLAttributes<'div'> {
+  size?: ContainerSize
+  /** Element to render. Use a landmark tag when this IS the landmark. */
+  as?: 'div' | 'section' | 'header' | 'footer' | 'main' | 'nav' | 'article'
+}
+
+const { size = 'default', as: Tag = 'div', class: className, ...rest } = Astro.props
+---
+
+<Tag class:list={['container', size, className]} {...rest}><slot /></Tag>
+
+<style>
+  .container {
+    width: 100%;
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+  .narrow {
+    max-width: var(--container-narrow);
+  }
+  .article {
+    max-width: var(--container-article);
+  }
+  .default {
+    max-width: var(--container);
+  }
+  .wide {
+    max-width: 90rem;
+  }
+</style>

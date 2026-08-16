@@ -1,0 +1,43 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "command": "./node_modules/.bin/astro dev",
+      "name": "Development server",
+      "request": "launch",
+      "type": "node-terminal"
+    },
+    {
+      // F5 → runs latexmk in Docker, writes cv/output/cv.pdf and public/cv.pdf.
+      // Same script LaTeX Workshop and `bun run deploy` use, so all three paths
+      // produce a byte-identical PDF.
+      "command": "./cv/build.sh",
+      "name": "Build CV (PDF)",
+      "request": "launch",
+      "type": "node-terminal"
+    },
+    {
+      // Compile only — leaves public/cv.pdf alone. For iterating on layout
+      // without touching what the site serves.
+      "command": "./cv/build.sh --no-publish",
+      "name": "Build CV (PDF, no publish)",
+      "request": "launch",
+      "type": "node-terminal"
+    },
+    {
+      // Discards latexmk's aux files first. Reach for this when a build fails
+      // with a stale .aux/.fdb_latexmk after an interrupted run.
+      "command": "rm -f cv/output/cv.* && ./cv/build.sh",
+      "name": "Rebuild CV (clean)",
+      "request": "launch",
+      "type": "node-terminal"
+    },
+    {
+      // Only needed after editing cv/Dockerfile (e.g. adding a \\usepackage).
+      "command": "docker build -t afshin-cv-latex:latest cv",
+      "name": "Rebuild CV LaTeX image",
+      "request": "launch",
+      "type": "node-terminal"
+    }
+  ]
+}

@@ -1,0 +1,173 @@
+---
+import { Image } from 'astro:assets'
+import PageLayout from '../layouts/PageLayout.astro'
+import PageHeader from '../components/ui/PageHeader.astro'
+import SkillList from '../components/ui/SkillList.astro'
+import Timeline from '../components/ui/Timeline.astro'
+import SectionHeading from '../components/ui/SectionHeading.astro'
+import Button from '../components/ui/Button.astro'
+import { aboutParagraphs, skills, contactPrompt, cvFile, portraitAlt } from '../data/profile'
+import { portrait } from '../lib/portrait'
+import { resumeSections } from '../data/resume'
+import { site } from '../data/site'
+
+// Listed in the URL map (docs §4) and linked from the header, so it must exist
+// as a real route: the nav is generated from site.nav and cannot link to a 404.
+
+// Education is short enough to belong on the page a reader lands on first;
+// everything longer stays on /resume rather than being duplicated here.
+const education = resumeSections.find((section) => section.id === 'education')
+---
+
+<PageLayout
+  title="About"
+  description={`About ${site.name}: chemical engineering, transport phenomena, and computational modelling at Shiraz University.`}
+>
+  <PageHeader
+    title="About"
+    lede={`${site.name}, ${site.role.toLowerCase()} at Shiraz University. Based in ${site.location}.`}
+  />
+
+  <div class="layout">
+    <div class="bio">
+      {aboutParagraphs.map((paragraph) => <p>{paragraph}</p>)}
+
+      {
+        education && (
+          <div class="education">
+            <SectionHeading>Education</SectionHeading>
+            <Timeline entries={education.entries} />
+          </div>
+        )
+      }
+    </div>
+
+    <aside class="side">
+      {/* Lazy: on this page the portrait is beside the fold, not the LCP
+          element. The <h1> and lede above it are. Absent until a file exists
+          at src/assets/portrait.jpg (see src/lib/portrait.ts). */}
+      {
+        portrait && (
+          <figure class="portrait">
+            <Image
+              src={portrait}
+              alt={portraitAlt}
+              widths={[380, 560, 760]}
+              sizes="(min-width: 56rem) 22rem, 100vw"
+              loading="lazy"
+              decoding="async"
+            />
+          </figure>
+        )
+      }
+
+      <h2 class="side-title">Focus areas</h2>
+      <SkillList skills={skills} />
+
+      <h2 class="side-title">Curriculum vitae</h2>
+      <p class="side-note">
+        The full two-page record, with coursework and grades.
+      </p>
+      <div class="side-actions">
+        <Button href="/resume" size="sm" variant="secondary" icon="→">Read the summary</Button>
+        <Button href={cvFile.href} size="sm" variant="ghost" icon="↓" download>PDF</Button>
+      </div>
+
+      <h2 class="side-title">Get in touch</h2>
+      <p class="side-note">{contactPrompt.body}</p>
+      <div class="side-actions">
+        <Button href="/contact-me" size="sm" icon="→">Get in touch</Button>
+        <Button href={`mailto:${site.email}`} size="sm" variant="ghost">Email</Button>
+      </div>
+    </aside>
+  </div>
+</PageLayout>
+
+<style>
+  .layout {
+    display: grid;
+    gap: var(--space-8);
+    padding-bottom: var(--space-8);
+  }
+  @media (min-width: 56rem) {
+    .layout {
+      grid-template-columns: 1.4fr 1fr;
+      gap: var(--space-9);
+      align-items: start;
+    }
+  }
+
+  /* Deliberately NOT `.prose`: that class is prose.css's contract for the HTML
+   * the MDX pipeline emits, and every rule in it is a `.prose` descendant
+   * selector. Borrowing the name here makes `.prose li + li` and `.prose h4`
+   * restyle the Timeline below. */
+  .bio {
+    font-size: var(--text-prose);
+    line-height: var(--leading-normal);
+    color: color-mix(in srgb, var(--fg) 88%, var(--muted));
+  }
+  .bio p + p {
+    margin-top: var(--space-5);
+  }
+
+  .education {
+    margin-top: var(--space-8);
+  }
+
+  .side {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+
+  .portrait {
+    margin: 0 0 var(--space-4);
+    align-self: stretch;
+  }
+  .portrait :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    /* 4:5 here too, so the two pages crop the same face the same way. */
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    object-position: 50% 22%;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+  }
+
+  /* Same mono/accent language as SectionHeading, one step DOWN in size: these
+   * open a sidebar beside the main column, and matching the main column's
+   * heading scale would make the aside compete with it. Still well above the
+   * --text-xs it used to be, which rendered an <h2> below body size. */
+  .side-title {
+    font-family: var(--font-mono);
+    font-size: var(--text-md);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    color: var(--accent);
+    padding-bottom: var(--space-2);
+    border-bottom: 1px solid var(--border);
+    align-self: stretch;
+  }
+  .side-title + :global(*) {
+    margin-top: 0;
+  }
+  .side-title:not(:first-child) {
+    margin-top: var(--space-5);
+  }
+
+  .side-note {
+    color: var(--muted);
+    font-size: var(--text-base);
+  }
+
+  .side-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+</style>

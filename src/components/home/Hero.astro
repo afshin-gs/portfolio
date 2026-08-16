@@ -1,0 +1,222 @@
+---
+import { Image } from 'astro:assets'
+import Container from '../ui/Container.astro'
+import Button from '../ui/Button.astro'
+import StatGrid from '../ui/StatGrid.astro'
+import { hero, stats, portraitAlt } from '../../data/profile'
+import { portrait } from '../../lib/portrait'
+
+/**
+ * The home page hero. The only place on the site that uses the display type
+ * scale and the accent gradient on text.
+ *
+ * Height is content-driven, NOT `min-height: 100vh`. A viewport-height hero
+ * pushes everything below the fold on a landscape phone and fights the mobile
+ * browser's collapsing address bar. The content is as tall as it needs to be.
+ *
+ * The portrait sits beside the headline above 64rem and is HIDDEN below it,
+ * not stacked. Stacking would push the headline, lede, and both calls to action
+ * down by the height of a portrait-orientation photo, which is the entire first
+ * screen on a phone. The photograph supports the text; it does not outrank it.
+ *
+ * It is also OPTIONAL. `src/lib/portrait.ts` resolves to null when no file
+ * exists, in which case the second grid column is never created and the intro
+ * keeps the full measure rather than sitting next to a hole.
+ */
+---
+
+<section class="hero">
+  <Container>
+    <div class:list={['grid', { 'has-portrait': portrait }]}>
+      <div class="intro">
+        {
+          hero.badge && (
+            <p class="badge">
+              <span class="dot" aria-hidden="true" />
+              {hero.badge}
+            </p>
+          )
+        }
+
+        <h1>
+          <span class="line">{hero.headlineLead}</span>
+          <span class="line gradient">{hero.headlineAccent}</span>
+          {hero.headlineTail && <span class="line">{hero.headlineTail}</span>}
+        </h1>
+
+        <p class="lede">{hero.lede}</p>
+
+        <div class="ctas">
+          <Button href={hero.primaryCta.href} icon="→">{hero.primaryCta.label}</Button>
+          {
+            hero.secondaryCta && (
+              <Button href={hero.secondaryCta.href} variant="secondary">
+                {hero.secondaryCta.label}
+              </Button>
+            )
+          }
+        </div>
+      </div>
+
+      {/*
+        NOT `loading="lazy"`: this is the largest element in the initial
+        viewport, so it is the LCP candidate. Lazy-loading it would defer the
+        request until after layout and make the metric worse, which is the
+        opposite of what the attribute is for.
+      */}
+      {
+        portrait && (
+          <figure class="portrait">
+            <Image
+              src={portrait}
+              alt={portraitAlt}
+              widths={[420, 640, 840]}
+              sizes="(min-width: 64rem) 26rem, 0px"
+              loading="eager"
+              fetchpriority="high"
+              decoding="async"
+            />
+          </figure>
+        )
+      }
+    </div>
+
+    <StatGrid stats={stats} class="stats" />
+  </Container>
+</section>
+
+<style>
+  .hero {
+    padding-block: var(--space-8) var(--space-section);
+  }
+  @media (min-width: 48rem) {
+    .hero {
+      padding-block: var(--space-10) var(--space-section);
+    }
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 0.35rem 0.85rem;
+    margin-bottom: var(--space-6);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    background: var(--surface-raised);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-wide);
+    color: var(--muted);
+  }
+  .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  h1 {
+    font-size: var(--text-4xl);
+    line-height: 0.98;
+    /* Each fragment starts its own line, so the shape of the headline is
+     * stable rather than depending on where the text happens to break. A
+     * fragment longer than the measure still wraps within itself; see the
+     * .has-portrait note below. */
+    display: flex;
+    flex-direction: column;
+    text-wrap: balance;
+  }
+
+  /* The gradient. One of exactly two places it appears (the other is a
+   * primary Button). -webkit-text-fill-color is required for Safari; `color`
+   * alone leaves the text solid there. */
+  .gradient {
+    /* Shrink-to-fit, so the gradient box is the width of the WORD rather than
+     * the width of the headline column. Stretched to the column, a short
+     * fragment only ever shows the first slice of the ramp and reads as a flat
+     * teal; hugging the text lets the full sweep land on the glyphs. */
+    align-self: flex-start;
+    background: var(--gradient-accent);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    /* Descenders get clipped by background-clip without a little room. */
+    padding-bottom: 0.08em;
+  }
+
+  .lede {
+    margin-top: var(--space-6);
+    max-width: 44ch;
+    font-size: var(--text-lg);
+    color: var(--muted);
+  }
+  .lede :global(strong) {
+    color: var(--fg);
+    font-weight: 500;
+  }
+
+  .ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-top: var(--space-7);
+  }
+
+  .hero :global(.stats) {
+    margin-top: var(--space-9);
+  }
+
+  /* ---- Portrait ----
+   * Single column until 64rem, where there is genuinely room for a 26rem image
+   * beside a headline at the display scale. `align-items: center` keeps the
+   * photo optically anchored to the headline block rather than to the top of
+   * the section.
+   *
+   * Both rules are gated on .has-portrait so that with no photograph the grid
+   * stays a plain single column and nothing reserves space for a missing image.
+   */
+  .grid {
+    display: grid;
+    gap: var(--space-8);
+  }
+  .intro {
+    min-width: 0;
+  }
+
+  .portrait {
+    display: none;
+    margin: 0;
+  }
+
+  /* 26rem is as wide as the photo can go before the intro column stops holding
+   * a headline fragment on one line. Each fragment in profile.ts must therefore
+   * stay SHORT: a long one wraps within itself, the headline grows a line, and
+   * the stat row drops below the fold. */
+  @media (min-width: 64rem) {
+    .grid.has-portrait {
+      grid-template-columns: minmax(0, 1fr) 26rem;
+      gap: var(--space-9);
+      align-items: center;
+    }
+    .has-portrait .portrait {
+      display: block;
+    }
+  }
+
+  .portrait :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    /* Cropped to 4:5: a full-length shot leaves the face small at this width.
+     * `object-position` biases the crop upward so the height comes off the
+     * FLOOR rather than off the top of the frame. */
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    object-position: 50% 22%;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+  }
+</style>

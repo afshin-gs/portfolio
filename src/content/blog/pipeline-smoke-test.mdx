@@ -1,0 +1,108 @@
+---
+title: Pipeline smoke test
+excerpt: 'Exercises every part of the content pipeline at once: math, code, callouts, element overrides, and an interactive ECharts island.'
+date: 2026-07-26
+tags: [meta, astro, mdx]
+isActive: true
+draft: false
+banner: ~assets/ronak-naik-WYnkVwaopzE-unsplash.jpg
+bannerAlt: Solid blue placeholder banner
+---
+
+![post banner](~assets/jens-freudenau-Xlg2KbYFUoM-unsplash.jpg)
+
+This post exists to prove the pipeline works end to end. If it renders
+correctly, every mechanism in §8 of the architecture doc is live. Delete it once
+real content exists.
+
+## Plain markdown still behaves
+
+Ordinary **bold**, _italic_, `inline code`, and a [link to the Astro
+docs](https://docs.astro.build) which should pick up the external-link marker
+via the `a` override.
+
+- Unordered lists
+- Render normally
+- With no special handling
+
+> Blockquotes pass through untouched.
+
+## Math renders at build time
+
+Inline math like $E = mc^2$ sits in the paragraph flow. Block math gets its own
+line:
+
+$$
+\hat{f}(\xi) = \int_{-\infty}^{\infty} f(x)\, e^{-2\pi i x \xi}\, dx
+$$
+
+Zero JavaScript is shipped for either — `remark-math` and `rehype-katex` do the
+work during the build, and only a stylesheet reaches the browser.
+
+## Code blocks are dual-themed
+
+```ts
+// Shiki emits CSS variables for both themes, so this follows the
+// theme switch with no client-side highlighting.
+export function derive(entry: Entry, collection: ContentCollection) {
+  const slug = entry.id
+  return { slug, uri: `/${collection}/${slug}` }
+}
+```
+
+## Named components need no import
+
+<Callout type="warning" title="This is the override map at work">
+  `Callout` was never imported in this file. It is supplied through
+  `components={mdxComponents}` at render time, which keeps posts as ~95% plain
+  markdown that round-trips to Obsidian.
+</Callout>
+
+## Element overrides apply to plain markdown
+
+The image below uses ordinary markdown syntax, but renders through
+`ZoomableImage`. Adding pan and zoom later changes one component file — this
+post is never edited.
+
+![A green placeholder standing in for a real diagram](~assets/diagram-sample.png)
+
+Tables route through `ScrollableTable`, so wide ones scroll inside their own
+container instead of breaking the page:
+
+| Mechanism | Where it hooks | Runtime cost |
+| --- | --- | --- |
+| Shiki | build | 0 KB |
+| KaTeX | build | 0 KB (CSS only) |
+| Override map | render | 0 KB |
+| ECharts island | client:visible | ~100 KB gz, on scroll |
+
+## An interactive island, mid-document
+
+Everything above this point shipped zero JavaScript. The chart below is the
+first thing on the page that costs anything, and it only loads when you scroll
+to it.
+
+<Plot
+  height={340}
+  caption="Synthetic data — proves the ECharts island mounts, themes itself from CSS custom properties, and survives a theme switch."
+  option={{
+    tooltip: { trigger: 'axis' },
+    legend: { data: ['build time', 'bundle size'] },
+    grid: { left: 48, right: 24, top: 40, bottom: 40 },
+    xAxis: { type: 'category', data: ['v1', 'v2', 'v3', 'v4', 'v5', 'v6'] },
+    yAxis: { type: 'value' },
+    series: [
+      { name: 'build time', type: 'line', smooth: true, data: [12, 14, 11, 9, 8, 7] },
+      { name: 'bundle size', type: 'bar', data: [40, 38, 36, 30, 28, 25] },
+    ],
+  }}
+/>
+
+Try switching the theme with the chart on screen. It should recolour rather than
+keep light-mode axes — that is the D11 failure mode the token-reading code
+exists to prevent.
+
+## Prose continues afterwards
+
+And markdown resumes as if nothing happened, which is the entire point of
+choosing MDX.

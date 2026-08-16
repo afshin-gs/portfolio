@@ -1,0 +1,287 @@
+---
+import Container from '../ui/Container.astro'
+import Button from '../ui/Button.astro'
+import ThemeToggle from './ThemeToggle.astro'
+import { site, isActivePath } from '../../data/site'
+
+/**
+ * Sticky site header with a desktop nav and a mobile overlay.
+ *
+ * Both navs render the SAME list from `site.nav` — one source, so they cannot
+ * drift. The mobile panel is `hidden` in the markup rather than hidden by CSS,
+ * so with JS unavailable it stays closed and inert instead of being an
+ * unopenable button next to an invisible menu; the desktop nav is the
+ * progressive-enhancement floor above 56rem.
+ */
+const path = Astro.url.pathname
+---
+
+<header class="site-header">
+  <Container>
+    <div class="bar">
+      <a class="brand" href="/">
+        <span class="dot" aria-hidden="true"></span>
+        <span class="name">{site.name}</span>
+        <span class="role" aria-hidden="true">/ {site.role}</span>
+      </a>
+
+      <nav class="desktop-nav" aria-label="Primary">
+        <ul>
+          {
+            site.nav.map((item) => (
+              <li>
+                <a
+                  href={item.href}
+                  aria-current={isActivePath(path, item.href) ? 'page' : undefined}
+                >
+                  {item.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <div class="actions">
+        <ThemeToggle />
+        <Button class="header-cta" href={site.cta.href} size="sm" icon="→">
+          {site.cta.label}
+        </Button>
+        <button
+          class="menu-button"
+          type="button"
+          data-nav-open
+          aria-expanded="false"
+          aria-controls="mobile-nav"
+          aria-label="Open menu"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M3 6h18M3 12h18M3 18h18"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </Container>
+</header>
+
+<div class="mobile-panel" id="mobile-nav" data-nav-panel hidden>
+  <div class="panel-bar">
+    <span class="panel-title">Menu</span>
+    <button class="menu-button" type="button" data-nav-close aria-label="Close menu">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M6 6l12 12M18 6L6 18"></path>
+      </svg>
+    </button>
+  </div>
+
+  <nav aria-label="Primary, mobile">
+    <ul>
+      {
+        site.nav.map((item) => (
+          <li>
+            <a
+              href={item.href}
+              aria-current={isActivePath(path, item.href) ? 'page' : undefined}
+            >
+              {item.label}
+            </a>
+          </li>
+        ))
+      }
+      <li>
+        <a href={site.cta.href}>{site.cta.label}</a>
+      </li>
+    </ul>
+  </nav>
+</div>
+
+<script>
+  import { initMobileNav } from '../../lib/mobile-nav'
+  initMobileNav()
+</script>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-header);
+    background: color-mix(in srgb, var(--bg) 82%, transparent);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    min-height: var(--header-height);
+  }
+
+  /* ---- Brand ---- */
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--fg);
+    text-decoration: none;
+    font-weight: 600;
+    letter-spacing: var(--tracking-snug);
+    min-width: 0;
+  }
+  .dot {
+    flex: none;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+  .name {
+    font-size: var(--text-base);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .role {
+    display: none;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    font-weight: 400;
+    color: var(--muted);
+  }
+
+  /* ---- Desktop nav ---- */
+  .desktop-nav {
+    display: none;
+  }
+  .desktop-nav ul {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    list-style: none;
+  }
+  .desktop-nav a {
+    display: block;
+    padding: 0.4rem 0.75rem;
+    border-radius: var(--radius-pill);
+    font-size: var(--text-sm);
+    color: var(--muted);
+    text-decoration: none;
+    transition:
+      color var(--dur-fast) var(--ease),
+      background-color var(--dur-fast) var(--ease);
+  }
+  .desktop-nav a:hover {
+    color: var(--fg);
+    background: var(--surface-hover);
+  }
+  .desktop-nav a[aria-current='page'] {
+    color: var(--accent);
+    background: var(--accent-soft);
+  }
+
+  /* ---- Actions ---- */
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex: none;
+  }
+  .actions :global(.header-cta) {
+    display: none;
+  }
+
+  .menu-button {
+    display: inline-grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    flex: none;
+    padding: 0;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    color: var(--fg);
+    cursor: pointer;
+  }
+  .menu-button svg {
+    width: 1.1rem;
+    height: 1.1rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.75;
+    stroke-linecap: round;
+  }
+  .menu-button:hover {
+    border-color: var(--accent-line);
+  }
+
+  /* ---- Mobile overlay ---- */
+  .mobile-panel {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-overlay);
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    overflow-y: auto;
+    /* Notched phones: keep the close button and the last link reachable. */
+    padding: env(safe-area-inset-top) env(safe-area-inset-right)
+      env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
+  .mobile-panel[hidden] {
+    display: none;
+  }
+
+  .panel-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: var(--header-height);
+    padding-inline: var(--gutter);
+    border-bottom: 1px solid var(--border);
+  }
+  .panel-title {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    color: var(--muted);
+  }
+
+  .mobile-panel ul {
+    list-style: none;
+    padding: var(--space-4) var(--gutter) var(--space-8);
+  }
+  .mobile-panel li + li {
+    border-top: 1px solid var(--border);
+  }
+  .mobile-panel a {
+    display: block;
+    padding: var(--space-4) 0;
+    font-size: var(--text-xl);
+    font-weight: 500;
+    letter-spacing: var(--tracking-snug);
+    color: var(--fg);
+    text-decoration: none;
+  }
+  .mobile-panel a[aria-current='page'] {
+    color: var(--accent);
+  }
+
+  /* ---- Desktop breakpoint. Must match DESKTOP_QUERY in lib/mobile-nav.ts ---- */
+  @media (min-width: 56rem) {
+    .role {
+      display: inline;
+    }
+    .desktop-nav {
+      display: block;
+    }
+    .actions :global(.header-cta) {
+      display: inline-flex;
+    }
+    .menu-button {
+      display: none;
+    }
+  }
+</style>

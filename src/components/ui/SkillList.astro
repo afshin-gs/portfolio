@@ -1,0 +1,58 @@
+---
+import type { Skill } from '../../data/profile'
+
+/**
+ * Name/level pairs.
+ *
+ * The Molecular mockup drew a filled progress bar per skill. That is dropped
+ * on purpose: a bar encodes a precise number ("88% of what?") that nobody can
+ * justify, and it is unreadable to a screen reader without a redundant text
+ * label anyway. The text level IS the label.
+ */
+interface Props {
+  skills: readonly Skill[]
+  class?: string
+}
+
+const { skills, class: className } = Astro.props
+---
+
+<ul class:list={['skills', className]}>
+  {
+    skills.map((skill) => (
+      <li>
+        <span class="name">{skill.name}</span>
+        <span class="level">{skill.level}</span>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .skills {
+    list-style: none;
+    border-top: 1px solid var(--border);
+  }
+
+  .skills li {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding: var(--space-3) 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .name {
+    font-size: var(--text-base);
+    font-weight: 500;
+  }
+
+  .level {
+    flex: none;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-wide);
+    color: var(--accent);
+  }
+</style>

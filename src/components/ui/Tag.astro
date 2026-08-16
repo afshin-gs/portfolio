@@ -1,0 +1,59 @@
+---
+import type { HTMLAttributes } from 'astro/types'
+import type { TagTone } from './types'
+
+/**
+ * The pill used for tags, stack entries, and inline metadata.
+ *
+ * Renders an <a> when `href` is present and a <span> otherwise, so a
+ * non-navigating label is never announced as a link.
+ */
+
+interface Props extends Omit<HTMLAttributes<'a'>, 'href'> {
+  href?: string
+  tone?: TagTone
+}
+
+const { href, tone = 'neutral', class: className, ...rest } = Astro.props
+const Tag = href ? 'a' : 'span'
+---
+
+<Tag class:list={['tag', tone, { link: !!href }, className]} {...href ? { href } : {}} {...rest}>
+  <slot />
+</Tag>
+
+<style>
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35em;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    line-height: 1.6;
+    padding: 0.15rem 0.6rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .neutral {
+    color: var(--muted);
+    background: transparent;
+  }
+  .accent {
+    color: var(--accent);
+    background: var(--accent-soft);
+    border-color: transparent;
+  }
+
+  .link {
+    transition:
+      color var(--dur-fast) var(--ease),
+      border-color var(--dur-fast) var(--ease);
+  }
+  .link:hover {
+    color: var(--accent);
+    border-color: var(--accent-line);
+  }
+</style>

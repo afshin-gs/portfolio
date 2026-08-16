@@ -1,0 +1,66 @@
+---
+import Grid from './Grid.astro'
+import type { Stat } from '../../data/profile'
+
+/**
+ * The hero's figure row.
+ *
+ * Two columns on a phone, four once there is room — handled by Grid's auto-fit
+ * rather than a media query, so it also does the right thing when the hero is
+ * narrowed by rotation rather than by device class.
+ *
+ * A <dl> because each item genuinely is a term/value pair; the value comes
+ * first visually, which is what `flex-direction: column-reverse` is for — the
+ * DOM keeps <dt> before <dd> so it is still read in the correct order.
+ */
+interface Props {
+  stats: readonly Stat[]
+  class?: string
+}
+
+const { stats, class: className } = Astro.props
+---
+
+<Grid as="div" min="8rem" gap="sm" class:list={['stats', className]}>
+  {
+    stats.map((stat) => (
+      <dl class="stat">
+        <dt class="label">{stat.label}</dt>
+        <dd class="value">{stat.value}</dd>
+      </dl>
+    ))
+  }
+</Grid>
+
+<style>
+  .stats {
+    max-width: 46rem;
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: var(--space-1);
+    margin: 0;
+    padding: var(--space-4);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--surface-raised);
+  }
+
+  .value {
+    margin: 0;
+    font-size: var(--text-2xl);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: var(--tracking-tight);
+    color: var(--accent);
+  }
+
+  .label {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-wide);
+    color: var(--muted);
+  }
+</style>

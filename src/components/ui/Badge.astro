@@ -1,0 +1,50 @@
+---
+import type { HTMLAttributes } from 'astro/types'
+import type { BadgeTone } from './types'
+
+/**
+ * A status marker: `wip`, `archived`, `active`.
+ *
+ * Distinct from Tag on purpose. A Tag is a navigable facet; a Badge states a
+ * condition and never links. Keeping them separate means restyling "every
+ * status on the site" cannot accidentally restyle every tag.
+ */
+
+interface Props extends HTMLAttributes<'span'> {
+  tone?: BadgeTone
+}
+
+const { tone = 'neutral', class: className, ...rest } = Astro.props
+---
+
+<span class:list={['badge', tone, className]} {...rest}><slot /></span>
+
+<style>
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    line-height: 1.7;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wide);
+    padding: 0 0.5rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    white-space: nowrap;
+  }
+
+  .neutral {
+    color: var(--muted);
+  }
+  .accent {
+    color: var(--accent);
+    border-color: var(--accent-line);
+  }
+  /* Not from the theme contract: a warning must stay a warning in both themes,
+   * so it is one fixed hue picked to pass contrast on either background. */
+  .warn {
+    color: #d18b28;
+    border-color: color-mix(in srgb, #d18b28 45%, transparent);
+  }
+</style>

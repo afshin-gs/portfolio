@@ -1,0 +1,37 @@
+---
+import { render } from 'astro:content'
+import Post from '../../layouts/Post.astro'
+import { mdxComponents } from '../../components/mdx'
+import { getItems } from '../../lib/content'
+
+// Mirrors the blog route exactly (D5). includeInactive: retired entries must still build their route so previously
+// shared links never 404 (§7).
+export async function getStaticPaths() {
+  const items = await getItems('projects', { includeInactive: true })
+  return items
+    .filter((item) => item.hasDetail) // §7 — empty body means list-only card
+    .map((item) => ({
+      params: { slug: item.slug },
+      props: { item },
+    }))
+}
+
+const { item } = Astro.props
+const { Content } = await render(item.entry)
+const { data } = item.entry
+---
+
+<Post
+  title={data.title}
+  excerpt={data.excerpt}
+  date={data.date}
+  updated={data.updated}
+  tags={data.tags}
+  derived={item}
+  collection="projects"
+  banner={data.banner}
+  bannerAlt={data.bannerAlt}
+>
+  {/* §8 — the override map. Posts need no import statements. */}
+  <Content components={mdxComponents} />
+</Post>

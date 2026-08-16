@@ -1,0 +1,97 @@
+---
+import Container from './Container.astro'
+import Eyebrow from './Eyebrow.astro'
+import type { ContainerSize } from './types'
+
+/**
+ * A page section: vertical rhythm, optional eyebrow, heading, and lede.
+ *
+ * Pages compose these rather than each declaring its own padding and heading
+ * markup — which is what keeps section spacing identical across every page and
+ * makes "make sections tighter on mobile" a one-token change.
+ *
+ * `titleAccent` is coloured with the flat --accent, NOT the gradient. The
+ * gradient is reserved for the hero headline and primary buttons.
+ */
+interface Props {
+  id?: string
+  eyebrow?: string
+  /** Renders the "01 —" prefix inside the eyebrow. */
+  index?: string
+  title?: string
+  titleAccent?: string
+  lede?: string
+  size?: ContainerSize
+  /** Heading level. Sections on a page with an <h1> should stay at 2. */
+  level?: 2 | 3
+  /** Hairline above the section. Use to separate stacked sections. */
+  divider?: boolean
+  class?: string
+}
+
+const {
+  id,
+  eyebrow,
+  index,
+  title,
+  titleAccent,
+  lede,
+  size = 'default',
+  level = 2,
+  divider = false,
+  class: className,
+} = Astro.props
+
+const Heading = `h${level}` as 'h2' | 'h3'
+const hasHeader = Boolean(eyebrow || title || lede)
+---
+
+<section id={id} class:list={['section', { divider }, className]}>
+  <Container size={size}>
+    {
+      hasHeader && (
+        <header class="head">
+          {eyebrow && <Eyebrow index={index}>{eyebrow}</Eyebrow>}
+          {title && (
+            <Heading class="title">
+              {title}
+              {titleAccent && <span class="accent"> {titleAccent}</span>}
+            </Heading>
+          )}
+          {lede && <p class="lede">{lede}</p>}
+        </header>
+      )
+    }
+    <slot />
+  </Container>
+</section>
+
+<style>
+  .section {
+    padding-block: var(--space-section);
+  }
+  .divider {
+    border-top: 1px solid var(--border);
+  }
+
+  .head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    margin-bottom: var(--space-7);
+    max-width: 46rem;
+  }
+
+  .title {
+    font-size: var(--text-2xl);
+  }
+  .accent {
+    color: var(--accent);
+  }
+
+  .lede {
+    color: var(--muted);
+    font-size: var(--text-lg);
+    max-width: 54ch;
+  }
+</style>

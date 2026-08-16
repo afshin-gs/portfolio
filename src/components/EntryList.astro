@@ -1,0 +1,94 @@
+---
+import Grid from './ui/Grid.astro'
+import EntryCard from './content/EntryCard.astro'
+import type { ContentCollection, Item } from '../lib/content'
+
+/**
+ * D5 — one list component, parameterised by collection. /blog and /projects
+ * differ in semantics and presentation, not in machinery.
+ *
+ * `layout` is presentation only; both render identical cards. 'grid' re-columns
+ * on container width via Grid's auto-fit, so it is safe inside a narrow column
+ * as well as full width. Grid cards stack their thumbnail on top — a side image
+ * in a 19rem column would leave the excerpt two words wide.
+ *
+ * TWO EMPTY STATES, and they are not the same thing. `empty` is "nothing has
+ * been published"; the filter island's message is "your filters matched
+ * nothing". Conflating them would tell a reader who over-filtered that the site
+ * has no content.
+ */
+export type EntryListLayout = 'rows' | 'grid'
+
+interface Props {
+  items: Item<ContentCollection>[]
+  collection: ContentCollection
+  layout?: EntryListLayout
+  /** Heading level for each card, so the list nests correctly. */
+  level?: 2 | 3
+  empty?: string
+}
+
+const {
+  items,
+  collection,
+  layout = 'rows',
+  level = 2,
+  empty = 'Nothing published here yet.',
+} = Astro.props
+
+const orientation = layout === 'grid' ? 'stack' : 'row'
+---
+
+{
+  items.length === 0 ? (
+    <p class="empty">{empty}</p>
+  ) : (
+    <>
+      {layout === 'grid' ? (
+        <Grid as="ul" min="19rem" gap="lg" data-entry-list>
+          {items.map((item) => (
+            <EntryCard
+              item={item}
+              collection={collection}
+              level={level}
+              orientation={orientation}
+            />
+          ))}
+        </Grid>
+      ) : (
+        <ul class="rows" data-entry-list>
+          {items.map((item) => (
+            <EntryCard
+              item={item}
+              collection={collection}
+              level={level}
+              orientation={orientation}
+            />
+          ))}
+        </ul>
+      )}
+
+      {/* Shown by the filter island when a filter matches nothing. */}
+      <p class="empty" data-filter-empty hidden>
+        No matches. Try a different search, or clear some filters.
+      </p>
+    </>
+  )
+}
+
+<style>
+  .rows {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    list-style: none;
+  }
+
+  .empty {
+    padding: var(--space-6);
+    border: 1px dashed var(--border);
+    border-radius: var(--radius-lg);
+    color: var(--muted);
+    text-align: center;
+  }
+</style>

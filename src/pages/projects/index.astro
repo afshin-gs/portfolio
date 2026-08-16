@@ -1,0 +1,30 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro'
+import PageHeader from '../../components/ui/PageHeader.astro'
+import FilterBar from '../../components/filter/FilterBar.astro'
+import EntryList from '../../components/EntryList.astro'
+import { getItems, getTags } from '../../lib/content'
+
+// Prerendered with ALL entries present. The filter island (§10) is progressive
+// enhancement over this — with JS off the page is complete and fully usable.
+const items = await getItems('projects')
+const tags = await getTags('projects')
+---
+
+<PageLayout title="Projects" description="Projects by Afshin Ghorbani.">
+  <PageHeader title="Projects" />
+  {/* Only when there is something to filter — the bar is no longer
+      hidden until mount, so an empty list would render dead controls. */}
+  {items.length > 0 && <FilterBar collection="projects" tags={tags} label="Search projects" />}
+  {/* Rows, not a grid: projects get the same card treatment as posts —
+      square thumbnail beside the text, tags pinned to the bottom. A grid of
+      narrow columns cannot carry a side thumbnail. */}
+  <EntryList items={items} collection="projects" empty="No projects published yet." />
+  <div class="tail"></div>
+</PageLayout>
+
+<style>
+  .tail {
+    padding-bottom: var(--space-8);
+  }
+</style>

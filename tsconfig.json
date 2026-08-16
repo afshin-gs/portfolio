@@ -1,0 +1,26 @@
+{
+  "extends": "astro/tsconfigs/strict",
+  "include": [".astro/types.d.ts", "**/*"],
+  "exclude": ["dist"],
+
+  "compilerOptions": {
+    // TYPE resolution only — the BUILD resolves `~assets/…` through the Vite
+    // plugin in plugins/assets-resolver.mjs. This exists so `astro check` and
+    // the editor can follow `import x from '~assets/x.png'` instead of
+    // reporting a missing module. Keep the two in agreement.
+    "paths": {
+      "~assets/*": ["./src/assets/*"]
+    }
+  },
+
+  // Read by the MDX language server (unifiedjs.vscode-mdx), NOT by the build.
+  // Without it the editor parses `$$...$$` as MDX JavaScript expressions and
+  // reports "Could not parse expression with acorn" on every LaTeX block —
+  // a false positive, since the real pipeline in astro.config.mjs consumes
+  // math before MDX expression parsing ever sees the braces.
+  //
+  // Keep this list in sync with the remarkPlugins in astro.config.mjs.
+  "mdx": {
+    "plugins": [["remark-math"], ["remark-directive"]]
+  }
+}

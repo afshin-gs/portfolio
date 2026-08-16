@@ -1,0 +1,88 @@
+---
+import type { HTMLAttributes } from 'astro/types'
+import type { CardPadding } from './types'
+
+/**
+ * The surface primitive. Every boxed thing on the site is one of these, so
+ * radius, border, and hover feedback stay identical across projects, apps,
+ * posts, and stats.
+ *
+ * WHOLE-CARD LINKS: set `interactive` and give ONE anchor inside the card the
+ * class `card-link`. It grows a ::after overlay covering the card, rather than
+ * the card being wrapped in an anchor. Wrapping would swallow every other link
+ * in the card (a repo link, a tag) into the outer one — invalid HTML and
+ * unusable by keyboard. With the overlay the `card-link` heading is the
+ * accessible name, and sibling links stay independently clickable because the
+ * rule at the bottom lifts them above it.
+ */
+
+interface Props extends HTMLAttributes<'div'> {
+  as?: 'div' | 'li' | 'article' | 'section'
+  padding?: CardPadding
+  /** Adds hover feedback. Implied by `href`. */
+  interactive?: boolean
+}
+
+const {
+  as: Tag = 'div',
+  padding = 'md',
+  interactive = false,
+  class: className,
+  ...rest
+} = Astro.props
+---
+
+<Tag class:list={['card', `pad-${padding}`, { interactive }, className]} {...rest}>
+  <slot />
+</Tag>
+
+<style>
+  .card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: var(--surface-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    transition:
+      border-color var(--dur-base) var(--ease),
+      background-color var(--dur-base) var(--ease);
+  }
+
+  .pad-none {
+    padding: 0;
+  }
+  .pad-sm {
+    padding: var(--space-4);
+  }
+  .pad-md {
+    padding: var(--space-5);
+  }
+  .pad-lg {
+    padding: var(--space-5);
+  }
+  @media (min-width: 48rem) {
+    .pad-lg {
+      padding: var(--space-6);
+    }
+  }
+
+  /* Colour-only feedback. No lift, no scale — see the motion policy in base.css. */
+  .interactive:hover,
+  .interactive:focus-within {
+    border-color: var(--accent-line);
+    background: var(--surface-hover);
+  }
+
+  /* Overlay link: covers the card, but sits UNDER any sibling link. */
+  .card :global(.card-link)::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+  }
+  .card :global(a:not(.card-link)) {
+    position: relative;
+    z-index: var(--z-base);
+  }
+</style>

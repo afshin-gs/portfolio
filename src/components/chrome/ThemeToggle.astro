@@ -1,0 +1,96 @@
+---
+/**
+ * Flips between light and dark (docs §12).
+ *
+ * The button renders both icons and CSS shows the one matching `data-pref` on
+ * the host. That is deliberate: swapping innerHTML in JS would mean the
+ * pre-hydration markup shows an icon that may be wrong for a fraction of a
+ * second, and it would put presentation back into the script.
+ *
+ * Rendered with no `data-pref` so neither icon is shown until the script sets
+ * it. The inline head script has already applied the THEME, so the page never
+ * flashes; only this one control settles a frame later.
+ *
+ * The icon shows the CURRENT theme, and the label says what activating it will
+ * do — a control whose icon showed the destination instead would read as "you
+ * are in dark mode" to half of users and "click for dark mode" to the other.
+ */
+---
+
+<button
+  class="theme-toggle"
+  type="button"
+  data-theme-toggle
+  aria-label="Change colour theme"
+  aria-pressed="false"
+>
+  <svg class="icon" data-icon="light" viewBox="0 0 24 24" aria-hidden="true">
+    <circle cx="12" cy="12" r="4"></circle>
+    <path
+      d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"
+    ></path>
+  </svg>
+  <svg class="icon" data-icon="dark" viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"></path>
+  </svg>
+</button>
+
+<script>
+  import { toggleTheme, themePref } from '../../lib/theme'
+
+  const LABELS = {
+    light: 'Light theme. Activate for dark.',
+    dark: 'Dark theme. Activate for light.',
+  } as const
+
+  for (const el of document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]')) {
+    // Reflect the store, do not own the state. Every toggle on the page (and
+    // any other subscriber) stays in sync through this one subscription.
+    themePref.subscribe((pref) => {
+      el.dataset.pref = pref
+      el.setAttribute('aria-label', LABELS[pref])
+      el.setAttribute('aria-pressed', String(pref === 'dark'))
+    })
+    el.addEventListener('click', () => toggleTheme())
+  }
+</script>
+
+<style>
+  .theme-toggle {
+    display: inline-grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    flex: none;
+    padding: 0;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    color: var(--muted);
+    cursor: pointer;
+    transition:
+      color var(--dur-fast) var(--ease),
+      border-color var(--dur-fast) var(--ease);
+  }
+  .theme-toggle:hover {
+    color: var(--fg);
+    border-color: var(--accent-line);
+  }
+
+  .icon {
+    grid-area: 1 / 1;
+    width: 1.05rem;
+    height: 1.05rem;
+    display: none;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.75;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .theme-toggle[data-pref='light'] [data-icon='light'],
+  .theme-toggle[data-pref='dark'] [data-icon='dark'] {
+    display: block;
+  }
+</style>

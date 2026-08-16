@@ -1,0 +1,16 @@
+---
+/**
+ * `table` override (§8). Wide tables must scroll inside their own container —
+ * the page body must never scroll horizontally.
+ */
+---
+<div class="table-scroll"><table><slot /></table></div>
+
+<style>
+  .table-scroll { overflow-x: auto; margin: 1.5rem 0; }
+  table { border-collapse: collapse; width: 100%; font-size: 0.9375rem; }
+  table :global(th), table :global(td) {
+    padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--border); text-align: left;
+  }
+  table :global(th) { font-weight: 600; border-bottom-width: 2px; }
+</style>

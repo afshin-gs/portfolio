@@ -1,0 +1,164 @@
+/*
+ * Styles for the zoom overlay in src/lib/lightbox.ts.
+ *
+ * GLOBAL, not scoped to ZoomableImage.astro, because the dialog is built in
+ * JavaScript and appended to <body> — it never carries the component's scoping
+ * attribute, so a scoped rule would not reach it.
+ */
+
+/*
+ * Scroll lock, derived from the dialog's own state.
+ *
+ * showModal() does not prevent the page behind from scrolling. Doing this in
+ * JavaScript means something must UNDO it, and the only hook for a native
+ * Escape dismissal is the `close` event — miss it once and the reader is left
+ * with a page that will not scroll and no way to fix it but a reload. A rule
+ * conditioned on [open] cannot desynchronise.
+ *
+ * Where :has() is unsupported the page simply scrolls behind the overlay,
+ * which is a cosmetic loss rather than a stuck state.
+ */
+html:has(.lightbox[open]) {
+  overflow: hidden;
+}
+
+.lightbox {
+  /* The dialog is the full viewport; the padding is the click-to-dismiss
+   * margin around the image. */
+  width: 100vw;
+  max-width: 100vw;
+  height: 100dvh;
+  max-height: 100dvh;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  overflow: hidden;
+  color: var(--fg);
+}
+
+.lightbox::backdrop {
+  /* Not a token: ::backdrop resolves custom properties against the dialog's
+   * own element, not :root, so a var() here would be empty. */
+  background: rgb(0 0 0 / 0.82);
+  backdrop-filter: blur(4px);
+}
+
+.lightbox-viewport {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  padding: clamp(0.75rem, 3vw, 3rem);
+  overflow: hidden;
+
+  /*
+   * THIS LINE IS THE FIX for pinch-zooming the whole site instead of the photo.
+   *
+   * A pinch is a browser-level visual-viewport zoom; there is no element-level
+   * pinch on the web. `touch-action: none` hands every touch gesture inside
+   * this box to the script (src/lib/lightbox.ts), which drives the transform
+   * below. Relaxing this to `pinch-zoom` gives the gesture back to the browser
+   * and the original bug returns.
+   *
+   * Scoped to the viewport, so ordinary page pinch-zoom still works everywhere
+   * else on the site.
+   */
+  touch-action: none;
+
+  /* A drag is a pan, not a text selection or an image drag. */
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.lightbox-image {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: var(--radius-md);
+  background: var(--surface);
+
+  /* Zoom and pan are ONE transform, set from script. transform-origin must
+   * stay at the centre — the anchoring maths in zoomTo() assumes it. */
+  transform-origin: center center;
+  will-change: transform;
+  -webkit-user-drag: none;
+
+  /* No transition, on purpose. A pinch tracks the fingers one-to-one, and an
+   * eased transform would lag behind them; discrete zoom stays instant to
+   * match, and to hold the site's no-animation policy (see base.css). */
+}
+
+/* Cursors describe what a click would DO. The script sets `data-can-zoom` from
+ * whether the image is actually being shrunk to fit — an image already shown at
+ * full size gets no zoom-in cursor, because clicking it is a no-op. */
+.lightbox[data-can-zoom='true'] .lightbox-image {
+  cursor: zoom-in;
+}
+.lightbox[data-zoomed='true'] .lightbox-image {
+  cursor: grab;
+}
+.lightbox[data-zoomed='true'] .lightbox-image:active {
+  cursor: grabbing;
+}
+
+.lightbox-close {
+  position: fixed;
+  top: max(var(--space-3), env(safe-area-inset-top));
+  right: max(var(--space-3), env(safe-area-inset-right));
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--fg);
+  cursor: pointer;
+}
+.lightbox-close:hover {
+  border-color: var(--accent);
+}
+.lightbox-close svg {
+  width: 1.15rem;
+  height: 1.15rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+}
+
+.lightbox-caption {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: max(var(--space-3), env(safe-area-inset-bottom));
+  margin: 0 auto;
+  width: fit-content;
+  max-width: min(60ch, calc(100vw - 2 * var(--space-5)));
+  padding: var(--space-2) var(--space-4);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  font-size: var(--text-sm);
+  color: var(--muted);
+  text-align: center;
+}
+.lightbox-caption[hidden] {
+  display: none;
+}
+
+/* ---- The trigger, in the post body ---- */
+.zoom-trigger {
+  display: block;
+  width: 100%;
+  padding: 0;
+  background: none;
+  border: 0;
+  cursor: zoom-in;
+}

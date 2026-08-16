@@ -1,0 +1,49 @@
+---
+import type { HTMLAttributes } from 'astro/types'
+
+/**
+ * The small monospaced label that sits above a section heading.
+ *
+ * `index` renders the "01 —" prefix from the Molecular design. It is passed in
+ * rather than counted automatically: an auto-counter would silently renumber
+ * every section below whenever one is added or reordered, which is exactly the
+ * kind of invisible coupling that makes a layout fragile to extend.
+ */
+interface Props extends HTMLAttributes<'p'> {
+  index?: string
+}
+
+const { index, class: className, ...rest } = Astro.props
+---
+
+<p class:list={['eyebrow', className]} {...rest}>
+  {index && <span class="index">{index} /</span>}
+  <slot />
+</p>
+
+<style>
+  .eyebrow {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    font-weight: 500;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+  }
+
+  /* The leading rule is decorative; it must not be announced or selectable. */
+  .eyebrow::before {
+    content: '';
+    flex: none;
+    width: 1.5rem;
+    height: 1px;
+    background: currentColor;
+  }
+
+  .index {
+    opacity: 0.75;
+  }
+</style>

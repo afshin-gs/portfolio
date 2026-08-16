@@ -1,0 +1,28 @@
+% !TEX root = main.tex
+%---- Packages ----
+% Every package here must also exist in the Docker image (cv/Dockerfile).
+% Adding one means adding it to the tlmgr list there and running `bun run cv:image`.
+
+\usepackage[T1]{fontenc}
+% cfr-lm = Latin Modern with real small caps. It defaults to oldstyle figures,
+% which put "17.90 / 20.00" and "2027" below the x-height, wrong for a document
+% whose numbers are the point. rm/lining etc. force lining figures throughout.
+\usepackage[rm/lining, sf/lining, tt/lining]{cfr-lm}
+\usepackage{microtype}    % margin kerning + protrusion; the single biggest
+                          % typographic win for a dense one-column document
+
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{lastpage}     % "Page 1 of 2" in the footer
+
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{needspace}  % keeps an entry header on the same page as its bullets
+\usepackage{array}        % >{...} column prefixes for the skills table
+\usepackage{tabularx}     % the two-column masthead (part of `tools`, already
+                          % in the image; it has no separate tlmgr package)
+\usepackage{ragged2e}
+\usepackage{xcolor}
+
+\usepackage{fontawesome5} % contact icons in the header
+\usepackage{hyperref}     % configured in configs.tex, metadata set in main.tex

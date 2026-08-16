@@ -1,0 +1,193 @@
+/*
+ * Element-level defaults. Everything here is unclassed: it styles the raw HTML
+ * a browser or the markdown pipeline produces. Component-specific rules belong
+ * in the component's own scoped <style>, never here.
+ *
+ * MOTION POLICY: this site has no entrance, scroll-triggered, or ambient
+ * animation. The only transitions permitted are short state-feedback ones on
+ * hover/focus, and they change colour/border only — never transform, so
+ * nothing shifts under a pointer or a reader's eye.
+ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/*
+ * `hidden` must actually hide.
+ *
+ * The HTML attribute is implemented as a UA rule (`[hidden] { display: none }`)
+ * and ANY author `display` outranks it. Entry cards set `display: grid`, so
+ * setting `el.hidden = true` on a filtered-out card changed nothing visible —
+ * the filter counted correctly and the list still showed everything.
+ *
+ * `!important` is the fix rather than a smell: `hidden` is a statement about
+ * whether the element is relevant at all, so it must beat layout styling by
+ * design. Keep this ABOVE component styles.
+ */
+[hidden] {
+  display: none !important;
+}
+
+html {
+  /* Anchor targets clear the fixed header instead of hiding under it. */
+  scroll-padding-top: calc(var(--header-height) + var(--space-4));
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-size: var(--text-md);
+  line-height: var(--leading-normal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  /* The mobile nav sets this to lock the page behind the overlay. */
+  overflow-x: hidden;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+  font-weight: 650;
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+  text-wrap: balance;
+}
+
+p {
+  margin: 0;
+  text-wrap: pretty;
+}
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+}
+
+a {
+  color: var(--accent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+
+img,
+svg,
+video,
+canvas {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid var(--border);
+  margin: var(--space-7) 0;
+}
+
+code,
+pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre.astro-code {
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  overflow-x: auto;
+}
+
+/* Shiki dual-theme: swap the CSS variables it emits. Zero JS (§8). */
+:root[data-theme='dark'] .astro-code,
+:root[data-theme='dark'] .astro-code span {
+  color: var(--shiki-dark) !important;
+  background-color: var(--shiki-dark-bg) !important;
+  font-style: var(--shiki-dark-font-style) !important;
+  font-weight: var(--shiki-dark-font-weight) !important;
+  text-decoration: var(--shiki-dark-text-decoration) !important;
+}
+
+/* One visible focus treatment for the whole site. Keyboard users get a ring;
+ * pointer users do not, because :focus-visible already makes that distinction. */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* <main> carries tabindex="-1" so the skip link can move focus to it. That
+ * makes it focusable by CLICK too in some browsers, which would paint a ring
+ * for a pointer user who never asked for one. :focus-visible above still
+ * covers the keyboard case. */
+main:focus {
+  outline: none;
+}
+
+::selection {
+  background: var(--accent-soft);
+  color: var(--fg);
+}
+
+/* Visually hidden but present for assistive tech. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Skip link — hidden until focused, then pinned to the top-left. */
+.skip-link {
+  position: absolute;
+  left: var(--space-4);
+  top: var(--space-4);
+  z-index: var(--z-overlay);
+  padding: var(--space-2) var(--space-4);
+  background: var(--bg-elevated);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-md);
+  color: var(--fg);
+  text-decoration: none;
+  transform: translateY(-200%);
+}
+.skip-link:focus-visible {
+  transform: none;
+}
+
+/* Honour the OS setting. Nothing here animates by default, but this covers
+ * anything a future component adds without it having to remember. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

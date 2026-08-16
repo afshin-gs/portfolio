@@ -1,0 +1,94 @@
+---
+/**
+ * The heading that opens a section INSIDE a page: "Education", "Elsewhere",
+ * "Selected projects".
+ *
+ * WHY THIS EXISTS: several pages had each grown a near-identical copy of this
+ * CSS, which is exactly the drift `src/components/ui/` exists to prevent. They
+ * also set these headings at --text-xs, so an <h2> rendered SMALLER than the
+ * body text under it and the visual hierarchy contradicted the document
+ * outline.
+ *
+ * The mono/uppercase/accent treatment is the site's established heading
+ * language and is kept deliberately; only the size changed. Sizing: the page
+ * <h1> is --text-3xl (PageHeader) and a home-page Section title is --text-2xl.
+ * --text-xl sits below both, so a section heading reads as clearly subordinate
+ * to the page title without competing with it.
+ *
+ * Uppercase mono at this size is WIDE, roughly 0.7em per character once
+ * tracking is counted. Headings must therefore be free to wrap; nothing here
+ * may set `white-space: nowrap`, or a two-word heading overflows the gutter on
+ * a narrow phone.
+ *
+ * The rule underneath is a border on the heading rather than a separate <hr>:
+ * an <hr> is a semantic thematic break and would be announced as one.
+ */
+interface Props {
+  /** Heading level. Keep at 2 for a section of a page that already has an h1. */
+  level?: 2 | 3
+  id?: string
+  /**
+   * Optional figure shown in a pill on the right of the heading, e.g. how many
+   * entries are in the section. Rendered as text, so pass a formatted value if
+   * it needs one.
+   */
+  count?: number | string
+  /** The hairline under the heading. Off for a heading that opens a short aside. */
+  divider?: boolean
+  class?: string
+}
+
+const { level = 2, id, count, divider = true, class: className } = Astro.props
+const Heading = `h${level}` as 'h2' | 'h3'
+---
+
+<Heading id={id} class:list={['section-heading', { divider }, className]}>
+  <span class="text"><slot /></span>
+  {count !== undefined && <span class="count">{count}</span>}
+</Heading>
+
+<style>
+  .section-heading {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-family: var(--font-mono);
+    font-size: var(--text-xl);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    color: var(--accent);
+    margin-bottom: var(--space-5);
+  }
+
+  .divider {
+    padding-bottom: var(--space-3);
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* min-width:0 so a long heading wraps inside the flex row instead of forcing
+   * the count pill off the end of the line. */
+  .text {
+    min-width: 0;
+  }
+
+  /* The count is supplementary, and the heading already shares its mono/accent
+   * treatment, so the pill separates itself by FILL and size rather than by
+   * colour, and drops the uppercase tracking it would otherwise inherit. */
+  .count {
+    text-transform: none;
+    letter-spacing: 0;
+    flex: none;
+    display: inline-grid;
+    place-items: center;
+    min-width: 1.5rem;
+    height: 1.5rem;
+    padding: 0 0.4rem;
+    border-radius: var(--radius-pill);
+    background: var(--accent-soft);
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    font-weight: 500;
+    color: var(--accent);
+  }
+</style>

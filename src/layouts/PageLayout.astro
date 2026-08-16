@@ -1,0 +1,54 @@
+---
+import Base from './Base.astro'
+import SiteHeader from '../components/chrome/SiteHeader.astro'
+import SiteFooter from '../components/chrome/SiteFooter.astro'
+import Container from '../components/ui/Container.astro'
+import type { ContainerSize } from '../components/ui/types'
+import type { SocialType } from '../lib/seo'
+
+/**
+ * Chrome for every ordinary page: header, <main>, footer.
+ *
+ * Pages should use THIS, not Base. Reaching for Base directly means opting out
+ * of the site's navigation, which only an embedded app has a reason to do.
+ *
+ * `width: 'full'` gives the page an un-contained <main> so it can lay out its
+ * own full-bleed sections (the home page does this — each Section brings its
+ * own Container). Any other value wraps the content once, which is what an
+ * article or a list page wants.
+ */
+interface Props {
+  title?: string
+  description?: string
+  indexable?: boolean
+  width?: ContainerSize | 'full'
+  /* Forwarded verbatim to Base — see the social preview block there. */
+  ogType?: SocialType
+  image?: ImageMetadata | string
+  imageAlt?: string
+  date?: Date
+  updated?: Date
+  tags?: readonly string[]
+}
+
+const { width = 'default', ...social } = Astro.props
+---
+
+<Base {...social}>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <SiteHeader />
+
+  {
+    width === 'full' ? (
+      <main id="main" tabindex="-1">
+        <slot />
+      </main>
+    ) : (
+      <Container as="main" size={width} id="main" tabindex="-1">
+        <slot />
+      </Container>
+    )
+  }
+
+  <SiteFooter />
+</Base>

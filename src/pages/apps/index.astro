@@ -1,0 +1,100 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro'
+import PageHeader from '../../components/ui/PageHeader.astro'
+import AppList from '../../components/content/AppList.astro'
+import { getApps } from '../../lib/apps'
+
+// Entirely generated. Internal apps are discovered from src/apps/*/meta.ts;
+// external ones come from src/data/apps.json. Nothing is listed by hand here.
+const apps = getApps()
+const live = apps.filter((app) => app.status !== 'archived')
+const archived = apps.filter((app) => app.status === 'archived')
+---
+
+<PageLayout
+  title="Apps"
+  description="Interactive web apps you can use in the browser."
+>
+  <PageHeader
+    title="Apps"
+    lede="Everything here runs in your browser: no account, no server, nothing sent anywhere."
+  />
+
+  {
+    live.length > 0 ? (
+      <AppList apps={live} />
+    ) : (
+      <p class="empty">No apps are live yet.</p>
+    )
+  }
+
+  {
+    archived.length > 0 && (
+      <section class="archived">
+        <h2>Archived</h2>
+        <ul>
+          {archived.map((app) => (
+            <li>
+              <span class="name">{app.title}</span>
+              <span class="desc">{app.description}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+
+  <div class="tail"></div>
+</PageLayout>
+
+<style>
+  .empty {
+    padding: var(--space-6);
+    border: 1px dashed var(--border);
+    border-radius: var(--radius-lg);
+    color: var(--muted);
+    text-align: center;
+  }
+
+  .archived {
+    margin-top: var(--space-8);
+  }
+  .archived h2 {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    color: var(--muted);
+    margin-bottom: var(--space-4);
+  }
+  .archived ul {
+    list-style: none;
+    border-top: 1px solid var(--border);
+  }
+  .archived li {
+    display: grid;
+    gap: var(--space-1);
+    padding: var(--space-3) 0;
+    border-bottom: 1px solid var(--border);
+    font-size: var(--text-base);
+  }
+  @media (min-width: 40rem) {
+    .archived li {
+      grid-template-columns: 12rem 1fr;
+      gap: var(--space-4);
+      align-items: baseline;
+    }
+  }
+  .archived .name {
+    color: var(--fg);
+  }
+  .archived .desc {
+    color: var(--muted);
+    font-size: var(--text-base);
+  }
+
+  .tail {
+    padding-bottom: var(--space-8);
+  }
+</style>

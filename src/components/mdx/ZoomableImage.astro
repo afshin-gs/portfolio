@@ -1,0 +1,88 @@
+---
+import { Image } from 'astro:assets'
+
+/**
+ * docs/architecture.md §8 — the `img` override.
+ *
+ * Every plain-markdown ![alt](src) in EVERY post routes through this component,
+ * which is why click-to-zoom could be added here without editing a single post.
+ *
+ * Local images get build-time optimisation (srcset + resizing) via <Image>.
+ * Output is JPEG, not WebP or AVIF: src/lib/image-service.ts overrides Astro's
+ * hardcoded default for the whole site.
+ * Remote/absolute URLs fall back to a plain <img> since Astro cannot process
+ * what it cannot resolve at build time.
+ *
+ * THE TRIGGER IS A <button>. An <img> with a click handler is invisible to the
+ * keyboard and announced as an image, not as something operable. The button
+ * gives it Tab, Enter/Space, and a focus ring for free — and if JavaScript
+ * never arrives, the image is still there and still readable; only the zoom is
+ * missing. Behaviour lives in src/lib/lightbox.ts, styling in
+ * src/styles/lightbox.css (the dialog is created in JS, so scoped styles
+ * cannot reach it).
+ */
+interface Props {
+  src: string | ImageMetadata
+  alt?: string
+  title?: string
+}
+
+const { src, alt = '', title } = Astro.props
+const isLocal = typeof src !== 'string'
+
+// The accessible name has to say what ACTIVATING it does, not just what the
+// picture is — "Diagram of the pipeline" alone would not tell a screen-reader
+// user that this opens anything.
+const label = alt ? `Enlarge image: ${alt}` : 'Enlarge image'
+---
+
+<figure class="post-figure">
+  <button class="zoom-trigger" type="button" data-zoomable aria-label={label} data-caption={title}>
+    {
+      isLocal ? (
+        // widths/sizes are what make Astro emit a srcset; without them you get a
+        // single optimised file and no responsive behaviour. The lightbox reuses
+        // this srcset with sizes="100vw" to pull the largest candidate.
+        <Image
+          src={src}
+          alt={alt}
+          widths={[480, 800, 1200]}
+          sizes="(max-width: 68ch) 100vw, 68ch"
+          loading="lazy"
+          decoding="async"
+        />
+      ) : (
+        <img src={src} alt={alt} loading="lazy" decoding="async" />
+      )
+    }
+  </button>
+  {title && <figcaption>{title}</figcaption>}
+</figure>
+
+<script>
+  import { initLightbox } from '../../lib/lightbox'
+  initLightbox()
+</script>
+
+<style>
+  .post-figure {
+    margin: var(--space-7) 0;
+  }
+  .post-figure :global(img) {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+  }
+  .post-figure :global(.zoom-trigger:hover img) {
+    border-color: var(--accent-line);
+  }
+  figcaption {
+    margin-top: var(--space-3);
+    font-size: var(--text-sm);
+    color: var(--muted);
+    text-align: center;
+  }
+</style>

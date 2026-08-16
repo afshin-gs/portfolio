@@ -1,0 +1,160 @@
+---
+import PageLayout from '../layouts/PageLayout.astro'
+import Hero from '../components/home/Hero.astro'
+import Section from '../components/ui/Section.astro'
+import Button from '../components/ui/Button.astro'
+import SkillList from '../components/ui/SkillList.astro'
+import EntryList from '../components/EntryList.astro'
+import AppList from '../components/content/AppList.astro'
+import { getItems } from '../lib/content'
+import { getApps } from '../lib/apps'
+import { aboutParagraphs, skills, contactPrompt } from '../data/profile'
+import { site } from '../data/site'
+
+/**
+ * The landing page is a set of previews, not a second copy of each section.
+ * Every block links to the page that owns the full list, so there is exactly
+ * one place each kind of content is maintained.
+ *
+ * `width="full"` because each Section brings its own Container — that lets a
+ * section use a full-bleed background later without restructuring the page.
+ */
+const projects = (await getItems('projects')).slice(0, 4)
+const posts = (await getItems('blog')).slice(0, 3)
+const apps = getApps()
+  .filter((app) => app.status !== 'archived')
+  .slice(0, 3)
+---
+
+<PageLayout width="full">
+  <Hero />
+
+  <Section id="about" eyebrow="About" title="About" divider>
+    <div class="about">
+      <div class="prose-block">
+        {aboutParagraphs.map((paragraph) => <p>{paragraph}</p>)}
+        <Button href="/about-me" variant="secondary" size="sm" icon="→" class="more">
+          More about me
+        </Button>
+      </div>
+      <SkillList skills={skills} />
+    </div>
+  </Section>
+
+  <Section
+    id="projects"
+    eyebrow="Selected work"
+    title="Projects"
+    divider
+  >
+    <EntryList
+      items={projects}
+      collection="projects"
+      layout="grid"
+      level={3}
+      empty="No projects published yet."
+    />
+    <Button href="/projects" variant="ghost" size="sm" icon="→" class="see-all">
+      All projects
+    </Button>
+  </Section>
+
+  <Section
+    id="writing"
+    eyebrow="Writing"
+    title="Blog"
+    divider
+  >
+    <EntryList
+      items={posts}
+      collection="blog"
+      level={3}
+      empty="No posts published yet."
+    />
+    <Button href="/blog" variant="ghost" size="sm" icon="→" class="see-all">
+      All posts
+    </Button>
+  </Section>
+
+  {
+    apps.length > 0 && (
+      <Section
+        id="apps"
+        eyebrow="Apps"
+        title="Apps"
+        divider
+      >
+        <AppList apps={apps} level={3} />
+        <Button href="/apps" variant="ghost" size="sm" icon="→" class="see-all">
+          All apps
+        </Button>
+      </Section>
+    )
+  }
+
+  <Section id="say-hello" eyebrow="Contact" divider>
+    <div class="contact">
+      <h2>{contactPrompt.heading}</h2>
+      <p>{contactPrompt.body}</p>
+      {/* Both, on purpose: the page for anyone deciding whether to write, and
+          the raw address for anyone who has already decided. */}
+      <div class="contact-actions">
+        <Button href="/contact-me" icon="→">Get in touch</Button>
+        <Button href={`mailto:${site.email}`} variant="secondary">Email me</Button>
+      </div>
+    </div>
+  </Section>
+</PageLayout>
+
+<style>
+  .about {
+    display: grid;
+    gap: var(--space-7);
+  }
+  @media (min-width: 56rem) {
+    .about {
+      grid-template-columns: 1.35fr 1fr;
+      gap: var(--space-9);
+    }
+  }
+
+  .prose-block {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    align-items: flex-start;
+  }
+  .prose-block p {
+    color: var(--muted);
+    font-size: var(--text-lg);
+    max-width: 60ch;
+  }
+  .prose-block :global(.more) {
+    margin-top: var(--space-2);
+  }
+
+  .see-all {
+    margin-top: var(--space-5);
+    margin-left: calc(var(--space-4) * -1);
+  }
+
+  .contact {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-4);
+  }
+  .contact h2 {
+    font-size: var(--text-2xl);
+  }
+  .contact p {
+    color: var(--muted);
+    font-size: var(--text-lg);
+    max-width: 52ch;
+  }
+  .contact-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+</style>

@@ -1,0 +1,54 @@
+---
+import Tag from '../ui/Tag.astro'
+import type { ContentCollection } from '../../lib/content'
+
+/**
+ * §10 — the prerendered, crawlable tag facets above a list page.
+ *
+ * These are real links to real prerendered routes, not client-side filters.
+ * The filter island, when it lands, sits on TOP of this rather than replacing
+ * it: the facets stay linkable and indexable, and the page still works with JS
+ * disabled.
+ *
+ * Renders nothing when there are no tags — an empty row of pills is noise.
+ */
+interface Props {
+  tags: readonly { tag: string; count: number }[]
+  collection: ContentCollection
+  class?: string
+}
+
+const { tags, collection, class: className } = Astro.props
+---
+
+{
+  tags.length > 0 && (
+    <nav class:list={['facets', className]} aria-label="Filter by tag">
+      <ul>
+        {tags.map(({ tag, count }) => (
+          <li>
+            <Tag href={`/${collection}/tag/${tag}`}>
+              {tag}
+              <span class="count">{count}</span>
+            </Tag>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  )
+}
+
+<style>
+  .facets {
+    margin-bottom: var(--space-6);
+  }
+  .facets ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    list-style: none;
+  }
+  .count {
+    opacity: 0.55;
+  }
+</style>

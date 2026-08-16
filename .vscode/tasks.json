@@ -1,0 +1,58 @@
+{
+  "version": "2.0.0",
+
+  // LaTeX Workshop contributes no problem matcher, so latexmk's
+  // -file-line-error output ("./main.tex:139: Undefined control sequence.")
+  // is parsed here. The paths are relative to latexmk's cwd, which is cv/.
+  "tasks": [
+    {
+      // Ctrl+Shift+B. Same script as launch.json, LaTeX Workshop and
+      // `bun run cv:build`.
+      "label": "Build CV (PDF)",
+      "type": "shell",
+      "command": "./cv/build.sh",
+      "group": { "kind": "build", "isDefault": true },
+      "presentation": { "reveal": "silent", "panel": "dedicated", "clear": true },
+      "problemMatcher": {
+        "owner": "latex",
+        "source": "latexmk",
+        "fileLocation": ["relative", "${workspaceFolder}/cv"],
+        "pattern": {
+          "regexp": "^(?:\\./)?(.*\\.tex):(\\d+):\\s+(.*)$",
+          "file": 1,
+          "line": 2,
+          "message": 3
+        }
+      }
+    },
+    {
+      // Discards aux files first — for a build that fails on a stale
+      // .aux/.fdb_latexmk after an interrupted run.
+      "label": "Rebuild CV (clean)",
+      "type": "shell",
+      "command": "rm -f cv/output/cv.* && ./cv/build.sh",
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "dedicated", "clear": true },
+      "problemMatcher": {
+        "owner": "latex",
+        "source": "latexmk",
+        "fileLocation": ["relative", "${workspaceFolder}/cv"],
+        "pattern": {
+          "regexp": "^(?:\\./)?(.*\\.tex):(\\d+):\\s+(.*)$",
+          "file": 1,
+          "line": 2,
+          "message": 3
+        }
+      }
+    },
+    {
+      // Only needed after editing cv/Dockerfile.
+      "label": "Rebuild CV LaTeX image",
+      "type": "shell",
+      "command": "docker build -t afshin-cv-latex:latest cv",
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "dedicated", "clear": true },
+      "problemMatcher": []
+    }
+  ]
+}

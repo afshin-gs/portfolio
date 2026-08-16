@@ -1,0 +1,52 @@
+name: deploy
+
+on:
+  push:
+    branches: [main]
+  # Manual re-deploy without needing an empty commit
+  workflow_dispatch:
+
+# Never deploy out of order; cancel superseded runs
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read # least privilege
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - run: bun install --frozen-lockfile
+
+      # Runs BEFORE build so a content schema violation (docs/architecture.md §7)
+      # fails fast with a clear message instead of midway through a build.
+      - run: bun run check
+
+      # NO LaTeX HERE, deliberately. The CV is compiled locally in Docker
+      # (`bun run cv:build`) and the resulting cv/output/cv.pdf is committed.
+      # `bun run build` runs cv/publish.sh first, which copies that file to
+      # public/cv.pdf so Astro serves it at /cv.pdf. If the PDF is missing the
+      # copy is skipped with a ::warning:: annotation rather than failing the
+      # deploy, so a forgotten `bun run cv:build` costs one dead download link
+      # and not the whole site.
+      - run: bun run build
+
+      # Needs two repository secrets:
+      #   CLOUDFLARE_API_TOKEN   Workers Scripts:Edit + Account Settings:Read on
+      #                          the account, Workers Routes:Edit + DNS:Edit on
+      #                          the iamafshin.me zone (the zone permissions are
+      #                          what the custom_domain route in wrangler.jsonc
+      #                          needs)
+      #   CLOUDFLARE_ACCOUNT_ID  the account id from the Cloudflare dashboard URL
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

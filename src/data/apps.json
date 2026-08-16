@@ -1,0 +1,10 @@
+[
+  {
+    "slug": "spike",
+    "title": "Route Spike",
+    "description": "Throwaway worker used to verify Cloudflare path-route precedence (R1). Not deployed; kept here as a registry example.",
+    "repo": "https://github.com/afshin/app-spike",
+    "tags": ["infra"],
+    "status": "archived"
+  }
+]

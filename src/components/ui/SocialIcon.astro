@@ -1,0 +1,86 @@
+---
+/**
+ * Brand marks for the profile links in `site.socials`.
+ *
+ * INLINE SVG, not an icon font or sprite sheet: a handful of glyphs do not
+ * justify a network request, and `currentColor` means each mark inherits
+ * whatever colour its link already has, in both themes, with no per-theme asset.
+ *
+ * PROVENANCE, which matters for trademarks, so it is recorded rather than
+ * assumed. The GitHub, Google Scholar, ORCID, and ResearchGate paths are taken
+ * verbatim from Simple Icons (simple-icons, CC0-1.0), which is why they share
+ * the same 24×24 viewBox and single-path construction. LinkedIn was REMOVED
+ * from Simple Icons over trademark policy, so its "in" mark is drawn here from
+ * primitives (a disc and two stems) rather than a path copied from an
+ * unverified source.
+ *
+ * All marks render monochrome. Brand colours are deliberately not used: a row
+ * of saturated logos in a footer would fight the one accent this design spends
+ * on emphasis, and a mark tinted to the page is the normal, permitted treatment
+ * for linking to one's own profile.
+ *
+ * Scholar, ORCID, and ResearchGate are kept even though `site.socials` does not
+ * list them yet. They cost nothing until a link exists, and having them here
+ * means adding the profile is a one-line change in site.ts.
+ *
+ * An unrecognised name renders NOTHING rather than a fallback glyph: every
+ * caller already supplies a real text label, so a missing mark degrades to a
+ * plain text link instead of a wrong logo.
+ *
+ * Icons are decorative and carry aria-hidden; without it every label would be
+ * announced twice.
+ */
+interface Props {
+  name: string
+  class?: string
+}
+
+const { name, class: className } = Astro.props
+
+const PATHS: Record<string, string> = {
+  GitHub:
+    'M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12',
+  'Google Scholar':
+    'M5.242 13.769L0 9.5 12 0l12 9.5-5.242 4.269C17.548 11.249 14.978 9.5 12 9.5c-2.977 0-5.548 1.748-6.758 4.269zM12 10a7 7 0 1 0 0 14 7 7 0 0 0 0-14z',
+  ORCID:
+    'M12 0C5.372 0 0 5.372 0 12s5.372 12 12 12 12-5.372 12-12S18.628 0 12 0zM7.369 4.378c.525 0 .947.431.947.947s-.422.947-.947.947a.95.95 0 0 1-.947-.947c0-.525.422-.947.947-.947zm-.722 3.038h1.444v10.041H6.647V7.416zm3.562 0h3.9c3.712 0 5.344 2.653 5.344 5.025 0 2.578-2.016 5.025-5.325 5.025h-3.919V7.416zm1.444 1.303v7.444h2.297c3.272 0 4.022-2.484 4.022-3.722 0-2.016-1.284-3.722-4.097-3.722h-2.222z',
+}
+
+const path = PATHS[name]
+const isLinkedIn = name === 'LinkedIn'
+---
+
+{
+  (path || isLinkedIn) && (
+    <svg
+      class:list={['social-icon', className]}
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden="true"
+      focusable="false"
+    >
+      {path && <path d={path} />}
+      {isLinkedIn && (
+        <>
+          {/* The tittle and stem of the "i". */}
+          <circle cx="6.57" cy="6.4" r="1.85" />
+          <rect x="4.98" y="9.2" width="3.19" height="9.3" />
+          {/* The "n": stem, then the shoulder arching over to a second stem. */}
+          <path d="M10.2 18.5V9.2h3.06v1.27a3.5 3.5 0 0 1 3.15-1.73c3.37 0 3.99 2.22 3.99 5.1v4.66h-3.19v-4.13c0-.99-.02-2.84-1.73-2.84-1.73 0-2 1.35-2 2.75v4.22z" />
+        </>
+      )}
+    </svg>
+  )
+}
+
+<style>
+  .social-icon {
+    /* 1em so the mark scales with whatever text it sits beside, rather than
+     * needing a size prop at every call site. */
+    width: 1em;
+    height: 1em;
+    flex: none;
+    /* Optical centring against a lowercase-heavy label. */
+    vertical-align: -0.125em;
+  }
+</style>

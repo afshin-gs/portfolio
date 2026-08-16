@@ -1,0 +1,116 @@
+/*
+ * Long-form content styling for the HTML the MDX pipeline emits (§8).
+ *
+ * WHY THIS IS GLOBAL AND NOT SCOPED TO Post.astro: Astro's scoped styles apply
+ * a data attribute to elements the component itself renders. Markdown output
+ * arrives through <slot />, so scoped rules would need `:global()` on every
+ * selector — at which point they are global anyway, just harder to read and
+ * duplicated in each layout that renders content.
+ *
+ * Everything is a descendant of `.prose`, so it can never leak into chrome.
+ */
+
+.prose {
+  font-size: var(--text-prose);
+  line-height: var(--leading-normal);
+  color: color-mix(in srgb, var(--fg) 88%, var(--muted));
+}
+
+.prose > * + * {
+  margin-top: var(--space-5);
+}
+
+.prose h2,
+.prose h3,
+.prose h4 {
+  color: var(--fg);
+  letter-spacing: var(--tracking-snug);
+}
+
+.prose h2 {
+  font-size: var(--text-xl);
+  margin-top: var(--space-8);
+}
+.prose h3 {
+  font-size: var(--text-lg);
+  margin-top: var(--space-7);
+}
+.prose h4 {
+  font-size: var(--text-md);
+  margin-top: var(--space-6);
+}
+
+.prose ul,
+.prose ol {
+  padding-left: 1.35em;
+}
+.prose li + li {
+  margin-top: var(--space-2);
+}
+.prose li::marker {
+  color: var(--muted);
+}
+
+.prose blockquote {
+  margin: var(--space-6) 0;
+  padding: var(--space-1) 0 var(--space-1) var(--space-5);
+  border-left: 2px solid var(--accent-line);
+  color: var(--muted);
+  font-style: normal;
+}
+
+.prose strong {
+  color: var(--fg);
+  font-weight: 600;
+}
+
+.prose code:not(.astro-code code) {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.1em 0.35em;
+}
+
+.prose figure {
+  margin: var(--space-7) 0;
+}
+
+.prose figcaption {
+  margin-top: var(--space-3);
+  font-size: var(--text-sm);
+  color: var(--muted);
+  text-align: center;
+}
+
+.prose img {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+}
+
+/* rehype-autolink-headings wraps the heading TEXT — keep it looking like text. */
+.heading-anchor {
+  color: inherit;
+  text-decoration: none;
+}
+.heading-anchor:hover {
+  text-decoration: underline;
+  text-decoration-color: var(--muted);
+}
+
+figure.post-plot {
+  margin: var(--space-7) 0;
+}
+figure.post-plot figcaption {
+  margin-top: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--muted);
+  text-align: center;
+}
+
+/* KaTeX display blocks overflow on narrow screens; scroll them rather than
+ * letting them widen the page. Mirrors what ScrollableTable does for tables. */
+.prose .katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: var(--space-1) 0;
+}

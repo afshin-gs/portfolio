@@ -1,0 +1,151 @@
+---
+import type { HTMLAttributes } from 'astro/types'
+import type { ButtonVariant, ButtonSize } from './types'
+
+/**
+ * Polymorphic by SEMANTICS, not by a prop: pass `href` and it renders an
+ * anchor, omit it and it renders a button. A styled <div> with a click handler
+ * is unreachable by keyboard, and "which element is this?" should never be a
+ * decision a caller has to remember to get right.
+ *
+ * `decorative` is the one exception, and it exists for cards. Inside a card
+ * whose whole surface is already a link, a "Read More" ANCHOR would be a second
+ * link to the same page: a duplicate tab stop, and an entry reading just
+ * "Read More" in a screen reader's link list, where it says nothing. So it
+ * renders a <span>, hidden from assistive tech — the card's own overlay handles
+ * the click, and the title link remains the one accessible name for the
+ * destination. It is a picture of a button, on purpose.
+ */
+
+type Common = {
+  variant?: ButtonVariant
+  size?: ButtonSize
+  /** Trailing glyph, e.g. '→'. Marked aria-hidden — it is decoration. */
+  icon?: string
+  /** Render as an inert, AT-hidden <span>. See the note above. */
+  decorative?: boolean
+  class?: string
+  /**
+   * Hoisted out of the two branches, and narrowed to the BUTTON meaning.
+   * On <a>, `type` is a MIME hint typed `string`; leaving it in the anchor
+   * branch widens the union so `type` cannot be destructured across both, and
+   * `<button type="buton">` would then type-check.
+   */
+  type?: 'button' | 'submit' | 'reset'
+}
+
+type Props = Common &
+  (
+    | ({ href: string } & Omit<HTMLAttributes<'a'>, 'class' | 'type'>)
+    | ({ href?: undefined } & Omit<HTMLAttributes<'button'>, 'class' | 'type'>)
+  )
+
+const {
+  variant = 'primary',
+  size = 'md',
+  icon,
+  href,
+  type,
+  decorative = false,
+  class: className,
+  ...rest
+} = Astro.props
+
+/**
+ * The runtime value may be 'span', but it is TYPED as the interactive pair.
+ * Astro checks `<Tag {...props}>` against the INTERSECTION of every tag in the
+ * union, and once a non-interactive element joins it no single prop set can
+ * satisfy all three. The cast is confined to this line; `tagProps` below is
+ * what actually decides which attributes are emitted.
+ */
+const Tag = (decorative ? 'span' : href ? 'a' : 'button') as 'a' | 'button'
+
+// A <button> with no type submits any form it happens to sit inside — a bug
+// that only shows up once someone wraps the component in a <form>.
+const tagProps = decorative
+  ? { 'aria-hidden': true }
+  : href
+    ? { href }
+    : { type: type ?? 'button' }
+---
+
+<Tag class:list={['btn', variant, size, className]} {...tagProps} {...rest}>
+  <slot />
+  {icon && <span class="icon" aria-hidden="true">{icon}</span>}
+</Tag>
+
+<style>
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    border: 1px solid transparent;
+    border-radius: var(--radius-pill);
+    font-weight: 500;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+      background-color var(--dur-base) var(--ease),
+      border-color var(--dur-base) var(--ease),
+      color var(--dur-base) var(--ease);
+  }
+
+  /* Sizes clear the 44px touch target on the size actually used on mobile. */
+  .md {
+    padding: 0.75rem 1.4rem;
+    font-size: var(--text-base);
+    min-height: 2.75rem;
+  }
+  .sm {
+    padding: 0.45rem 1rem;
+    font-size: var(--text-sm);
+    min-height: 2.25rem;
+  }
+
+  /* The gradient appears here and on the hero headline. Nowhere else. */
+  .primary {
+    background: var(--gradient-accent);
+    color: var(--accent-contrast);
+    font-weight: 600;
+  }
+  .primary:hover {
+    filter: brightness(1.08);
+  }
+
+  .secondary {
+    background: var(--surface-raised);
+    border-color: var(--border);
+    color: var(--fg);
+  }
+  .secondary:hover {
+    background: var(--surface-hover);
+    border-color: var(--accent-line);
+  }
+
+  /* All three values come from the theme contract, so this inverts correctly
+   * between light and dark without a second rule. */
+  .accent {
+    background: var(--accent-soft);
+    border-color: var(--accent-line);
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .accent:hover {
+    border-color: var(--accent);
+  }
+
+  .ghost {
+    background: transparent;
+    color: var(--muted);
+  }
+  .ghost:hover {
+    background: var(--surface-hover);
+    color: var(--fg);
+  }
+
+  .icon {
+    line-height: 1;
+  }
+</style>

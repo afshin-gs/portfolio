@@ -1,0 +1,121 @@
+---
+import Base from './Base.astro'
+import Container from '../components/ui/Container.astro'
+import Tag from '../components/ui/Tag.astro'
+import Badge from '../components/ui/Badge.astro'
+import ThemeToggle from '../components/chrome/ThemeToggle.astro'
+import type { AppMeta } from '../lib/apps'
+
+/**
+ * Chrome for an internal app page, so each app's route file stays ~6 lines.
+ *
+ * Built on Base, NOT PageLayout: an app gets a minimal bar and the full width
+ * below it. The site's sticky header and footer would compete with the app's
+ * own UI, and the fixed header in particular would eat vertical space an app
+ * may need. The theme toggle is repeated here so the contract (§12) is still
+ * reachable from inside an app.
+ *
+ * WHY EACH INTERNAL APP NEEDS ITS OWN ROUTE FILE: Astro resolves `client:*`
+ * directives at COMPILE time. A component pulled from import.meta.glob and
+ * passed through props cannot hydrate — it fails with NoMatchingImport, the
+ * same constraint that forced the Plot wrapper (§8). The app LIST is still
+ * fully auto-generated; only the hydration entrypoint must be static.
+ */
+interface Props {
+  app: AppMeta
+}
+
+const { app } = Astro.props
+---
+
+<Base title={app.title} description={app.description}>
+  <a class="skip-link" href="#app">Skip to app</a>
+
+  <header class="app-bar">
+    <Container size="wide">
+      <div class="bar">
+        <a class="back" href="/apps">
+          <span aria-hidden="true">←</span> apps
+        </a>
+        <div class="meta">
+          <h1>{app.title}</h1>
+          {app.status === 'wip' && <Badge tone="warn">wip</Badge>}
+        </div>
+        <div class="actions">
+          {app.repo && <Tag href={app.repo}>source ↗</Tag>}
+          <ThemeToggle />
+        </div>
+      </div>
+      <p class="description">{app.description}</p>
+    </Container>
+  </header>
+
+  <Container as="main" size="wide" id="app" tabindex="-1" class="app-main">
+    <slot />
+  </Container>
+</Base>
+
+<style>
+  .app-bar {
+    border-bottom: 1px solid var(--border);
+    padding-block: var(--space-4);
+    background: var(--surface-raised);
+  }
+
+  .bar {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+  }
+
+  .back {
+    flex: none;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--muted);
+    text-decoration: none;
+  }
+  .back:hover {
+    color: var(--accent);
+  }
+
+  .meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-width: 0;
+    flex: 1;
+  }
+  h1 {
+    font-size: var(--text-lg);
+    letter-spacing: var(--tracking-snug);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex: none;
+  }
+
+  .description {
+    margin-top: var(--space-2);
+    color: var(--muted);
+    font-size: var(--text-base);
+  }
+
+  .app-main {
+    padding-block: var(--space-6) var(--space-9);
+  }
+
+  /* On a phone the source link is the first thing to go; the app itself and
+   * the way back out are what must survive. */
+  @media (max-width: 30rem) {
+    .actions :global(a) {
+      display: none;
+    }
+  }
+</style>

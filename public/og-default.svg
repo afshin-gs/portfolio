@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <!--
+    SOURCE for public/og-default.jpg — the site-wide social preview card
+    (src/lib/seo.ts). Edit this file, then RE-RENDER; nothing reads the SVG at
+    build time and no scraper accepts an SVG as og:image:
+
+      node -e "import('./node_modules/sharp/dist/index.mjs').then(async ({default:s}) => \
+        s('public/og-default.svg', {density:144}).resize(1200,630) \
+         .jpeg({quality:88, chromaSubsampling:'4:4:4'}).toFile('public/og-default.jpg'))"
+
+    1200x630 is the 1.91:1 box Facebook/LinkedIn/X render and the frame
+    WhatsApp/Telegram crop from. Do not change the canvas size.
+
+    Colours are the LIGHT theme values from src/styles/tokens.css, hardcoded
+    because an SVG rendered by a headless rasteriser has no :root to inherit
+    from. If a token changes there, change it here too:
+      bg #fbfbfd   fg #0d1017   muted #5a6373
+      border #e2e4ec   surface #f3f4f8   accent #0d9488   accent-2 #6d28d9
+
+    FONTS are resolved from the SYSTEM, not from public/fonts — a rasteriser
+    does not do @font-face. Carlito stands in for Inter and JetBrainsMono NF for
+    JetBrains Mono; both fall back to DejaVu if absent, which shifts the metrics
+    and can overflow the row below. Check the render, do not assume.
+
+    If you keep the mono row's `x` values in sync by hand: JetBrains Mono is
+    0.6em per glyph, so a string is `chars * font-size * 0.6` wide. Chips are
+    that plus 22px padding each side, laid out left to right with a 14px gap.
+  -->
+
+  <defs>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0d9488"/>
+      <stop offset="100%" stop-color="#6d28d9"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="#fbfbfd"/>
+  <rect width="1200" height="10" fill="url(#accent)"/>
+  <rect x="0.5" y="0.5" width="1199" height="629" fill="none" stroke="#e2e4ec" stroke-width="1"/>
+
+  <!-- Name. 96 is the left margin the whole card is aligned to. -->
+  <text x="96" y="225" font-family="Carlito, DejaVu Sans, sans-serif" font-size="92"
+        font-weight="700" fill="#0d1017" letter-spacing="-2">Afshin Ghorbani</text>
+
+  <!--
+    Tagline. xml:space="preserve" is LOAD-BEARING: without it librsvg collapses
+    the whitespace at each <tspan> boundary and the pipes butt against the words.
+  -->
+  <text x="96" y="297" font-family="Carlito, DejaVu Sans, sans-serif" font-size="38"
+        fill="#5a6373" xml:space="preserve">Chemical Engineering<tspan fill="#0d9488">  |  </tspan>Biology<tspan fill="#0d9488">  |  </tspan>Technology</text>
+
+  <rect x="96" y="368" width="120" height="3" fill="url(#accent)"/>
+
+  <!--
+    Bottom row: domain, then route chips. Baseline y=462 for the text; the chips
+    are centred on 452.4 (the baseline minus 0.32em) so they do not ride low.
+    Domain is 12 chars at 30px = 216 wide, so the first chip starts at
+    96 + 216 + 36 = 348. Row ends at 835.6, against a 1104 limit — room for a
+    fourth chip if you want /apps.
+  -->
+  <text x="96" y="462" font-family="JetBrainsMono NF, DejaVu Sans Mono, monospace"
+        font-size="30" fill="#0d9488">iamafshin.me</text>
+
+  <rect x="348" y="429.4" width="122" height="46" rx="8" fill="#f3f4f8" stroke="#e2e4ec" stroke-width="1"/>
+  <text x="409" y="462" text-anchor="middle"
+        font-family="JetBrainsMono NF, DejaVu Sans Mono, monospace"
+        font-size="26" fill="#5a6373">/blog</text>
+
+  <rect x="484" y="429.4" width="184.4" height="46" rx="8" fill="#f3f4f8" stroke="#e2e4ec" stroke-width="1"/>
+  <text x="576.2" y="462" text-anchor="middle"
+        font-family="JetBrainsMono NF, DejaVu Sans Mono, monospace"
+        font-size="26" fill="#5a6373">/projects</text>
+
+  <rect x="682.4" y="429.4" width="153.2" height="46" rx="8" fill="#f3f4f8" stroke="#e2e4ec" stroke-width="1"/>
+  <text x="759" y="462" text-anchor="middle"
+        font-family="JetBrainsMono NF, DejaVu Sans Mono, monospace"
+        font-size="26" fill="#5a6373">/resume</text>
+</svg>

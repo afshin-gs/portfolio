@@ -1,0 +1,31 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+
+  // Keeping the EXISTING worker name means this deploy inherits the apex
+  // custom domain binding that is already attached to it — no DNS change, no
+  // certificate wait, no window where the site is unreachable.
+  // It also means deploying REPLACES the current site. That is intended.
+  "name": "iamafshin",
+  "compatibility_date": "2025-11-01",
+
+  // Declared so the binding is reproducible from config rather than existing
+  // only as dashboard state.
+  "routes": [{ "pattern": "iamafshin.me", "custom_domain": true }],
+
+  "assets": {
+    "directory": "./dist",
+
+    // docs/architecture.md §3 — the website must serve a REAL 404.
+    // NEVER "single-page-application" here: that would turn every typo into a
+    // 200 rendering the homepage, which is invisible to users and to search
+    // engines. SPA fallback is for APPS only (D10).
+    "not_found_handling": "404-page",
+
+    // Must agree with astro.config.mjs `trailingSlash: 'never'`.
+    // Astro emits directory-style output (blog/index.html) and treats /blog as
+    // canonical; this serves that and redirects /blog/ -> /blog.
+    "html_handling": "drop-trailing-slash"
+  },
+
+  "observability": { "enabled": true }
+}

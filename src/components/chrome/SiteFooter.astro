@@ -1,0 +1,177 @@
+---
+import Container from '../ui/Container.astro'
+import { site } from '../../data/site'
+import SocialIcon from '../ui/SocialIcon.astro'
+
+/**
+ * Site footer: contact address, social links, and the colophon.
+ *
+ * `#contact` lives here, which is why every "get in touch" link on the site
+ * resolves to a real element on whatever page it is clicked from rather than
+ * needing a dedicated contact page.
+ *
+ * Social entries whose href is still the '#' placeholder are dropped at BUILD
+ * time. A dead link that silently jumps to the top of the page is worse than
+ * an absent one, and this way filling in src/data/site.ts is all that is
+ * needed to make them appear.
+ */
+const year = new Date().getFullYear()
+const socials = site.socials.filter((s) => s.href !== '#')
+---
+
+<footer class="site-footer" id="contact">
+  <Container>
+    <div class="inner">
+      <div class="reach">
+        <p class="label">Contact</p>
+        <a class="email" href={`mailto:${site.email}`}>
+          <span class="prompt" aria-hidden="true">&gt;</span>
+          {site.email}
+        </a>
+      </div>
+
+      {
+        socials.length > 0 && (
+          <nav class="socials" aria-label="Elsewhere">
+            <ul>
+              {socials.map((link) => (
+                <li>
+                  {/*
+                    `rel` is doing three jobs, and dropping any one of them is a
+                    real regression:
+                      me         — claims the profile as the same identity, which
+                                   is what Mastodon and IndieAuth verify against.
+                      noopener   — denies the opened page `window.opener`, so it
+                                   cannot navigate this tab somewhere else.
+                      noreferrer — withholds the Referer header. Consistent with
+                                   a site that self-hosts its fonts and runs
+                                   cookieless analytics specifically to avoid
+                                   leaking readers to third parties.
+
+                    The visually-hidden suffix is not optional politeness: a link
+                    that changes context without warning is WCAG 3.2.5, and a
+                    screen-reader user gets no equivalent of the tab appearing.
+                  */}
+                  <a href={link.href} target="_blank" rel="me noopener noreferrer">
+                    <SocialIcon name={link.label} />
+                    {link.label}
+                    <span class="sr-only"> (opens in a new tab)</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        )
+      }
+    </div>
+
+    <div class="colophon">
+      <span>© {year} {site.name} · {site.location}</span>
+      <span class="built">Astro · Cloudflare Workers</span>
+    </div>
+  </Container>
+</footer>
+
+<style>
+  .site-footer {
+    margin-top: var(--space-section);
+    border-top: 1px solid var(--border);
+    padding-block: var(--space-8) var(--space-6);
+    background: var(--surface-raised);
+  }
+
+  .inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+
+  .label {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    color: var(--muted);
+    margin-bottom: var(--space-3);
+  }
+
+  .email {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-5);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    background: var(--bg);
+    color: var(--fg);
+    font-size: var(--text-md);
+    font-weight: 500;
+    text-decoration: none;
+    /* Long addresses must not force a horizontal scrollbar on a small phone. */
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    transition:
+      border-color var(--dur-base) var(--ease),
+      background-color var(--dur-base) var(--ease);
+  }
+  .email:hover {
+    border-color: var(--accent-line);
+    background: var(--accent-soft);
+  }
+  .prompt {
+    font-family: var(--font-mono);
+    color: var(--accent);
+  }
+
+  .socials ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    list-style: none;
+  }
+  .socials a {
+    /* inline-flex, not block: the mark and its label must share a baseline row
+     * and stay together when the pill row wraps. */
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.45rem 0.9rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--muted);
+    text-decoration: none;
+    transition:
+      color var(--dur-fast) var(--ease),
+      border-color var(--dur-fast) var(--ease);
+  }
+  .socials a:hover {
+    color: var(--fg);
+    border-color: var(--accent-line);
+  }
+
+  .colophon {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-2);
+    margin-top: var(--space-8);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--border);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--muted);
+  }
+  .built {
+    opacity: 0.7;
+  }
+
+  @media (min-width: 48rem) {
+    .inner {
+      flex-direction: row;
+      align-items: flex-end;
+      justify-content: space-between;
+    }
+  }
+</style>

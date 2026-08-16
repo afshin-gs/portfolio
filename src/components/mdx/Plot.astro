@@ -1,0 +1,37 @@
+---
+/**
+ * docs/architecture.md D11 — interactive chart, usable mid-post with no import.
+ *
+ * The option object is serialised into a data attribute rather than passed to a
+ * script via define:vars, because define:vars forces the script INLINE — which
+ * would defeat bundling, caching, and the dynamic import of ECharts.
+ *
+ * Hydration lives here, not in posts (§8): switching every chart's load
+ * strategy is a one-line change in plot-client.ts.
+ */
+interface Props {
+  option: Record<string, unknown>
+  height?: number | string
+  caption?: string
+}
+
+const { option, height = 360, caption } = Astro.props
+const h = typeof height === 'number' ? `${height}px` : height
+---
+
+<figure class="post-plot">
+  <div
+    data-plot
+    data-option={JSON.stringify(option)}
+    style={`width:100%;height:${h}`}
+    role="img"
+    aria-label={caption ?? 'Interactive chart'}
+  >
+  </div>
+  {caption && <figcaption>{caption}</figcaption>}
+</figure>
+
+<script>
+  import { initPlots } from '../../lib/plot-client'
+  initPlots()
+</script>

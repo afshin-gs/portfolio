@@ -1,0 +1,592 @@
+---
+import TagFacets from '../content/TagFacets.astro'
+import type { ContentCollection } from '../../lib/content'
+
+/**
+ * The one filter control for a list page (docs §10). Search, multi-select tags,
+ * and a date range — all writing to a single state owned by
+ * src/lib/filter/controller.ts.
+ *
+ * The two panels are <details>/<summary>. That is a deliberate choice over a
+ * div and a click handler: open/closed state, the button role, Enter and Space,
+ * and focus behaviour are all native, so the only JavaScript here is the part
+ * that is genuinely bespoke — positioning, mutual exclusion, and outside-click.
+ *
+ * ONE MARKUP, TWO PRESENTATIONS. The same panel is an anchored dropdown on a
+ * wide screen and a centred modal with a backdrop below 40rem, decided entirely
+ * in CSS. Rendering two variants would mean two DOM subtrees to keep in sync
+ * and duplicate ids.
+ *
+ * Gated on `html.js` in CSS, NOT on a `hidden` attribute the controller
+ * removes. The class is set synchronously in <head>, so with script available
+ * the bar is painted in its final position from the first frame; removing an
+ * attribute later would shove the list down after it had already rendered.
+ * Callers must only render this when the list is non-empty — see the pages.
+ * The <noscript> fallback keeps tag navigation available without script.
+ */
+interface Props {
+  collection: ContentCollection
+  /** Facets for the no-JS fallback only. The live list is built from the DOM. */
+  tags: readonly { tag: string; count: number }[]
+  /** Placeholder wording, e.g. "Search posts". */
+  label: string
+}
+
+const { collection, tags, label } = Astro.props
+---
+
+<section class="filter" data-filter aria-label="Filter and search">
+  <div class="row">
+    <div class="search">
+      <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="11" cy="11" r="7"></circle>
+        <path d="M20 20l-3.6-3.6"></path>
+      </svg>
+      <input type="search" data-filter-q placeholder={label} aria-label={label} />
+    </div>
+
+    <details class="popover" data-filter-tags>
+      <summary>
+        <span data-tag-summary>Tags</span>
+        <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M6 9l6 6 6-6"></path>
+        </svg>
+      </summary>
+
+      <div class="panel">
+        <div class="panel-head">
+          <strong>Filter by tag</strong>
+          <button class="panel-close" type="button" data-panel-close aria-label="Close">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+          </button>
+        </div>
+
+        <input
+          class="panel-search"
+          type="search"
+          data-tag-search
+          placeholder="Find a tag"
+          aria-label="Find a tag"
+        />
+
+        <ul class="tag-list" data-tag-list></ul>
+
+        <div class="panel-foot">
+          <button type="button" data-tag-clear>Clear tags</button>
+        </div>
+      </div>
+    </details>
+
+    <details class="popover" data-filter-dates>
+      <summary>
+        <span data-date-summary>Any date</span>
+        <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M6 9l6 6 6-6"></path>
+        </svg>
+      </summary>
+
+      <div class="panel">
+        <div class="panel-head">
+          <strong>Filter by date</strong>
+          <button class="panel-close" type="button" data-panel-close aria-label="Close">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+          </button>
+        </div>
+
+        <p class="panel-hint" data-date-hint aria-live="polite">Pick a start date</p>
+
+        <div class="calendar" data-date-body></div>
+
+        <div class="panel-foot">
+          <button type="button" data-date-clear>Clear dates</button>
+        </div>
+      </div>
+    </details>
+
+    <button class="clear" type="button" data-filter-clear disabled>Clear all</button>
+  </div>
+
+  <p class="status" role="status" aria-live="polite" data-filter-status></p>
+</section>
+
+<div class="filter-backdrop" data-filter-backdrop hidden></div>
+
+<noscript>
+  <TagFacets tags={tags} collection={collection} />
+</noscript>
+
+<script>
+  import { initFilter } from '../../lib/filter/controller'
+  initFilter()
+</script>
+
+<style is:global>
+  /* Set synchronously by the head script in Base.astro, so the bar is present
+   * from the first paint rather than appearing after hydration and shoving the
+   * list down. */
+  html:not(.js) [data-filter],
+  html:not(.js) [data-filter-backdrop] {
+    display: none !important;
+  }
+
+  /* Scroll lock while a panel is a modal. Class rather than :has() because the
+   * controller already knows whether it is in the mobile presentation, and the
+   * desktop dropdown must NOT lock. */
+  html.filter-locked body {
+    overflow: hidden;
+  }
+</style>
+
+<style>
+  .filter {
+    margin-bottom: var(--space-6);
+  }
+
+  /*
+   * LAYOUT STABILITY IS THE POINT OF THIS BLOCK.
+   *
+   * The date trigger's label grows when a range is picked ("Any date" →
+   * "1 Jul 2026 – 2 Jul 2026"). If any control before it can flex, that growth
+   * is absorbed upstream and every control SHIFTS — including the one whose
+   * panel is open, so the calendar slid sideways under the pointer mid-click.
+   *
+   * So: nothing to the left of the popovers may flex, and the only element
+   * allowed to move is the one pinned to the far right, which has no panel.
+   */
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    align-items: center;
+  }
+
+  /* ---- search ---- */
+  .search {
+    position: relative;
+    display: flex;
+    align-items: center;
+    /* flex-grow 0: a growing date label must not be paid for by shrinking the
+     * search box, which would drag both popovers leftwards. */
+    flex: 0 1 24rem;
+    min-width: 0;
+  }
+  .search-icon {
+    position: absolute;
+    left: 0.85rem;
+    width: 1rem;
+    height: 1rem;
+    fill: none;
+    stroke: var(--muted);
+    stroke-width: 1.75;
+    stroke-linecap: round;
+    pointer-events: none;
+  }
+  .search input {
+    width: 100%;
+    min-height: 2.75rem;
+    padding: 0 0.9rem 0 2.4rem;
+    background: var(--surface-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    color: var(--fg);
+    font-size: var(--text-base);
+  }
+  .search input::placeholder {
+    color: var(--muted);
+  }
+  .search input:focus-visible {
+    border-color: var(--accent);
+  }
+  /* The browser's own clear affordance, which would otherwise be invisible in
+   * dark mode. */
+  .search input::-webkit-search-cancel-button {
+    filter: grayscale(1);
+    cursor: pointer;
+  }
+
+  /* ---- popover trigger ---- */
+  .popover {
+    position: relative;
+  }
+  .popover > summary {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 2.75rem;
+    padding: 0 0.9rem;
+    background: var(--surface-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    font-size: var(--text-base);
+    color: var(--fg);
+    cursor: pointer;
+    list-style: none;
+    white-space: nowrap;
+    user-select: none;
+  }
+  .popover > summary::-webkit-details-marker {
+    display: none;
+  }
+  .popover > summary:hover {
+    border-color: var(--accent-line);
+  }
+  .popover.is-active > summary {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .chevron {
+    width: 0.9rem;
+    height: 0.9rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
+  .popover[open] .chevron {
+    transform: rotate(180deg);
+  }
+
+  /* Always rendered, so applying a filter cannot reflow the row. The label is
+   * fixed text, the box is fixed height, and only colour changes between
+   * states — nothing here can alter the button's width. */
+  .clear {
+    /* Pinned right. It is the one control allowed to absorb width changes,
+     * because it is the only one with nothing anchored to it. */
+    margin-left: auto;
+    min-height: 2.75rem;
+    padding: 0 0.9rem;
+    background: none;
+    border: 1px solid transparent;
+    border-radius: var(--radius-pill);
+    color: var(--muted);
+    font-size: var(--text-sm);
+    cursor: pointer;
+    transition:
+      color var(--dur-base) var(--ease),
+      background-color var(--dur-base) var(--ease),
+      border-color var(--dur-base) var(--ease);
+  }
+  .clear:disabled {
+    opacity: 0.45;
+    cursor: default;
+  }
+  .clear:not(:disabled) {
+    color: var(--danger);
+    border-color: var(--danger-line);
+    background: var(--danger-soft);
+  }
+  .clear:not(:disabled):hover {
+    border-color: var(--danger);
+  }
+
+  .status {
+    margin-top: var(--space-3);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--muted);
+    min-height: 1rem;
+  }
+
+  /* ---- panel: dropdown on desktop ---- */
+  .panel {
+    position: absolute;
+    z-index: var(--z-header);
+    top: calc(100% + 0.4rem);
+    left: 0;
+    /* A fixed width, NOT max(…, 100%). Sizing off the trigger meant the panel
+     * resized the instant the trigger's label grew — the calendar reflowed
+     * under the pointer between the first and second click of a range. */
+    width: 20rem;
+    max-height: min(30rem, 80vh);
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 16px 40px -20px hsl(var(--shadow-color) / 0.5);
+    overflow: hidden;
+  }
+
+  .panel-head {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: var(--space-4) var(--space-4) var(--space-3);
+    font-size: var(--text-base);
+  }
+  /* The title and close button are the modal's chrome; a dropdown needs
+   * neither, and the trigger is right above it. */
+  @media (min-width: 40.0625rem) {
+    .panel-head {
+      display: none;
+    }
+  }
+
+  .panel-close {
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    color: var(--fg);
+    cursor: pointer;
+  }
+  .panel-close svg {
+    width: 1rem;
+    height: 1rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.75;
+    stroke-linecap: round;
+  }
+
+  .panel-search {
+    flex: none;
+    margin: var(--space-3) var(--space-3) 0;
+    min-height: 2.5rem;
+    padding: 0 0.75rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    color: var(--fg);
+    font-size: var(--text-base);
+  }
+
+  .panel-hint {
+    /* flex: none and a one-line box: the hint is a fixed part of the panel's
+     * chrome, never a thing that can grow and squeeze the footer. */
+    flex: none;
+    min-height: 1lh;
+    padding: var(--space-3) var(--space-4) 0;
+    font-size: var(--text-xs);
+    color: var(--muted);
+  }
+  /* Mid-range: the picker is waiting on a second click, and the reader needs
+   * to notice that the instruction changed. */
+  .panel-hint.is-active {
+    color: var(--accent);
+  }
+
+  .panel-foot {
+    flex: none;
+    display: flex;
+    justify-content: flex-end;
+    padding: var(--space-3);
+    border-top: 1px solid var(--border);
+  }
+  .panel-foot button {
+    padding: 0.4rem 0.8rem;
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    color: var(--muted);
+    font-size: var(--text-sm);
+    cursor: pointer;
+  }
+  .panel-foot button:hover {
+    color: var(--accent);
+    border-color: var(--accent-line);
+  }
+
+  /* ---- tag list ---- */
+  .tag-list {
+    flex: 1;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    list-style: none;
+    padding: var(--space-2) var(--space-2) var(--space-3);
+    margin: 0;
+  }
+  .tag-list :global(.tag-option) {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: 0.5rem 0.6rem;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-size: var(--text-base);
+  }
+  .tag-list :global(.tag-option:hover) {
+    background: var(--surface-hover);
+  }
+  .tag-list :global(.tag-option input) {
+    width: 1rem;
+    height: 1rem;
+    accent-color: var(--accent);
+    flex: none;
+    cursor: pointer;
+  }
+  .tag-list :global(.tag-name) {
+    flex: 1;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .tag-list :global(.tag-count) {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--muted);
+  }
+  .tag-list :global(.tag-none) {
+    padding: var(--space-4) 0.6rem;
+    color: var(--muted);
+    font-size: var(--text-sm);
+    text-align: center;
+  }
+
+  /* ---- calendar ---- */
+  /*
+   * The calendar is the panel's FLEXIBLE region, exactly as .tag-list is in the
+   * other panel. Without flex:1 + min-height:0 it sizes to its content and
+   * pushes the footer past the panel's max-height, where overflow:hidden clips
+   * it — "Clear dates" was cut in half the moment the hint wrapped to a second
+   * line. Now anything that does not fit scrolls here and the footer is pinned.
+   */
+  .calendar {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: var(--space-3) var(--space-4) var(--space-4);
+  }
+  .calendar :global(.cal-head) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+  }
+  .calendar :global(.cal-title) {
+    font-size: var(--text-base);
+    font-weight: 600;
+  }
+  .calendar :global(.cal-nav) {
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    color: var(--fg);
+    font-size: 1.1rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .calendar :global(.cal-nav:disabled) {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+  .calendar :global(.cal-nav:not(:disabled):hover) {
+    border-color: var(--accent-line);
+    color: var(--accent);
+  }
+
+  .calendar :global(.cal-grid) {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+  }
+  .calendar :global(.cal-weekday) {
+    padding-bottom: var(--space-2);
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    color: var(--muted);
+    text-align: center;
+  }
+  .calendar :global(.cal-day) {
+    aspect-ratio: 1;
+    display: grid;
+    place-items: center;
+    background: none;
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    color: var(--fg);
+    font-size: var(--text-sm);
+    font-variant-numeric: tabular-nums;
+    cursor: pointer;
+  }
+  .calendar :global(.cal-day:hover) {
+    background: var(--surface-hover);
+  }
+  .calendar :global(.cal-day.is-today) {
+    border-color: var(--border);
+    font-weight: 600;
+  }
+  /* The span between the two ends, tinted rather than filled so the endpoints
+   * stay the strongest thing in the grid. */
+  .calendar :global(.cal-day.is-inside) {
+    background: var(--accent-soft);
+    border-radius: 0;
+  }
+  .calendar :global(.cal-day.is-start),
+  .calendar :global(.cal-day.is-end) {
+    background: var(--accent);
+    color: var(--accent-contrast);
+    font-weight: 600;
+  }
+  .calendar :global(.cal-day.is-start) {
+    border-start-end-radius: 0;
+    border-end-end-radius: 0;
+  }
+  .calendar :global(.cal-day.is-end) {
+    border-start-start-radius: 0;
+    border-end-start-radius: 0;
+  }
+  /* A one-day range is both ends at once — it must look like a single pill,
+   * not like a square with two corners flattened. */
+  .calendar :global(.cal-day.is-start.is-end) {
+    border-radius: var(--radius-sm);
+  }
+
+  /* ---- backdrop + modal presentation ---- */
+  .filter-backdrop {
+    display: none;
+  }
+
+  @media (max-width: 40rem) {
+    .search {
+      flex: 1 1 100%;
+    }
+    .clear {
+      margin-left: 0;
+    }
+    .popover {
+      flex: 1;
+    }
+    .popover > summary {
+      width: 100%;
+      justify-content: space-between;
+    }
+
+    .filter-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: var(--z-overlay);
+      display: block;
+      background: rgb(0 0 0 / 0.5);
+    }
+    .filter-backdrop[hidden] {
+      display: none;
+    }
+
+    /* Centred modal. `position: fixed` takes it out of the trigger's flow, so
+     * the panel is no longer constrained by the width of the button that
+     * opened it. */
+    .panel {
+      position: fixed;
+      z-index: calc(var(--z-overlay) + 1);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: min(22rem, calc(100vw - 2 * var(--space-4)));
+      max-height: min(32rem, calc(100dvh - 2 * var(--space-6)));
+    }
+  }
+</style>
