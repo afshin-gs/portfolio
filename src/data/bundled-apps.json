@@ -5,6 +5,7 @@
     "description": "Design a binary distillation column: stages, minimum reflux, Murphree efficiency, and a mass-balanced schematic.",
     "repo": "https://github.com/afshin-gs/McCabe-Thiele",
     "tags": ["react", "chemical-engineering"],
-    "status": "live"
+    "status": "live",
+    "thumbnail": "~assets/apps/mccabe-thiele.png"
   }
 ]

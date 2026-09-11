@@ -1,4 +1,5 @@
 ---
+import { Image } from 'astro:assets'
 import Grid from '../ui/Grid.astro'
 import Card from '../ui/Card.astro'
 import Tag from '../ui/Tag.astro'
@@ -11,6 +12,12 @@ import type { AppRecord } from '../../lib/apps'
  * Takes an already-filtered list rather than calling getApps() itself, so the
  * caller decides what is shown (all live apps, the first three, only
  * internal ones) without this component growing a flag per case.
+ *
+ * THUMBNAILS ARE OPTIONAL PER APP. A card with one gets a flush 16:9 image on
+ * top; a card without one has no media slot at all, not an empty placeholder.
+ * Rows stay tidy because getApps() lists thumbnail apps first within each
+ * status, and because cards in one row stretch to the same height with the
+ * tag row pinned to the bottom, so a mixed row still lines up at its base.
  */
 interface Props {
   apps: readonly AppRecord[]
@@ -25,6 +32,11 @@ const SOURCE_HINT: Record<AppRecord['source'], string> = {
   internal: 'Built inside the website repository',
   bundled: 'Separate repository, built and deployed with the website',
 }
+
+// A track never exceeds 24rem (Grid's cap) and is the full row below 40rem,
+// where the grid is one column.
+const IMAGE_WIDTHS = [400, 800]
+const IMAGE_SIZES = '(min-width: 40rem) 24rem, 100vw'
 ---
 
 {/*
@@ -36,39 +48,90 @@ const SOURCE_HINT: Record<AppRecord['source'], string> = {
 <Grid as="ul" min="18rem" gap="lg" maxColumns={Math.min(apps.length, 3)}>
   {
     apps.map((app) => (
-      <Card as="li" interactive padding="md" class="app">
-        <p class="top">
-          {app.status === 'wip' && <Badge tone="warn">wip</Badge>}
-          <span class="spacer" />
-          <span class="source" title={SOURCE_HINT[app.source]}>
-            {app.source}
-          </span>
-        </p>
+      <Card as="li" interactive padding="none" class:list={['app', { 'has-media': !!app.image }]}>
+        {app.image && (
+          <div class="media">
+            {/* PNG stays PNG: an app thumbnail is almost always a screenshot,
+                and JPEG rings around its hard UI edges (image-service.ts). SVG
+                is passed through, so it gets no srcset. */}
+            <Image
+              src={app.image}
+              alt={app.thumbnailAlt ?? ''}
+              format={app.image.format === 'png' ? 'png' : undefined}
+              {...(app.image.format === 'svg'
+                ? {}
+                : { widths: IMAGE_WIDTHS, sizes: IMAGE_SIZES })}
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+        )}
 
-        <Heading class="title">
-          <a class="card-link" href={app.href}>
-            {app.title}
-          </a>
-        </Heading>
+        <div class="body">
+          <p class="top">
+            {app.status === 'wip' && <Badge tone="warn">wip</Badge>}
+            <span class="spacer" />
+            <span class="source" title={SOURCE_HINT[app.source]}>
+              {app.source}
+            </span>
+          </p>
 
-        <p class="description">{app.description}</p>
+          <Heading class="title">
+            <a class="card-link" href={app.href}>
+              {app.title}
+            </a>
+          </Heading>
 
-        <p class="foot">
-          {app.tags?.map((tag) => <Tag>{tag}</Tag>)}
-          {app.repo && (
-            <Tag href={app.repo} tone="accent">
-              repo ↗
-            </Tag>
-          )}
-        </p>
+          <p class="description">{app.description}</p>
+
+          <p class="foot">
+            {app.tags?.map((tag) => <Tag>{tag}</Tag>)}
+            {app.repo && (
+              <Tag href={app.repo} tone="accent">
+                repo ↗
+              </Tag>
+            )}
+          </p>
+        </div>
       </Card>
     ))
   }
 </Grid>
 
 <style>
+  /* No card padding, so the image can sit flush against the frame; all inset
+   * lives on .body, which is why a card with and without an image share the
+   * same text position. overflow clips the image to the card's radius. */
   .app {
+    overflow: hidden;
+  }
+
+  .media {
+    /* The hairline belongs to the media, so the image reads as framed without
+     * doubling up against the card's own border. The surface colour shows
+     * while a lazy image is still loading. */
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .media :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    /* One ratio for every card, whatever the source's shape, so a row of image
+     * cards is one height. cover crops; it never stretches. */
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+  }
+
+  /* flex: 1 makes the body fill the card when its row is stretched by a taller
+   * neighbour, so .description can push the tag row to the bottom. */
+  .body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
     gap: var(--space-3);
+    padding: var(--space-5);
+    min-width: 0;
   }
 
   .top {

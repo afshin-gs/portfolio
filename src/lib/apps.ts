@@ -24,6 +24,8 @@ import bundledRaw from '../data/bundled-apps.json'
  *     and copies the output to dist/apps/<slug>/, so it ships with the website.
  */
 
+import type { ImageMetadata } from 'astro'
+
 export type AppSource = 'external' | 'internal' | 'bundled'
 export type AppStatus = 'live' | 'wip' | 'archived'
 
@@ -36,6 +38,14 @@ export interface AppMeta {
   status: AppStatus
   /** Shown on the card so a visitor knows what they are opening. */
   accent?: string
+  /** Card image, written `~assets/apps/<file>` for a file in src/assets/apps/.
+   *  Optional: a card without one has no media slot at all. A path that does
+   *  not resolve fails the build (resolveThumbnail). */
+  thumbnail?: string
+  /** Only when the image shows something the title does not. Defaults to ""
+   *  (decorative), because the card title sits directly below it and a screen
+   *  reader would otherwise announce the app twice. */
+  thumbnailAlt?: string
 }
 
 export interface AppRecord extends AppMeta {
@@ -44,6 +54,39 @@ export interface AppRecord extends AppMeta {
   /** External apps are separate deployments; the website cannot verify them at
    *  build time. Used to warn rather than to silently link into a 404 (R5). */
   verifiable: boolean
+  /** `thumbnail`, resolved. Absent when none is set. */
+  image?: ImageMetadata
+}
+
+/**
+ * Thumbnails come from ONE folder, src/assets/apps/, rather than anywhere in
+ * src/assets. The registries are JSON, so they cannot `import` an image; a glob
+ * is how the path becomes ImageMetadata. Globbing all of src/assets would pull
+ * every image on the site into this module to find a handful of card images.
+ *
+ * Eager for the same reason as the meta.ts glob below: getApps() stays
+ * synchronous for its callers.
+ */
+const THUMBNAILS = import.meta.glob<{ default: ImageMetadata }>(
+  '../assets/apps/*.{png,jpg,jpeg,webp,avif,svg}',
+  { eager: true },
+)
+const THUMBNAIL_PREFIX = '~assets/apps/'
+
+function resolveThumbnail(app: AppMeta): ImageMetadata | undefined {
+  if (!app.thumbnail) return undefined
+  const file = app.thumbnail.startsWith(THUMBNAIL_PREFIX)
+    ? app.thumbnail.slice(THUMBNAIL_PREFIX.length)
+    : null
+  const match = file ? THUMBNAILS[`../assets/apps/${file}`] : undefined
+  if (!match) {
+    throw new Error(
+      `[apps] "${app.slug}" has thumbnail "${app.thumbnail}", which does not resolve. ` +
+        `Put the image in src/assets/apps/ (png, jpg, jpeg, webp, avif or svg) ` +
+        `and reference it as "${THUMBNAIL_PREFIX}<file>".`,
+    )
+  }
+  return match.default
 }
 
 /** D10: a route pattern of `/apps/<slug>*` also captures `/apps/<slug>anything`.
@@ -136,13 +179,20 @@ export function getApps(): AppRecord[] {
     if (!SLUG_RE.test(app.slug)) {
       throw new Error(`[apps] Invalid slug "${app.slug}" — use lowercase-kebab-case.`)
     }
+    app.image = resolveThumbnail(app)
   }
   assertNoPrefixCollisions(all.map((a) => a.slug))
   assertRoutesExist(internal)
 
-  // live first, then wip, then archived; alphabetical within each
+  // live first, then wip, then archived. Within each, apps WITH a thumbnail
+  // come first: image cards are taller, so grouping them keeps each grid row
+  // one height instead of alternating tall and short cards across the page. At
+  // most one row ends up mixed. Alphabetical after that.
   const rank: Record<AppStatus, number> = { live: 0, wip: 1, archived: 2 }
   return all.sort(
-    (a, b) => rank[a.status] - rank[b.status] || a.title.localeCompare(b.title),
+    (a, b) =>
+      rank[a.status] - rank[b.status] ||
+      Number(!!b.image) - Number(!!a.image) ||
+      a.title.localeCompare(b.title),
   )
 }

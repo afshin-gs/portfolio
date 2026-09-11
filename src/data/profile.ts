@@ -46,14 +46,6 @@ export const hero: Hero = {
   secondaryCta: { label: 'Resume', href: '/resume' },
 }
 
-/** Four figures, all traceable to the transcript. */
-export const stats: readonly Stat[] = [
-  { value: '17.90', label: 'GPA / 20.00' },
-  { value: '2nd', label: 'Class rank' },
-  { value: '6', label: 'Courses at 20.00' },
-  { value: '2027', label: 'B.Sc. expected' },
-]
-
 /** Paragraphs for /about-me. Plain strings — no markup, no markdown. */
 export const aboutParagraphs: readonly string[] = [
   'I am an undergraduate chemical engineer at Shiraz University, expecting a B.Sc. in 2027. Most of what interests me sits where transport phenomena meet numerical methods: distillation and separations, coupled heat and mass transfer, phase equilibrium, and the models that claim to describe them.',

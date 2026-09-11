@@ -2,8 +2,7 @@
 import { Image } from 'astro:assets'
 import Container from '../ui/Container.astro'
 import Button from '../ui/Button.astro'
-import StatGrid from '../ui/StatGrid.astro'
-import { hero, stats, portraitAlt } from '../../data/profile'
+import { hero, portraitAlt } from '../../data/profile'
 import { portrait } from '../../lib/portrait'
 
 /**
@@ -80,8 +79,6 @@ import { portrait } from '../../lib/portrait'
         )
       }
     </div>
-
-    <StatGrid stats={stats} class="stats" />
   </Container>
 </section>
 
@@ -164,10 +161,6 @@ import { portrait } from '../../lib/portrait'
     margin-top: var(--space-7);
   }
 
-  .hero :global(.stats) {
-    margin-top: var(--space-9);
-  }
-
   /* ---- Portrait ----
    * Single column until 64rem, where there is genuinely room for a 26rem image
    * beside a headline at the display scale. `align-items: center` keeps the
@@ -193,7 +186,7 @@ import { portrait } from '../../lib/portrait'
   /* 26rem is as wide as the photo can go before the intro column stops holding
    * a headline fragment on one line. Each fragment in profile.ts must therefore
    * stay SHORT: a long one wraps within itself, the headline grows a line, and
-   * the stat row drops below the fold. */
+   * the calls to action drop below the fold. */
   @media (min-width: 64rem) {
     .grid.has-portrait {
       grid-template-columns: minmax(0, 1fr) 26rem;

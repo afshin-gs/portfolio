@@ -573,10 +573,19 @@ repository that declares which apps exist so `/apps` can list them. It contains
     "description": "…",
     "repo": "https://github.com/<user>/app-calculator",
     "tags": ["react", "vite"],
-    "status": "live"               // live | wip | archived
+    "status": "live",              // live | wip | archived
+    "thumbnail": "~assets/apps/calculator.png"   // optional card image
   }
 ]
 ```
+
+**Thumbnails** are optional on every app type (the same field in `meta.ts` for
+an internal app). The file lives in *this* repository, in `src/assets/apps/`,
+and is optimised by the site build like any other image; `src/lib/apps.ts`
+resolves the path and fails the build if it does not exist. The card shows it
+as a flush 16:9 banner; a card without one has no media slot at all. Apps with
+a thumbnail are listed first within each status, so image cards and text-only
+cards form their own rows instead of alternating heights across the grid.
 
 Adding an app is therefore two independent actions: create and deploy the app
 repository, and add one entry here. Neither blocks the other — an app can be
