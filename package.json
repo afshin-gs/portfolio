@@ -7,13 +7,15 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "bun run cv:publish && astro build",
+    "dev:all": "./scripts/dev-all.sh",
+    "build": "bun run cv:publish && astro build && bun run apps:bundle",
     "preview": "astro preview",
     "check": "astro check",
     "astro": "astro",
     "cv:image": "docker build -t afshin-cv-latex:latest cv",
     "cv:build": "./cv/build.sh",
     "cv:publish": "./cv/publish.sh",
+    "apps:bundle": "./scripts/bundle-apps.sh",
     "deploy": "bun run cv:build && bun run build && wrangler deploy",
     "preview:remote": "wrangler versions upload"
   },

@@ -406,6 +406,41 @@ watch for.
 
 ---
 
+### D12: Bundled apps, built by the website *(added 2026-09-11)*
+
+**Decision:** a third way for an app to exist, alongside external (D2) and
+internal. A bundled app lives in its own repository, like an external one, but
+has no Worker. `bun run build` clones it, runs its `build:portfolio` script, and
+copies the output into `dist/apps/<slug>/`, so it ships inside the website's own
+deploy. Bundled apps are declared in `src/data/bundled-apps.json` and built by
+`scripts/bundle-apps.sh`.
+
+**This partly reverses D2**, which rejected Option A (bundled builds). It was
+chosen explicitly for `mccabe-thiele`: a standalone repository with no deploy
+configuration of its own, which leaves one Cloudflare project to run instead of
+two. The costs D2 names apply to bundled apps, and only to them: an app fix
+needs a website redeploy, and each bundled app adds its install and build time
+to every site build. External remains the default for new apps.
+
+**How it fits the existing constraints:**
+
+- **URLs.** The app builds with base `/apps/<slug>/` (D1), so moving it to
+  external later changes no public URL, per D2's reversibility property.
+- **Serving.** The site Worker serves `dist/apps/<slug>/index.html` for
+  `/apps/<slug>` (`html_handling: "drop-trailing-slash"`). The site has no SPA
+  fallback, so a bundled app must not use client-side routing; an app that
+  needs it must be external (D10).
+- **Slugs.** Bundled apps go through the same registry code in
+  `src/lib/apps.ts`, so the prefix-collision guard covers them. The bundle
+  script also fails if Astro already emitted `dist/apps/<slug>`.
+- **Local parity (§13).** The step is part of `bun run build`, not a CI-only
+  step. Clones are anonymous, so bundled app repositories must be public (C3).
+  `USE_LOCAL_APPS=1` builds sibling checkouts (`../<repo name>`) instead.
+- **Failure.** A failed clone or build, or output that was not built for
+  `/apps/<slug>/`, fails the site build rather than shipping a dead link.
+
+---
+
 ## 3. System topology
 
 ```mermaid
@@ -417,8 +452,8 @@ graph TB
     subgraph cf["Cloudflare edge — zone iamafshin.me"]
         R{"Route matching<br/>most specific wins"}
         W1["Worker: site<br/>route iamafshin.me/*<br/>static assets from Astro dist/"]
-        W2["Worker: app-calculator<br/>route /apps/calculator/*<br/>static assets from Vite dist/"]
-        W3["Worker: app-N<br/>route /apps/N/*"]
+        W2["Worker: app-calculator<br/>route /apps/calculator*<br/>static assets from Vite dist/"]
+        W3["Worker: app-N<br/>route /apps/N*"]
     end
 
     subgraph gh["GitHub — public repos"]
@@ -429,8 +464,8 @@ graph TB
 
     U --> R
     R -->|"/blog, /projects, /about-me, ..."| W1
-    R -->|"/apps/calculator/*"| W2
-    R -->|"/apps/N/*"| W3
+    R -->|"/apps/calculator*"| W2
+    R -->|"/apps/N*"| W3
 
     RS -.->|"GH Actions - wrangler deploy"| W1
     RC -.->|"GH Actions - wrangler deploy"| W2
@@ -444,6 +479,9 @@ Every property is a Cloudflare Worker serving static assets. There is no origin
 server and no dynamic compute in the request path. The apps and the website are
 connected only by (a) sharing a hostname and (b) the theme contract in §12.
 
+Bundled apps (D12) have no Worker of their own: their files ship inside the
+site Worker's `dist/apps/<slug>/`, so the site Worker answers for them.
+
 ### Request resolution
 
 ```mermaid
@@ -452,7 +490,7 @@ flowchart LR
     B -->|"most specific match"| C["Worker: app-calculator"]
     C --> D{"Asset exists at<br/>/apps/calculator/settings ?"}
     D -->|yes| E["Serve file"]
-    D -->|no| F["SPA fallback:<br/>serve /apps/calculator/index.html"]
+    D -->|no| F["SPA fallback:<br/>serve the bucket-root /index.html (D10)"]
     F --> G["Client router reads<br/>location.pathname"]
 ```
 
@@ -477,7 +515,7 @@ should render a real 404.
 | `/blog/<slug>` | site | Static | e.g. `/blog/how-i-built-my-calculator-app` |
 | `/blog/tag/<tag>` | site | Static | Prerendered facet |
 | `/apps` | site | Static | Launcher index, rendered from `apps.json` |
-| `/apps/<slug>/*` | **app repo** | Static SPA | Independent Worker |
+| `/apps/<slug>/*` | **app repo** | Static SPA | Independent Worker; for a bundled app (D12), the site Worker |
 | `/blog/index.json` | site | Build-time endpoint | Search/filter index |
 | `/projects/index.json` | site | Build-time endpoint | Search/filter index |
 | `/rss.xml` | site | Build-time | Blog feed |
@@ -535,7 +573,6 @@ repository that declares which apps exist so `/apps` can list them. It contains
     "description": "…",
     "repo": "https://github.com/<user>/app-calculator",
     "tags": ["react", "vite"],
-    "screenshot": "/img/apps/calculator.png",
     "status": "live"               // live | wip | archived
   }
 ]
@@ -940,7 +977,7 @@ participate):
 | 4 | Deploy as a Worker on the **single greedy** route `iamafshin.me/apps/<slug>*` — *not* `/*`, see D10 | `wrangler.jsonc` |
 | 5 | Enable SPA fallback for client-side routing | `wrangler.jsonc` assets config |
 | 5b | Slug must not be a prefix of any other app slug (D10) | `apps.json` |
-| 6 | Consume `--color-*` custom properties rather than hardcoding colours | Styles |
+| 6 | Consume the theme-contract custom properties (`--bg`, `--fg`, `--muted`, `--accent`, `--border`, `--surface`) rather than hardcoding colours | Styles |
 | 7 | Add an entry to `apps.json` in the website repo | Website repo |
 
 Requirements 1 and 2 are the entirety of the cost of D1. Requirement 7 is the
@@ -948,6 +985,11 @@ entirety of the coupling in D2.
 
 **Explicitly not required:** matching the website's framework, sharing
 components, sharing a build tool, or coordinating releases.
+
+**Bundled apps (D12)** follow requirements 1, 3, 5b, and 6, but output to their
+own `dist/` (the website copies it into `dist/apps/<slug>/`). In place of 2, 2b,
+4, 5, and 7 they provide a `build:portfolio` script and an entry in
+`src/data/bundled-apps.json`, and they must not use client-side routing.
 
 ---
 
@@ -1061,7 +1103,7 @@ flowchart TB
         A2 --> A3["bun install"]
         A3 --> A4["typecheck + build"]
         A4 --> A5["wrangler deploy"]
-        A5 --> A6["Worker: app-calculator<br/>/apps/calculator/*"]
+        A5 --> A6["Worker: app-calculator<br/>/apps/calculator*"]
     end
 
     L1["Local: bun run deploy"] -.->|"same commands"| S6
@@ -1119,7 +1161,7 @@ should fail fast with a clear message rather than midway through a build.
 
 | Secret | Scope | Notes |
 |---|---|---|
-| `CLOUDFLARE_API_TOKEN` | Per repository | Scoped to **Workers Scripts: Edit** only — *not* a global API key. One token per repository so a leak can be revoked in isolation |
+| `CLOUDFLARE_API_TOKEN` | Per repository | Least privilege, *not* a global API key. An app repository needs **Workers Scripts: Edit** on the account and **Workers Routes: Edit** on the `iamafshin.me` zone, because its route is a zone route. The website also needs **Account Settings: Read** and **DNS: Edit** on the zone for its custom-domain binding (see `deploy.yml`). One token per repository so a leak can be revoked in isolation |
 | `CLOUDFLARE_ACCOUNT_ID` | Per repository | Not secret, but stored alongside for convenience |
 
 ### Rollback
@@ -1144,22 +1186,43 @@ mistakes, `git revert && push` is usually clearer.
 | Mode | Command | When | Frequency |
 |---|---|---|---|
 | **Single repository** | `bun dev` in that repo | Writing posts, building a feature, styling | ~90% of the time |
-| **Unified origin** | `caddy run` + the dev servers you need | Testing theme sync, site↔app navigation, prod-like paths | ~10% |
+| **Unified origin** | `bun run dev:all` in the website repo | Testing theme sync, site↔app navigation, prod-like paths, bundled apps (D12) live | ~10% |
 
-The single-repository mode must stay frictionless. The proxy is an occasional
-tool, not a prerequisite.
+The single-repository mode must stay frictionless: `bun dev` never depends on
+Caddy. The proxy is an occasional tool, not a prerequisite.
+
+### What `bun run dev:all` does
+
+`scripts/dev-all.sh`, one command for the whole origin:
+
+1. For every non-archived app in `apps.json` and `bundled-apps.json` that has a
+   checkout at `../<repo name>` (the same convention as `USE_LOCAL_APPS`), runs
+   that repository's `bun run dev --base /apps/<slug>/ --port <5173+n>
+   --strictPort` and writes a Caddy route for it to `.caddy/apps.caddy`
+   (git-ignored). Apps without a checkout are skipped and answer with a 502
+   page that says so.
+2. Starts Caddy on the `Caddyfile`, which imports those routes.
+3. Starts Astro on :4321, or proxies to a `bun dev` already running there.
+4. Ctrl-C stops every server and deletes the generated routes.
+
+**One-time setup:** `brew install caddy`. On the first run Caddy installs its
+local CA into the system trust store and sudo asks for a password.
+
+**What an app repository must provide:** `bun run dev` is Vite, so it accepts
+the three flags. Its own config needs no dev-specific `base`, port, or HMR
+setting; the flags supply the first two and the third is not needed (below).
 
 ### Caddy configuration
 
+`Caddyfile`, at the repository root:
+
 ```caddyfile
-# Caddyfile — lives in afshin-website
 iamafshin.localhost {
-	handle /apps/calculator/* {
-		reverse_proxy localhost:5173
-	}
-	handle /apps/notes/* {
-		reverse_proxy localhost:5174
-	}
+	import .caddy/*.caddy      # generated, one block per app:
+	#   handle /apps/<slug>* {
+	#   	rewrite /apps/<slug> /apps/<slug>/
+	#   	reverse_proxy localhost:<port>
+	#   }
 	handle {
 		reverse_proxy localhost:4321      # Astro
 	}
@@ -1170,29 +1233,42 @@ Caddy auto-issues a certificate from its local CA for `.localhost`, so
 development runs over **HTTPS on one origin** — matching production, and
 satisfying secure-context browser APIs.
 
-Apps that are not currently running simply return 502. Run only what you need.
+**The same greedy pattern as production** (D10). `/apps/<slug>/*` would miss
+the bare `/apps/<slug>`.
 
 **Use `handle`, not `handle_path`.** `handle_path` strips the prefix, which
-would make development paths differ from production. Instead set Vite's `base`
-to `/apps/<slug>/` in *both* dev and prod so the app observes identical URLs
+would make development paths differ from production. Instead the app's dev
+server runs with `base` `/apps/<slug>/`, so it observes identical URLs
 everywhere. Dev/prod path parity is the entire justification for this setup.
+
+**The rewrite.** Vite only serves under its `base`, which has a trailing slash,
+so the bare `/apps/<slug>` 404s in dev. Production serves the bare path, and it
+is what the `/apps` cards link to. Caddy rewrites it internally, so the address
+bar and the query string are unchanged.
+
+**Known dev/prod differences,** both harmless: `/apps/<slug>/` is a 200 in dev
+but redirects to the bare path in production for a bundled app
+(`drop-trailing-slash`); and Vite answers any deep path with the app's
+`index.html`, so a bundled app's client-side routes seem to work in dev while
+404ing in production. D12 already forbids client routing for bundled apps.
 
 ### HMR through the proxy
 
-Vite's HMR is a WebSocket, and the client infers the wrong URL when proxied.
-Three settings fix it:
-
-```ts
-// vite.config.ts (app) — or astro.config.mjs under `vite: { server: ... }`
-server: {
-  host: '0.0.0.0',
-  allowedHosts: ['iamafshin.localhost'],       // Vite 6+ blocks unknown Host headers
-  hmr: { protocol: 'wss', clientPort: 443 },   // ← the actual fix
-}
-```
-
-Caddy v2 proxies WebSocket upgrades transparently; no proxy-side configuration
-is needed. **HMR works normally through the proxy** once these are set.
+> **Revised 2026-09-11 — no configuration needed.** Verified with Vite 8.1
+> (Astro) and 8.3 (an app) behind Caddy 2.11. When `server.ws.clientPort` and
+> `port` are unset, and the server is not in middleware mode, Vite's HMR client
+> builds its socket URL from the page: `wss` for an HTTPS page, the page's own
+> host and port. Behind Caddy that is `wss://iamafshin.localhost/<base>`, which
+> Caddy upgrades transparently (`101 Switching Protocols` for both Astro and the
+> app). Vite also admits any `*.localhost` Host header by default, so
+> `allowedHosts` is unnecessary too.
+>
+> The earlier recipe, `hmr: { protocol: 'wss', clientPort: 443 }`, is now
+> redundant and harmful: it would point plain `bun dev` at port 443 and break
+> HMR on `localhost:4321`. (Vite 8 also deprecates `server.hmr.*` connection
+> options in favour of `server.ws.*`.) If HMR ever fails through the proxy,
+> check that nothing sets a client port, and that the server is not in
+> middleware mode, which moves HMR to a separate port (24678).
 
 ### Why not Docker (D9)
 
@@ -1350,8 +1426,12 @@ app count grows past roughly five, revisit packaging it.
 ### R5 — `apps.json` and deployed apps can disagree
 
 A listed app that is not deployed will 404; a deployed app that is not listed is
-invisible. **Mitigation:** the `status` field, and a build-time check on the
-website that warns for entries with `status: "live"` that do not resolve.
+invisible. **Mitigation:** the `status` field; list an app as `wip` until it
+has deployed. Bundled apps (D12) cannot disagree: `scripts/bundle-apps.sh`
+fails the build if one does not produce `dist/apps/<slug>/`. **Not yet built:**
+the planned build-time warning for external entries with `status: "live"`
+that do not resolve. Until then, check by hand after an app's first deploy,
+with the cache-busting `curl` in the `add-app` skill.
 
 ### R6 — Cloudflare free-tier limits
 
@@ -1399,12 +1479,13 @@ website, and it is metadata only.
 
 ### Test cross-property theme sync locally
 
-1. Start Astro: `bun dev` in the website repo (port 4321).
-2. Start the app: `bun dev` in the app repo (port 5173).
-3. `caddy run` in the website repo.
-4. Open `https://iamafshin.localhost`, toggle the theme, navigate to
+1. Check the app out next to the website: `../<repo name>`, dependencies
+   installed.
+2. `bun run dev:all` in the website repo. It starts the app, Caddy, and Astro
+   (§14) and prints which apps it found.
+3. Open `https://iamafshin.localhost`, toggle the theme, navigate to
    `/apps/<slug>` — the theme must carry over with no flash.
-5. Open a second tab and verify the `storage` event propagates.
+4. Open a second tab and verify the `storage` event propagates.
 
 ### Check or refresh a social preview
 

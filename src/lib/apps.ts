@@ -1,9 +1,10 @@
 import externalRaw from '../data/apps.json'
+import bundledRaw from '../data/bundled-apps.json'
 
 /**
  * docs/architecture.md §5, §11 — the /apps registry.
  *
- * An app can exist two ways. Both appear in one merged, sorted list, and /apps
+ * An app can exist three ways. All appear in one merged, sorted list, and /apps
  * renders whatever this returns — nothing is hand-maintained in the page.
  *
  *   EXTERNAL (primary — D2)
@@ -16,9 +17,14 @@ import externalRaw from '../data/apps.json'
  *     Lives in this repo under src/apps/<slug>/. Fully auto-discovered by the
  *     glob below: drop a folder in with a meta.ts and it appears on /apps and
  *     gets a route. No registry edit at all.
+ *
+ *   BUNDLED (D12)
+ *     Its own repo but no Worker. Declared in src/data/bundled-apps.json;
+ *     scripts/bundle-apps.sh clones and builds it at the end of `bun run build`
+ *     and copies the output to dist/apps/<slug>/, so it ships with the website.
  */
 
-export type AppSource = 'external' | 'internal'
+export type AppSource = 'external' | 'internal' | 'bundled'
 export type AppStatus = 'live' | 'wip' | 'archived'
 
 export interface AppMeta {
@@ -114,7 +120,17 @@ export function getApps(): AppRecord[] {
     verifiable: false,
   }))
 
-  const all = [...internal, ...external]
+  // Bundled apps are built after astro build, so nothing can be checked here;
+  // scripts/bundle-apps.sh fails the build instead if one does not produce
+  // dist/apps/<slug>/, which is what makes the link safe to call verifiable.
+  const bundled: AppRecord[] = (bundledRaw as AppMeta[]).map((app) => ({
+    ...app,
+    source: 'bundled' as const,
+    href: `/apps/${app.slug}`,
+    verifiable: true,
+  }))
+
+  const all = [...internal, ...external, ...bundled]
 
   for (const app of all) {
     if (!SLUG_RE.test(app.slug)) {

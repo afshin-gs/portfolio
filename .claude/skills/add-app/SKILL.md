@@ -16,7 +16,7 @@ before writing code.
 | Deploys | Itself, own Worker, own route | With the website |
 | A fix means | Push that repo — site untouched | Rebuild and redeploy the whole site |
 | Stack | Anything | Must be React (this repo's renderer) |
-| Local dev | Needs Caddy for the shared origin (D9/§14) | Just `bun dev` |
+| Local dev | `bun run dev:all` here, with the app checked out at `../<repo name>` (§14) | Just `bun dev` |
 | Good for | Anything real, anything that will grow | Small self-contained widgets |
 
 **Default to external.** It is the architecture's primary path: independent
@@ -24,6 +24,10 @@ deploys, constant website build time, genuinely standalone repos.
 
 Choose internal only if the app is small, self-contained, React, and unlikely to
 grow — or if the user explicitly wants it in this repo.
+
+A third option, **bundled** (D12, section 2c), keeps its own repository but has
+no Worker: the website build clones it and ships it. Use it only when the user
+asks for it; it brings back the rebuild-the-site cost that D2 avoids.
 
 Then ask for: **title**, **description** (one sentence — it is the card text),
 **slug**, **status** (`live` | `wip` | `archived`), **tags**, and **repo URL**
@@ -146,6 +150,24 @@ guard that names the missing file.
 Style using **only** theme-contract custom properties — `--bg`, `--fg`,
 `--muted`, `--border`, `--surface`, `--accent`. Hardcoded colours will not
 survive a theme switch.
+
+## 2c. Bundled app (D12)
+
+Add one entry to `src/data/bundled-apps.json`. It takes the same fields as
+`apps.json`; `repo` is required and must be a public GitHub repository, because
+the build clones it anonymously.
+
+In the app's repository:
+
+1. **A `build:portfolio` script** that writes a static site to `dist/` with base
+   `/apps/<slug>/`. For Vite: `vite build --base /apps/<slug>/`.
+2. **A committed `bun.lock`.** The build runs `bun install --frozen-lockfile`.
+3. **No client-side routing.** The site Worker has no SPA fallback, so a deep
+   link would 404. An app that needs routing must be external.
+4. **No `wrangler.jsonc`**, and no route: the website's Worker serves it.
+
+Do not add a page under `src/pages/apps/`; the bundle script fails the build if
+Astro already emitted `dist/apps/<slug>`.
 
 ## 3. Verify
 

@@ -37,6 +37,12 @@ jobs:
       # copy is skipped with a ::warning:: annotation rather than failing the
       # deploy, so a forgotten `bun run cv:build` costs one dead download link
       # and not the whole site.
+      #
+      # `bun run build` also runs scripts/bundle-apps.sh after astro build: it
+      # clones every app in src/data/bundled-apps.json, builds it with
+      # `bun run build:portfolio`, and copies the output into dist/apps/<slug>/
+      # (docs/architecture.md D12). The clones are anonymous, so those app
+      # repositories must be public. A failed app build fails the deploy.
       - run: bun run build
 
       # Needs two repository secrets:

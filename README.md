@@ -14,7 +14,7 @@ no runtime cost.
 | Content | MDX + content collections, Zod-validated frontmatter |
 | Markdown | remark/rehype — KaTeX math, Shiki dual-theme code, callouts, autolinked headings |
 | Charts | Apache ECharts, vanilla island, lazy-loaded on scroll |
-| Apps | Internal (React, in this repo) or external (own repo, own Worker) |
+| Apps | Internal (React, in this repo), external (own repo, own Worker), or bundled (own repo, shipped with the site) |
 | Hosting | Cloudflare Workers static assets, one Worker per property |
 | Runtime cost | $0 |
 
@@ -28,6 +28,7 @@ bun dev            # http://localhost:4321
 | Command | |
 |---|---|
 | `bun dev` | Dev server on :4321 |
+| `bun run dev:all` | Site plus every app checked out next to this repo, on one HTTPS origin, `https://iamafshin.localhost` (needs `brew install caddy`) |
 | `bunx astro dev --background` | Same, detached (`stop` / `status` / `logs`) |
 | `bun run build` | Build to `dist/` |
 | `bun run check` | Types + content schema validation |
@@ -48,6 +49,7 @@ src/
 │   └── projects/          *.mdx
 ├── content.config.ts      collection schemas
 ├── data/apps.json         external app registry
+├── data/bundled-apps.json bundled app registry (built into dist/ by bun run build)
 ├── layouts/               Base, Post, AppShell
 ├── lib/
 │   ├── content.ts         collection queries + derived values
@@ -58,6 +60,8 @@ src/
 ├── pages/                 routes
 └── styles/tokens.css      CSS custom properties — the theme contract
 docs/architecture.md       source of truth
+scripts/                   bundle-apps.sh (end of build), dev-all.sh (bun run dev:all)
+Caddyfile                  unified-origin dev proxy, used by bun run dev:all
 ```
 
 ## Routes
@@ -67,7 +71,7 @@ docs/architecture.md       source of truth
 | `/` | Landing |
 | `/blog`, `/blog/<slug>`, `/blog/tag/<tag>` | Blog + prerendered tag facets |
 | `/projects`, `/projects/<slug>`, `/projects/tag/<tag>` | Projects (same substrate, different presentation) |
-| `/apps`, `/apps/<slug>` | App launcher and internal apps |
+| `/apps`, `/apps/<slug>` | App launcher, internal and bundled apps (external apps are served by their own Worker) |
 | `/blog/index.json`, `/projects/index.json` | Build-time search indexes |
 | `/404`, `/sitemap-index.xml` | |
 
@@ -101,7 +105,7 @@ route. Write a body and it gains one automatically.
 
 ## Apps
 
-Two ways to exist, both listed together on `/apps`:
+Three ways to exist, all listed together on `/apps`:
 
 - **External** *(primary)* — own repo, own Worker, own route `iamafshin.me/apps/<slug>*`.
   Declared in `src/data/apps.json`; that file is the entire coupling between
@@ -109,6 +113,11 @@ Two ways to exist, both listed together on `/apps`:
 - **Internal** — lives in `src/apps/<slug>/`, auto-discovered. Needs a
   ~6-line entrypoint at `src/pages/apps/<slug>.astro`, because Astro resolves
   hydration directives at compile time.
+- **Bundled**: own repo, no Worker. Declared in `src/data/bundled-apps.json`.
+  `bun run build` clones each one, runs its `build:portfolio` script, and
+  copies the output into `dist/apps/<slug>/` (`scripts/bundle-apps.sh`, D12),
+  so building the site needs network access. `USE_LOCAL_APPS=1 bun run build`
+  builds sibling checkouts (`../<repo name>`) instead of cloning.
 
 Build-time guards reject invalid slugs, slug prefix collisions, directory/slug
 mismatches, and internal apps missing their route.
@@ -123,9 +132,10 @@ Deploys as the Cloudflare Worker `iamafshin`, which already holds the apex
 custom domain — so there is no DNS change and no downtime window, but the
 deploy **replaces what is currently live**. Roll back with `bunx wrangler rollback`.
 
-`.github/workflows/deploy.yml` is ready for push-to-deploy and needs a git
-remote plus two repo secrets: `CLOUDFLARE_API_TOKEN` (scoped to *Workers
-Scripts: Edit*) and `CLOUDFLARE_ACCOUNT_ID`.
+Pushing to `main` deploys through `.github/workflows/deploy.yml`, running the
+same `check` and `build` as a laptop. It needs two repo secrets:
+`CLOUDFLARE_API_TOKEN` (scopes listed in the workflow file) and
+`CLOUDFLARE_ACCOUNT_ID`.
 
 ## For agents
 
@@ -135,7 +145,8 @@ See [`AGENTS.md`](AGENTS.md) and the skills in `.claude/skills/`
 ## Status
 
 Built: content pipeline, blog and projects with tag facets, search-index
-endpoints, ECharts island, theme contract, `/apps` with one internal app.
+endpoints, ECharts island, theme contract, `/apps` with one internal app and one bundled app (`mccabe-thiele`), and
+unified-origin local dev (`bun run dev:all`).
 
 Not yet built: the filter/search island, theme toggle UI, RSS, `/about-me`,
 `/resume`.

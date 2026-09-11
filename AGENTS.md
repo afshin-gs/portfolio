@@ -19,6 +19,7 @@ proposed feature needs any of those, it is out of scope — see §16.
 
 ```bash
 bun dev                        # dev server on :4321
+bun run dev:all                # site + checked-out apps on https://iamafshin.localhost (Caddy, §14)
 bunx astro dev --background    # ...as a background process
 bunx astro dev stop|status|logs
 bun run build                  # -> dist/
@@ -27,6 +28,7 @@ bun run preview                # serve the built output locally
 bun run cv:build               # latexmk in Docker -> cv/output/cv.pdf, then publishes
 bun run cv:publish             # copy cv/output/cv.pdf -> public/cv.pdf (no Docker; CI runs this)
 bun run cv:image               # rebuild the LaTeX Docker image (after Dockerfile edits)
+bun run apps:bundle            # clone + build bundled apps into dist/apps/<slug>/ (end of build)
 bun run deploy                 # cv:build && build && wrangler deploy — REPLACES the live site
 ```
 
@@ -52,6 +54,22 @@ engines. SPA fallback belongs to *apps* only (D10).
 **App slugs must not prefix one another.** The Cloudflare route `/apps/<slug>*`
 also captures `/apps/<slug>anything`, so `calc` would silently swallow
 `calculator`. Enforced at build time in `src/lib/apps.ts`.
+
+**`bun run build` clones and builds the bundled apps (D12).** After
+`astro build`, `scripts/bundle-apps.sh` clones every repository in
+`src/data/bundled-apps.json`, runs its `build:portfolio` script, and copies the
+output into `dist/apps/<slug>/`. So a build needs network access, and those
+repositories must be public. `USE_LOCAL_APPS=1 bun run build` builds the sibling
+checkouts (`../<repo name>`) instead, which is how to preview an unpushed app
+change. `bun dev` does not serve bundled apps. `bun run dev:all` serves them
+live from those sibling checkouts (§14); `bun run build && bun run preview`
+serves the built output.
+
+**Never put HMR or proxy settings in `astro.config.mjs`.** `bun dev` on
+`localhost:4321` must keep working without Caddy. Behind the proxy Vite already
+derives the right `wss://` socket from the page URL, and it admits
+`*.localhost` hosts by default, so the old `hmr.clientPort: 443` recipe is not
+needed — and it would break HMR in plain `bun dev` (§14).
 
 **Never put `slug`, `uri`, `fullUrl`, or `readingTime` in frontmatter.** They
 are derived in `src/lib/content.ts`. Stored URLs drift from their own files.
