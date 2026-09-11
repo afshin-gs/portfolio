@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "subsequent-shepherd",
+      "name": "afshin-website",
       "dependencies": {
         "@astrojs/mdx": "^7.0.3",
         "@astrojs/react": "^6.0.1",
