@@ -42,7 +42,7 @@ export const resumeSections: readonly ResumeSection[] = [
         title: 'B.Sc. Chemical Engineering',
         org: 'Shiraz University, Shiraz',
         detail:
-          'Cumulative GPA 17.90 / 20.00; last two years 18.47 / 20.00 (estimated). Ranked 2nd in class to date, consistently among the top three of the cohort by semester. Perfect 20.00 in six core courses: Mass Transfer, Unit Operations I, the heat transfer and fluid mechanics laboratories, Numerical Methods, and Introduction to Biological Sciences.',
+          'Cumulative GPA 17.93 / 20.00; last two years 18.52 / 20.00 (estimated). Ranked 3rd in class to date, consistently among the top three of the cohort by semester. Perfect 20.00 in six core courses: Mass Transfer, Unit Operations I, the heat transfer and fluid mechanics laboratories, Numerical Methods, and Introduction to Biological Sciences.',
       },
     ],
   },
