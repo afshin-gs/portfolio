@@ -38,7 +38,7 @@ export const resumeSections: readonly ResumeSection[] = [
     heading: 'Education',
     entries: [
       {
-        period: 'Fall 2023 – Summer 2027 (expected)',
+        period: 'Fall 2023 – Spring 2027 (expected)',
         title: 'B.Sc. Chemical Engineering',
         org: 'Shiraz University, Shiraz',
         detail:
@@ -53,7 +53,7 @@ export const resumeSections: readonly ResumeSection[] = [
       {
         period: 'Summer 2026 – present',
         title: 'Biochemistry Laboratory Intern',
-        org: 'Sturgeon Research Facility, Rasht',
+        org: 'International Sturgeon Research Institute, Rasht',
         detail:
           'Catalase activity and malondialdehyde (MDA) assays on tissue samples: homogenisation, micropipetting, buffer and standard preparation, centrifugation, and quantification by spectrophotometry against experimentally generated standard curves.',
       },
@@ -65,7 +65,7 @@ export const resumeSections: readonly ResumeSection[] = [
     entries: [
       {
         title: 'Computational McCabe–Thiele Simulator',
-        org: 'MATLAB, JavaScript',
+        org: 'MATLAB, TypeScript',
         detail:
           'Multi-section distillation with arbitrary feeds, side streams, and subcooled reflux. Operating lines, q-lines, VLE interpolation, Murphree efficiency, and automated stage stepping, ported to a browser implementation.',
       },
@@ -141,7 +141,7 @@ export const resumeSections: readonly ResumeSection[] = [
     entries: [
       { title: 'Persian', org: 'Native' },
       { title: 'English', org: 'Advanced / fluent' },
-      { title: 'German', org: 'Intermediate (A2–B1)' },
+      { title: 'German', org: 'Advanced' },
     ],
   },
 ]
