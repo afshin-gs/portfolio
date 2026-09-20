@@ -1,0 +1,262 @@
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" style="fill-opacity:1; color-rendering:auto; color-interpolation:auto; text-rendering:auto; stroke:var(--fig-ink); stroke-linecap:square; stroke-miterlimit:10; shape-rendering:auto; stroke-opacity:1; fill:var(--fig-ink); stroke-dasharray:none; font-weight:normal; stroke-width:1; font-family: var(--font-sans); font-style:normal; stroke-linejoin:miter; font-size:12px; stroke-dashoffset:0; image-rendering:auto;" xmlns="http://www.w3.org/2000/svg"
+ viewBox="132 33 1188 772" preserveAspectRatio="xMidYMid meet"><defs id="f4-genericDefs"
+  /><g
+  ><defs id="f4-defs1"
+    ><clipPath clipPathUnits="userSpaceOnUse" id="f4-clipPath1"
+      ><path d="M0 0 L1440 0 L1440 849 L0 849 L0 0 Z"
+      /></clipPath
+      ></defs
+    ><g style="fill:var(--fig-paper); stroke:var(--fig-paper);"
+    ></g
+    ><g style="fill:var(--fig-paper); text-rendering:optimizeSpeed; color-rendering:optimizeSpeed; image-rendering:optimizeSpeed; shape-rendering:crispEdges; stroke:var(--fig-paper); color-interpolation:sRGB;"
+    ><path style="stroke:none;" d="M187 755.5 L1303 755.5 L1303 63.5 L187 63.5 Z"
+    /></g
+    ><g style="stroke-linecap:butt; fill-opacity:0.149; fill:var(--fig-ink); text-rendering:geometricPrecision; image-rendering:optimizeQuality; color-rendering:optimizeQuality; stroke-linejoin:round; stroke:var(--fig-ink); color-interpolation:linearRGB; stroke-width:1.5; stroke-opacity:0.149;"
+    ><line y2="63.5" style="fill:none;" x1="187" x2="187" y1="755.5"
+      /><line y2="63.5" style="fill:none;" x1="298.6" x2="298.6" y1="755.5"
+      /><line y2="63.5" style="fill:none;" x1="410.2" x2="410.2" y1="755.5"
+      /><line y2="63.5" style="fill:none;" x1="521.8" x2="521.8" y1="755.5"
+      /><line y2="63.5" style="fill:none;" x1="633.4" x2="633.4" y1="755.5"
+      /><line y2="63.5" style="fill:none;" x1="745" x2="745" y1="755.5"
+      /><line y2="63.5" style="fill:none;" x1="856.6" x2="856.6" y1="755.5"
+      /><line y2="63.5" style="fill:none;" x1="968.2" x2="968.2" y1="755.5"
+      /><line y2="63.5" style="fill:none;" x1="1079.8" x2="1079.8" y1="755.5"
+      /><line y2="63.5" style="fill:none;" x1="1191.4" x2="1191.4" y1="755.5"
+      /><line y2="63.5" style="fill:none;" x1="1303" x2="1303" y1="755.5"
+      /><line y2="755.5" style="fill:none;" x1="1303" x2="187" y1="755.5"
+      /><line y2="686.3" style="fill:none;" x1="1303" x2="187" y1="686.3"
+      /><line y2="617.1" style="fill:none;" x1="1303" x2="187" y1="617.1"
+      /><line y2="547.9" style="fill:none;" x1="1303" x2="187" y1="547.9"
+      /><line y2="478.7" style="fill:none;" x1="1303" x2="187" y1="478.7"
+      /><line y2="409.5" style="fill:none;" x1="1303" x2="187" y1="409.5"
+      /><line y2="340.3" style="fill:none;" x1="1303" x2="187" y1="340.3"
+      /><line y2="271.1" style="fill:none;" x1="1303" x2="187" y1="271.1"
+      /><line y2="201.9" style="fill:none;" x1="1303" x2="187" y1="201.9"
+      /><line y2="132.7" style="fill:none;" x1="1303" x2="187" y1="132.7"
+      /><line y2="63.5" style="fill:none;" x1="1303" x2="187" y1="63.5"
+      /><line x1="187" x2="1303" y1="755.5" style="stroke-linecap:square; fill-opacity:1; fill:none; stroke-opacity:1;" y2="755.5"
+      /><line x1="187" x2="1303" y1="63.5" style="stroke-linecap:square; fill-opacity:1; fill:none; stroke-opacity:1;" y2="63.5"
+      /><line x1="187" x2="187" y1="755.5" style="stroke-linecap:square; fill-opacity:1; fill:none; stroke-opacity:1;" y2="744.34"
+      /><line x1="298.6" x2="298.6" y1="755.5" style="stroke-linecap:square; fill-opacity:1; fill:none; stroke-opacity:1;" y2="744.34"
+      /><line x1="410.2" x2="410.2" y1="755.5" style="stroke-linecap:square; fill-opacity:1; fill:none; stroke-opacity:1;" y2="744.34"
+      /><line x1="521.8" x2="521.8" y1="755.5" style="stroke-linecap:square; fill-opacity:1; fill:none; stroke-opacity:1;" y2="744.34"
+      /><line x1="633.4" x2="633.4" y1="755.5" style="stroke-linecap:square; fill-opacity:1; fill:none; stroke-opacity:1;" y2="744.34"
+      /><line x1="745" x2="745" y1="755.5" style="stroke-linecap:square; fill-opacity:1; fill:none; stroke-opacity:1;" y2="744.34"
+      /><line x1="856.6" x2="856.6" y1="755.5" style="stroke-linecap:square; fill-opacity:1; fill:none; stroke-opacity:1;" y2="744.34"
+      /><line x1="968.2" x2="968.2" y1="755.5" style="stroke-linecap:square; fill-opacity:1; fill:none; stroke-opacity:1;" y2="744.34"
+      /><line x1="1079.8" x2="1079.8" y1="755.5" style="stroke-linecap:square; fill-opacity:1; fill:none; stroke-opacity:1;" y2="744.34"
+      /><line x1="1191.4" x2="1191.4" y1="755.5" style="stroke-linecap:square; fill-opacity:1; fill:none; stroke-opacity:1;" y2="744.34"
+      /><line x1="1303" x2="1303" y1="755.5" style="stroke-linecap:square; fill-opacity:1; fill:none; stroke-opacity:1;" y2="744.34"
+      /><line x1="187" x2="187" y1="63.5" style="stroke-linecap:square; fill-opacity:1; fill:none; stroke-opacity:1;" y2="74.66"
+      /><line x1="298.6" x2="298.6" y1="63.5" style="stroke-linecap:square; fill-opacity:1; fill:none; stroke-opacity:1;" y2="74.66"
+      /><line x1="410.2" x2="410.2" y1="63.5" style="stroke-linecap:square; fill-opacity:1; fill:none; stroke-opacity:1;" y2="74.66"
+      /><line x1="521.8" x2="521.8" y1="63.5" style="stroke-linecap:square; fill-opacity:1; fill:none; stroke-opacity:1;" y2="74.66"
+      /><line x1="633.4" x2="633.4" y1="63.5" style="stroke-linecap:square; fill-opacity:1; fill:none; stroke-opacity:1;" y2="74.66"
+      /><line x1="745" x2="745" y1="63.5" style="stroke-linecap:square; fill-opacity:1; fill:none; stroke-opacity:1;" y2="74.66"
+      /><line x1="856.6" x2="856.6" y1="63.5" style="stroke-linecap:square; fill-opacity:1; fill:none; stroke-opacity:1;" y2="74.66"
+      /><line x1="968.2" x2="968.2" y1="63.5" style="stroke-linecap:square; fill-opacity:1; fill:none; stroke-opacity:1;" y2="74.66"
+      /><line x1="1079.8" x2="1079.8" y1="63.5" style="stroke-linecap:square; fill-opacity:1; fill:none; stroke-opacity:1;" y2="74.66"
+      /><line x1="1191.4" x2="1191.4" y1="63.5" style="stroke-linecap:square; fill-opacity:1; fill:none; stroke-opacity:1;" y2="74.66"
+      /><line x1="1303" x2="1303" y1="63.5" style="stroke-linecap:square; fill-opacity:1; fill:none; stroke-opacity:1;" y2="74.66"
+    /></g
+    ><g transform="translate(187,760.3)" style="font-size:14px; fill:var(--fig-ink); text-rendering:geometricPrecision; image-rendering:optimizeQuality; color-rendering:optimizeQuality; font-family: var(--font-sans); stroke:var(--fig-ink); color-interpolation:linearRGB;"
+    ><text x="-4" xml:space="preserve" y="14" style="stroke:none;"
+      >0</text
+    ></g
+    ><g transform="translate(298.6,760.3)" style="font-size:14px; fill:var(--fig-ink); text-rendering:geometricPrecision; image-rendering:optimizeQuality; color-rendering:optimizeQuality; font-family: var(--font-sans); stroke:var(--fig-ink); color-interpolation:linearRGB;"
+    ><text x="-4" xml:space="preserve" y="14" style="stroke:none;"
+      >2</text
+    ></g
+    ><g transform="translate(410.2,760.3)" style="font-size:14px; fill:var(--fig-ink); text-rendering:geometricPrecision; image-rendering:optimizeQuality; color-rendering:optimizeQuality; font-family: var(--font-sans); stroke:var(--fig-ink); color-interpolation:linearRGB;"
+    ><text x="-4" xml:space="preserve" y="14" style="stroke:none;"
+      >4</text
+    ></g
+    ><g transform="translate(521.8,760.3)" style="font-size:14px; fill:var(--fig-ink); text-rendering:geometricPrecision; image-rendering:optimizeQuality; color-rendering:optimizeQuality; font-family: var(--font-sans); stroke:var(--fig-ink); color-interpolation:linearRGB;"
+    ><text x="-4" xml:space="preserve" y="14" style="stroke:none;"
+      >6</text
+    ></g
+    ><g transform="translate(633.4,760.3)" style="font-size:14px; fill:var(--fig-ink); text-rendering:geometricPrecision; image-rendering:optimizeQuality; color-rendering:optimizeQuality; font-family: var(--font-sans); stroke:var(--fig-ink); color-interpolation:linearRGB;"
+    ><text x="-4" xml:space="preserve" y="14" style="stroke:none;"
+      >8</text
+    ></g
+    ><g transform="translate(745,760.3)" style="font-size:14px; fill:var(--fig-ink); text-rendering:geometricPrecision; image-rendering:optimizeQuality; color-rendering:optimizeQuality; font-family: var(--font-sans); stroke:var(--fig-ink); color-interpolation:linearRGB;"
+    ><text x="-8" xml:space="preserve" y="14" style="stroke:none;"
+      >10</text
+    ></g
+    ><g transform="translate(856.6,760.3)" style="font-size:14px; fill:var(--fig-ink); text-rendering:geometricPrecision; image-rendering:optimizeQuality; color-rendering:optimizeQuality; font-family: var(--font-sans); stroke:var(--fig-ink); color-interpolation:linearRGB;"
+    ><text x="-8" xml:space="preserve" y="14" style="stroke:none;"
+      >12</text
+    ></g
+    ><g transform="translate(968.2,760.3)" style="font-size:14px; fill:var(--fig-ink); text-rendering:geometricPrecision; image-rendering:optimizeQuality; color-rendering:optimizeQuality; font-family: var(--font-sans); stroke:var(--fig-ink); color-interpolation:linearRGB;"
+    ><text x="-8" xml:space="preserve" y="14" style="stroke:none;"
+      >14</text
+    ></g
+    ><g transform="translate(1079.8,760.3)" style="font-size:14px; fill:var(--fig-ink); text-rendering:geometricPrecision; image-rendering:optimizeQuality; color-rendering:optimizeQuality; font-family: var(--font-sans); stroke:var(--fig-ink); color-interpolation:linearRGB;"
+    ><text x="-8" xml:space="preserve" y="14" style="stroke:none;"
+      >16</text
+    ></g
+    ><g transform="translate(1191.4,760.3)" style="font-size:14px; fill:var(--fig-ink); text-rendering:geometricPrecision; image-rendering:optimizeQuality; color-rendering:optimizeQuality; font-family: var(--font-sans); stroke:var(--fig-ink); color-interpolation:linearRGB;"
+    ><text x="-8" xml:space="preserve" y="14" style="stroke:none;"
+      >18</text
+    ></g
+    ><g transform="translate(1303,760.3)" style="font-size:14px; fill:var(--fig-ink); text-rendering:geometricPrecision; image-rendering:optimizeQuality; color-rendering:optimizeQuality; font-family: var(--font-sans); stroke:var(--fig-ink); color-interpolation:linearRGB;"
+    ><text x="-8" xml:space="preserve" y="14" style="stroke:none;"
+      >20</text
+    ></g
+    ><g transform="translate(745.0005,777.8)" style="font-size:16px; fill:var(--fig-ink); text-rendering:geometricPrecision; image-rendering:optimizeQuality; color-rendering:optimizeQuality; font-family: var(--font-sans); stroke:var(--fig-ink); color-interpolation:linearRGB; font-weight:bold;"
+    ><text x="-62" xml:space="preserve" y="16" style="stroke:none;"
+      >Distance, x [cm]</text
+    ></g
+    ><g style="fill:var(--fig-ink); text-rendering:geometricPrecision; image-rendering:optimizeQuality; color-rendering:optimizeQuality; stroke-linejoin:round; stroke:var(--fig-ink); color-interpolation:linearRGB; stroke-width:1.5;"
+    ><line y2="63.5" style="fill:none;" x1="187" x2="187" y1="755.5"
+      /><line y2="63.5" style="fill:none;" x1="1303" x2="1303" y1="755.5"
+      /><line y2="755.5" style="fill:none;" x1="187" x2="198.16" y1="755.5"
+      /><line y2="686.3" style="fill:none;" x1="187" x2="198.16" y1="686.3"
+      /><line y2="617.1" style="fill:none;" x1="187" x2="198.16" y1="617.1"
+      /><line y2="547.9" style="fill:none;" x1="187" x2="198.16" y1="547.9"
+      /><line y2="478.7" style="fill:none;" x1="187" x2="198.16" y1="478.7"
+      /><line y2="409.5" style="fill:none;" x1="187" x2="198.16" y1="409.5"
+      /><line y2="340.3" style="fill:none;" x1="187" x2="198.16" y1="340.3"
+      /><line y2="271.1" style="fill:none;" x1="187" x2="198.16" y1="271.1"
+      /><line y2="201.9" style="fill:none;" x1="187" x2="198.16" y1="201.9"
+      /><line y2="132.7" style="fill:none;" x1="187" x2="198.16" y1="132.7"
+      /><line y2="63.5" style="fill:none;" x1="187" x2="198.16" y1="63.5"
+      /><line y2="755.5" style="fill:none;" x1="1303" x2="1291.84" y1="755.5"
+      /><line y2="686.3" style="fill:none;" x1="1303" x2="1291.84" y1="686.3"
+      /><line y2="617.1" style="fill:none;" x1="1303" x2="1291.84" y1="617.1"
+      /><line y2="547.9" style="fill:none;" x1="1303" x2="1291.84" y1="547.9"
+      /><line y2="478.7" style="fill:none;" x1="1303" x2="1291.84" y1="478.7"
+      /><line y2="409.5" style="fill:none;" x1="1303" x2="1291.84" y1="409.5"
+      /><line y2="340.3" style="fill:none;" x1="1303" x2="1291.84" y1="340.3"
+      /><line y2="271.1" style="fill:none;" x1="1303" x2="1291.84" y1="271.1"
+      /><line y2="201.9" style="fill:none;" x1="1303" x2="1291.84" y1="201.9"
+      /><line y2="132.7" style="fill:none;" x1="1303" x2="1291.84" y1="132.7"
+      /><line y2="63.5" style="fill:none;" x1="1303" x2="1291.84" y1="63.5"
+    /></g
+    ><g transform="translate(182.2,755.5)" style="font-size:14px; fill:var(--fig-ink); text-rendering:geometricPrecision; image-rendering:optimizeQuality; color-rendering:optimizeQuality; font-family: var(--font-sans); stroke:var(--fig-ink); color-interpolation:linearRGB;"
+    ><text x="-8" xml:space="preserve" y="5.5" style="stroke:none;"
+      >0</text
+    ></g
+    ><g transform="translate(182.2,686.3)" style="font-size:14px; fill:var(--fig-ink); text-rendering:geometricPrecision; image-rendering:optimizeQuality; color-rendering:optimizeQuality; font-family: var(--font-sans); stroke:var(--fig-ink); color-interpolation:linearRGB;"
+    ><text x="-20" xml:space="preserve" y="5.5" style="stroke:none;"
+      >0.2</text
+    ></g
+    ><g transform="translate(182.2,617.1)" style="font-size:14px; fill:var(--fig-ink); text-rendering:geometricPrecision; image-rendering:optimizeQuality; color-rendering:optimizeQuality; font-family: var(--font-sans); stroke:var(--fig-ink); color-interpolation:linearRGB;"
+    ><text x="-20" xml:space="preserve" y="5.5" style="stroke:none;"
+      >0.4</text
+    ></g
+    ><g transform="translate(182.2,547.9)" style="font-size:14px; fill:var(--fig-ink); text-rendering:geometricPrecision; image-rendering:optimizeQuality; color-rendering:optimizeQuality; font-family: var(--font-sans); stroke:var(--fig-ink); color-interpolation:linearRGB;"
+    ><text x="-20" xml:space="preserve" y="5.5" style="stroke:none;"
+      >0.6</text
+    ></g
+    ><g transform="translate(182.2,478.7)" style="font-size:14px; fill:var(--fig-ink); text-rendering:geometricPrecision; image-rendering:optimizeQuality; color-rendering:optimizeQuality; font-family: var(--font-sans); stroke:var(--fig-ink); color-interpolation:linearRGB;"
+    ><text x="-20" xml:space="preserve" y="5.5" style="stroke:none;"
+      >0.8</text
+    ></g
+    ><g transform="translate(182.2,409.5)" style="font-size:14px; fill:var(--fig-ink); text-rendering:geometricPrecision; image-rendering:optimizeQuality; color-rendering:optimizeQuality; font-family: var(--font-sans); stroke:var(--fig-ink); color-interpolation:linearRGB;"
+    ><text x="-8" xml:space="preserve" y="5.5" style="stroke:none;"
+      >1</text
+    ></g
+    ><g transform="translate(182.2,340.3)" style="font-size:14px; fill:var(--fig-ink); text-rendering:geometricPrecision; image-rendering:optimizeQuality; color-rendering:optimizeQuality; font-family: var(--font-sans); stroke:var(--fig-ink); color-interpolation:linearRGB;"
+    ><text x="-20" xml:space="preserve" y="5.5" style="stroke:none;"
+      >1.2</text
+    ></g
+    ><g transform="translate(182.2,271.1)" style="font-size:14px; fill:var(--fig-ink); text-rendering:geometricPrecision; image-rendering:optimizeQuality; color-rendering:optimizeQuality; font-family: var(--font-sans); stroke:var(--fig-ink); color-interpolation:linearRGB;"
+    ><text x="-20" xml:space="preserve" y="5.5" style="stroke:none;"
+      >1.4</text
+    ></g
+    ><g transform="translate(182.2,201.9)" style="font-size:14px; fill:var(--fig-ink); text-rendering:geometricPrecision; image-rendering:optimizeQuality; color-rendering:optimizeQuality; font-family: var(--font-sans); stroke:var(--fig-ink); color-interpolation:linearRGB;"
+    ><text x="-20" xml:space="preserve" y="5.5" style="stroke:none;"
+      >1.6</text
+    ></g
+    ><g transform="translate(182.2,132.7)" style="font-size:14px; fill:var(--fig-ink); text-rendering:geometricPrecision; image-rendering:optimizeQuality; color-rendering:optimizeQuality; font-family: var(--font-sans); stroke:var(--fig-ink); color-interpolation:linearRGB;"
+    ><text x="-20" xml:space="preserve" y="5.5" style="stroke:none;"
+      >1.8</text
+    ></g
+    ><g transform="translate(182.2,63.5)" style="font-size:14px; fill:var(--fig-ink); text-rendering:geometricPrecision; image-rendering:optimizeQuality; color-rendering:optimizeQuality; font-family: var(--font-sans); stroke:var(--fig-ink); color-interpolation:linearRGB;"
+    ><text x="-8" xml:space="preserve" y="5.5" style="stroke:none;"
+      >2</text
+    ></g
+    ><g transform="translate(159.7,409.4997) rotate(-90)" style="font-size:16px; fill:var(--fig-ink); text-rendering:geometricPrecision; image-rendering:optimizeQuality; color-rendering:optimizeQuality; font-family: var(--font-sans); stroke:var(--fig-ink); color-interpolation:linearRGB; font-weight:bold;"
+    ><text x="-113.5" xml:space="preserve" y="-4" style="stroke:none;"
+      >Polymer thickness, h(x,t) [cm]</text
+    ></g
+    ><g transform="translate(745.0007,61.25)" style="font-size:18px; text-rendering:geometricPrecision; image-rendering:optimizeQuality; color-rendering:optimizeQuality; font-family: var(--font-sans); color-interpolation:linearRGB; font-weight:bold;"
+    ><text x="-154" xml:space="preserve" y="-4" style="stroke:none;"
+      >Thickness profiles at different times</text
+    ></g
+    ><g style="stroke-linecap:butt; fill:var(--chart-5); text-rendering:geometricPrecision; image-rendering:optimizeQuality; color-rendering:optimizeQuality; stroke-linejoin:round; stroke:var(--chart-5); color-interpolation:linearRGB; stroke-width:2;"
+    ><path d="M187.01 748.58 L1303 748.58" style="fill:none; fill-rule:evenodd;"
+      /><path d="M187.01 755.5 L187.5 750.24 L188.5 749.54 L190.5 749.21 L193.5 749.04 L208 748.84 L391 748.66 L1303 748.62" style="fill:none; fill-rule:evenodd; stroke:var(--chart-4);"
+      /><path d="M187.01 755.5 L187.5 755.5 L188.5 753.36 L189 752.72 L190 751.96 L192.5 751.08 L196.5 750.48 L203 750.04 L213 749.73 L248.5 749.33 L332 749.07 L497 748.91 L1303 748.76" style="fill:none; fill-rule:evenodd; stroke:var(--chart-2);"
+      /><path d="M187.01 755.5 L189.51 755.5 L190 755.35 L191 754.44 L192.5 753.58 L196.5 752.38 L201.5 751.66 L209 751.08 L220.5 750.61 L236.5 750.25 L287 749.75 L387 749.41 L558 749.19 L1303 748.93" style="fill:none; fill-rule:evenodd; stroke:var(--chart-3);"
+      /><path d="M187.01 755.5 L258.5 755.5 L297.5 754.16 L352 753.14 L427 752.36 L529 751.75 L822.5 750.9 L1303 750.33" style="fill:none; fill-rule:evenodd; stroke:var(--chart-6);"
+      /><path d="M187.01 755.5 L474 755.5 L602.5 754.33 L774 753.42 L1004 752.68 L1303 752.09" style="fill:none; fill-rule:evenodd; stroke:var(--chart-1);"
+      /><path d="M187.01 747.94 L187.5 747.21 L188 746.87 L191.5 745.57 L197 744.35 L205 743.1 L227 740.68 L257.5 738.27 L297 735.84 L345.51 733.39 L402.51 730.96 L468.51 728.53 L543 726.1 L624 723.73 L816.5 718.86 L1043.01 714.02 L1303 709.19" style="fill:none; fill-rule:evenodd; stroke:var(--fig-conc);"
+      /><path d="M187.01 747.49 L187.5 738.26 L188 733.9 L189.5 725.42 L191.5 717.5 L194 709.83 L197 702.25 L200.5 694.75 L205 686.44 L209.5 679.1 L215 671.07 L220.5 663.8 L227 655.94 L234 648.16 L241.51 640.44 L249.5 632.78 L258 625.16 L266.99 617.57 L276.5 610.01 L286.5 602.48 L297.5 594.61 L308.5 587.13 L320.5 579.34 L332.5 571.9 L345.5 564.17 L358.5 556.76 L372.5 549.09 L387 541.44 L402 533.81 L417.5 526.2 L434 518.38 L467.5 503.27 L503.5 488 L541.5 472.8 L581.49 457.66 L624 442.38 L668.5 427.17 L715.5 411.85 L765 396.43 L816 381.23 L869.5 365.92 L924.5 350.8 L982 335.59 L1042 320.29 L1103.5 305.15 L1167.5 289.93 L1234 274.63 L1303 259.26" style="fill:none; fill-rule:evenodd; stroke:var(--fig-flow);"
+    /></g
+    ><g style="fill:var(--fig-paper); text-rendering:optimizeSpeed; color-rendering:optimizeSpeed; image-rendering:optimizeSpeed; shape-rendering:crispEdges; stroke:var(--fig-paper); color-interpolation:sRGB;"
+    ><path style="stroke:none;" d="M1295 199 L1295 71.5 L1079 71.5 L1079 199 Z"
+    /></g
+    ><g transform="translate(1116,81)" style="font-size:11.6px; text-rendering:geometricPrecision; color-rendering:optimizeQuality; image-rendering:optimizeQuality; font-family: var(--font-sans); color-interpolation:linearRGB;"
+    ><text x="0" xml:space="preserve" y="4.5" style="stroke:none;"
+      >t = 0 min</text
+    ></g
+    ><g style="stroke-linecap:butt; fill:var(--chart-5); text-rendering:geometricPrecision; image-rendering:optimizeQuality; color-rendering:optimizeQuality; stroke-linejoin:round; stroke:var(--chart-5); color-interpolation:linearRGB; stroke-width:2;"
+    ><line y2="81" style="fill:none;" x1="1083" x2="1113" y1="81"
+    /></g
+    ><g transform="translate(1116,96.5)" style="font-size:11.6px; text-rendering:geometricPrecision; color-rendering:optimizeQuality; image-rendering:optimizeQuality; font-family: var(--font-sans); color-interpolation:linearRGB;"
+    ><text x="0" xml:space="preserve" y="4.5" style="stroke:none;"
+      >t = 1 min</text
+    ></g
+    ><g style="stroke-linecap:butt; fill:var(--chart-4); text-rendering:geometricPrecision; image-rendering:optimizeQuality; color-rendering:optimizeQuality; stroke-linejoin:round; stroke:var(--chart-4); color-interpolation:linearRGB; stroke-width:2;"
+    ><line y2="96.5" style="fill:none;" x1="1083" x2="1113" y1="96.5"
+    /></g
+    ><g transform="translate(1116,112)" style="font-size:11.6px; text-rendering:geometricPrecision; color-rendering:optimizeQuality; image-rendering:optimizeQuality; font-family: var(--font-sans); color-interpolation:linearRGB;"
+    ><text x="0" xml:space="preserve" y="4.5" style="stroke:none;"
+      >t = 5 min</text
+    ></g
+    ><g style="stroke-linecap:butt; fill:var(--chart-2); text-rendering:geometricPrecision; image-rendering:optimizeQuality; color-rendering:optimizeQuality; stroke-linejoin:round; stroke:var(--chart-2); color-interpolation:linearRGB; stroke-width:2;"
+    ><line y2="112" style="fill:none;" x1="1083" x2="1113" y1="112"
+    /></g
+    ><g transform="translate(1116,127.5)" style="font-size:11.6px; text-rendering:geometricPrecision; color-rendering:optimizeQuality; image-rendering:optimizeQuality; font-family: var(--font-sans); color-interpolation:linearRGB;"
+    ><text x="0" xml:space="preserve" y="4.5" style="stroke:none;"
+      >t = 10 min</text
+    ></g
+    ><g style="stroke-linecap:butt; fill:var(--chart-3); text-rendering:geometricPrecision; image-rendering:optimizeQuality; color-rendering:optimizeQuality; stroke-linejoin:round; stroke:var(--chart-3); color-interpolation:linearRGB; stroke-width:2;"
+    ><line y2="127.5" style="fill:none;" x1="1083" x2="1113" y1="127.5"
+    /></g
+    ><g transform="translate(1116,143)" style="font-size:11.6px; text-rendering:geometricPrecision; color-rendering:optimizeQuality; image-rendering:optimizeQuality; font-family: var(--font-sans); color-interpolation:linearRGB;"
+    ><text x="0" xml:space="preserve" y="4.5" style="stroke:none;"
+      >t = 50 min</text
+    ></g
+    ><g style="stroke-linecap:butt; fill:var(--chart-6); text-rendering:geometricPrecision; image-rendering:optimizeQuality; color-rendering:optimizeQuality; stroke-linejoin:round; stroke:var(--chart-6); color-interpolation:linearRGB; stroke-width:2;"
+    ><line y2="143" style="fill:none;" x1="1083" x2="1113" y1="143"
+    /></g
+    ><g transform="translate(1116,158.5)" style="font-size:11.6px; text-rendering:geometricPrecision; color-rendering:optimizeQuality; image-rendering:optimizeQuality; font-family: var(--font-sans); color-interpolation:linearRGB;"
+    ><text x="0" xml:space="preserve" y="4.5" style="stroke:none;"
+      >t = 100 min</text
+    ></g
+    ><g style="stroke-linecap:butt; fill:var(--chart-1); text-rendering:geometricPrecision; image-rendering:optimizeQuality; color-rendering:optimizeQuality; stroke-linejoin:round; stroke:var(--chart-1); color-interpolation:linearRGB; stroke-width:2;"
+    ><line y2="158.5" style="fill:none;" x1="1083" x2="1113" y1="158.5"
+    /></g
+    ><g transform="translate(1116,174)" style="font-size:11.6px; text-rendering:geometricPrecision; color-rendering:optimizeQuality; image-rendering:optimizeQuality; font-family: var(--font-sans); color-interpolation:linearRGB;"
+    ><text x="0" xml:space="preserve" y="4.5" style="stroke:none;"
+      >Concentration Boundary Layer</text
+    ></g
+    ><g style="stroke-linecap:butt; fill:var(--fig-conc); text-rendering:geometricPrecision; image-rendering:optimizeQuality; color-rendering:optimizeQuality; stroke-linejoin:round; stroke:var(--fig-conc); color-interpolation:linearRGB; stroke-width:2;"
+    ><line y2="174" style="fill:none;" x1="1083" x2="1113" y1="174"
+    /></g
+    ><g transform="translate(1116,189.5)" style="font-size:11.6px; text-rendering:geometricPrecision; color-rendering:optimizeQuality; image-rendering:optimizeQuality; font-family: var(--font-sans); color-interpolation:linearRGB;"
+    ><text x="0" xml:space="preserve" y="4.5" style="stroke:none;"
+      >Hydrodynamic Boundary Layer</text
+    ></g
+    ><g style="stroke-linecap:butt; fill:var(--fig-flow); text-rendering:geometricPrecision; image-rendering:optimizeQuality; color-rendering:optimizeQuality; stroke-linejoin:round; stroke:var(--fig-flow); color-interpolation:linearRGB; stroke-width:2;"
+    ><line y2="189.5" style="fill:none;" x1="1083" x2="1113" y1="189.5"
+    /></g
+    ><g style="stroke-linecap:butt; fill:var(--fig-ink); text-rendering:geometricPrecision; color-rendering:optimizeQuality; image-rendering:optimizeQuality; stroke:var(--fig-ink); color-interpolation:linearRGB; stroke-width:1.5;"
+    ><path d="M1079 199 L1079 71.5 L1295 71.5 L1295 199 Z" style="fill:none; fill-rule:evenodd;"
+    /></g
+  ></g
+></svg
+>

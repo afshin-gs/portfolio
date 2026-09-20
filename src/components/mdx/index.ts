@@ -1,4 +1,5 @@
 import Callout from './Callout.astro'
+import Figure from './Figure.astro'
 import ScrollableTable from './ScrollableTable.astro'
 import SmartLink from './SmartLink.astro'
 import ZoomableImage from './ZoomableImage.astro'
@@ -21,6 +22,7 @@ import Plot from './Plot.astro'
 export const mdxComponents = {
   // Named
   Callout,
+  Figure,
   Plot,
 
   // Element overrides
@@ -29,4 +31,4 @@ export const mdxComponents = {
   table: ScrollableTable,
 }
 
-export { Callout, Plot, ScrollableTable, SmartLink, ZoomableImage }
+export { Callout, Figure, Plot, ScrollableTable, SmartLink, ZoomableImage }

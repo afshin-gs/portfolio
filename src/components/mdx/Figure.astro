@@ -1,0 +1,138 @@
+---
+/**
+ * docs/architecture.md §8 — named component, usable in any post with NO import.
+ *
+ * An INLINE, theme-aware SVG figure.
+ *
+ * Why not just ![alt](~assets/diagram.svg)? Because that routes through
+ * ZoomableImage and ends up as <img src>, and an <img> is its own document:
+ * it cannot see the page's custom properties, so a diagram drawn in black ink
+ * on white paper stays black-on-white after the theme toggle. Inlining the
+ * markup puts the SVG in the page's cascade, where `var(--fig-ink)` resolves
+ * against whatever :root[data-theme] currently says.
+ *
+ * The contract is the --fig-* block below. An SVG dropped in src/assets/ must
+ * already reference those names instead of literal colours; exports from
+ * draw.io or MATLAB are converted once, on the way in, not at render time.
+ *
+ * Everything here is build-time. No JavaScript is shipped.
+ */
+const figures = import.meta.glob<string>('../../assets/**/*.svg', {
+  query: '?raw',
+  import: 'default',
+  eager: true,
+})
+
+interface Props {
+  /** ~assets/<path>.svg — same spelling as anywhere else (§ assets-resolver) */
+  src: string
+  /** Describes the figure for a reader who cannot see it. Required. */
+  alt: string
+  /** Let the figure outgrow the prose measure. For wide plots. */
+  wide?: boolean
+}
+
+const { src, alt, wide = false } = Astro.props
+
+// import.meta.glob keys are literal relative paths; ~assets/ is a build-time
+// alias the resolver applies to imports, not to strings, so map it by hand.
+const key = src.replace(/^~assets\//, '../../assets/')
+const markup = figures[key]
+
+// Prefer failing the build over rendering a hole where a figure should be.
+if (!markup) {
+  throw new Error(
+    `<Figure src="${src}"> did not resolve. Known figures:\n  ` +
+      Object.keys(figures)
+        .map((k) => k.replace('../../assets/', '~assets/'))
+        .join('\n  ')
+  )
+}
+---
+
+<figure class:list={['post-figure', { wide }]}>
+  <div class="diagram" role="img" aria-label={alt} set:html={markup} />
+  {
+    Astro.slots.has('default') && (
+      <figcaption>
+        <slot />
+      </figcaption>
+    )
+  }
+</figure>
+
+<style>
+  .post-figure {
+    margin: var(--space-7) 0;
+  }
+
+  /* Plots carry axis labels at a fixed size inside their viewBox, so squeezing
+   * them into the prose measure renders the tick text at ~7px. These reclaim
+   * the page gutter instead.
+   *
+   * A negative gutter rather than a 100vw calculation: Container's padding IS
+   * the gutter, so this lands exactly on the container's edge at every width,
+   * and 100vw would have counted the scrollbar and overflowed by its width. */
+  .post-figure.wide {
+    margin-inline: calc(-1 * var(--gutter));
+  }
+
+  .diagram {
+    /* ---- The figure contract -----------------------------------------
+     * Converted SVGs reference ONLY these names. Mapping them here rather
+     * than writing --fg/--bg into the markup keeps a figure's vocabulary
+     * (ink, paper, the liquid) separate from the site's, so a diagram can be
+     * re-tuned without touching the theme, and vice versa. */
+    --fig-ink: var(--fg);
+    --fig-paper: var(--bg);
+    --fig-fill: var(--surface);
+    --fig-line: var(--border);
+    --fig-flow: var(--chart-5);
+    --fig-conc: var(--chart-6);
+    --fig-liquid: color-mix(in srgb, var(--chart-5) 14%, var(--bg));
+
+    /* MathJax labels inside draw.io exports paint with currentColor. */
+    color: var(--fig-ink);
+
+    padding: var(--space-4);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+  }
+
+  .diagram :global(svg) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  /* draw.io puts its text in a <foreignObject> as real HTML, and typeset
+   * labels arrive as MathJax custom elements. MathJax normally ships 7 KB of
+   * global CSS per figure to make these lay out; these are the only rules of
+   * it that matter here, so the stylesheet is stripped on conversion. */
+  .diagram :global(mjx-container) {
+    display: inline-block;
+    direction: ltr;
+    line-height: 0;
+    white-space: nowrap;
+  }
+  .diagram :global(mjx-container > svg) {
+    display: inline-block;
+    width: auto;
+    overflow: visible;
+  }
+
+  figcaption {
+    margin-top: var(--space-3);
+    font-size: var(--text-sm);
+    line-height: var(--leading-normal);
+    color: var(--muted);
+    text-align: center;
+  }
+  figcaption :global(> :last-child) {
+    margin-bottom: 0;
+  }
+  figcaption :global(> :first-child) {
+    margin-top: 0;
+  }
+</style>

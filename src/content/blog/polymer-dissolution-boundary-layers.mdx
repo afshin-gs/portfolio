@@ -1,0 +1,461 @@
+---
+title: 'From Boundary Layers to Dissolution: Modeling Polymer Removal by a Flowing Solvent'
+excerpt: A thin polymer film does not dissolve uniformly under flowing solvent. A local mass balance plus a flat-plate correlation predicts its changing shape, and shows where the assumptions break.
+date: 2026-08-23
+tags: [transport, modelling, matlab]
+draft: true
+banner: ~assets/polymer-dissolution-banner.jpg
+bannerAlt: Macro photograph of coloured droplets suspended on a swirling pink and blue liquid surface
+---
+
+Problem adapted from *Welty et al.*, *Fundamentals of momentum, heat and mass transfer, 7th edition, problem 28.7.*
+
+*Sketches were made using **[draw.io](http://draw.io)**.\
+Plots were constructed using MATLAB.*
+
+---
+
+## Motivation
+
+I enjoy applying transport modeling to small-scale processes with industrial applications, especially in manufacturing. I chose this problem because it demonstrates concepts such as boundary layers, convective mass transfer, and quasi-steady-state assumptions by applying them to a process that could realistically occur in manufacturing. This problem, adapted from Welty et al.’s *Fundamentals of Momentum, Heat, and Mass Transfer*, was a particularly interesting example.
+
+I initially encountered the problem while preparing for my mass transfer final. What intrigued me was that the polymer film does not dissolve uniformly, and that we can model its thickness as a function of both position and time, $h(x,t)$, to predict how its shape changes as it dissolves.
+
+I found the problem interesting enough that I wanted to extend the solution beyond what the original problem statement required. In addition to solving the model, I decided to examine its assumptions and limitations and provide a visual walkthrough of the modeling procedure.
+
+## Problem statement
+
+The system consists of a thin polymer film deposited on a flat surface and exposed to flowing MEK, which acts as a solvent for the polymer. As the liquid travels over the surface, polymer dissolves into the MEK and is carried downstream.
+
+Because the concentration boundary layer grows along the direction of flow, the mass-transfer coefficient, and therefore the dissolution rate, is not constant over the surface. The goal of this analysis is to quantify this behavior using boundary-layer mass-transfer correlations and explore how it leads to a nonuniform polymer thickness as dissolution proceeds.
+
+<Figure
+  src="~assets/polymer-dissolution/fig1-nomenclature.svg"
+  alt="Side view of a channel of flowing MEK over a thin polymer film on a flat plate. The free-stream velocity U-infinity enters from the left, a hydrodynamic boundary layer grows along the plate from the leading edge at x = 0, and polymer flux N leaves the film surface in the y direction."
+>
+Figure 1: Sketch of the problem showing the nomenclature and important physical phenomena.\
+The blue curve is a representation of the hydrodynamic boundary layer. The actual scales are discussed later.\
+The top of the fluid is unbounded.
+</Figure>
+
+Designating polymer as A and MEK as B :
+
+$N_{A,y}:$ mass flux of polymer $[\frac {g}{cm^2.s}]$ .
+
+$C_{A \infin}:$ Concentration of polymer in the bulk fluid $[\frac {g}{cm^3}]$.
+
+$C_{As}:$ Concentration of polymer at the surface (saturation concentration) $[\frac {g}{cm^3}]$.
+
+$k_{x}:$ local mass transfer coefficient $[\frac {cm}{s}]$.
+
+$\rho_s:$ density of the solid polymer $[\frac {g}{cm^3}]$.
+
+## Modeling
+
+Model goal: Model should be able to predict the thickness of the polymer film at any specified location and time i.e,$h(x,t)$. It should also be able to predict the overall shape of the film over time as liquid solvent flows over it.
+
+Assumptions :
+
+1. Hydrodynamic boundary layer’s thickness and shape do not change significantly as the polymer is dissolved.
+1. Laminar flow over the entire film length.
+1. Saturation concentration at the polymer-solvent interface is constant throughout the dissolution. i.e, $C_{As}=constant$.
+1. Concentration of polymer in the bulk fluid is negligible and **approximated** as zero and constant. $C_{A \infin} \approx 0$. In reality however, polymer diffuses through the concentration boundary layer into the bulk fluid.
+1. Density of the solid polymer is assumed constant. This means MEK diffusion into the polymer matrix and any resulting swelling are neglected. i.e, $\rho_s= constant$.
+1. Bulk fluid properties remain constant. $\nu_B$, $\rho_B$, etc
+
+The flux equation in terms of mass transfer coefficient is:
+
+$$
+{N_{A,y}(x,t)=k_{x}(x,t)[C_{A,s}(t)-C_{A \infin }(t)]} \tag{1}
+$$
+
+Under the assumption that the hydrodynamic and concentration boundary layers are quasi-steady, their time dependencies can be neglected.
+
+$$
+\boxed {N_{A,y}(x)=k_{x}(x)(C_{A,s}-C_{A \infin })} \tag{2}
+$$
+
+Here, assumptions 1, 3 and 4 were used.
+Under these assumptions, since the mass transfer coefficient is a function of distance from the leading edge (i.e, $x$), so is the mass flux. In other words, $N_{A,y}$ is a function of $x$ because the concentration boundary layer grows in that direction.
+
+$h$ (thickness of the film) is a function of time and position, i.e, $h=h(x,t)$. It depends on position because mass transfer flux is a function of $x$ and $h$ is related to mass transfer flux as discussed later.
+
+$$
+h=f(N_{A,y}(x),t)=g(x,t) \tag{3}
+$$
+
+To find the relationship between $h$ and $t$, let’s consider a small element in the $x$ direction, with length $\Delta x$ at distance $x$ from the leading edge. $\Delta x$ must be so small that mass flux $(N_{A,y})$ can be approximated as constant across the element. Figure 2 shows the element and the 3D shape of the polymer film.
+This way, we temporarily treat $x$ as fixed, and can focus on the relationship between $h $ and $t$ at a given local mass flux.
+
+<Figure
+  src="~assets/polymer-dissolution/fig2-element.svg"
+  alt="Two sketches of the polymer film: a 2D side view marking a differential slice of width delta-x at distance x from the leading edge, and a 3D view of the same slice showing its width W and height h(x,t)."
+>
+Figure 2: The 2D and 3D sketch of the polymer film
+</Figure>
+
+To do this, we write mass balance for the polymer in the element:
+
+$$
+Accumulation=Input \ - \ Output \ + \ Generation \ - \ Consumption \tag{4}
+$$
+
+Let’s discuss each term:
+
+- $Input:$ Zero. Polymer isn’t being added to the element.
+- $Output: N_{A,y} \times A_s = N_{A,y} \times \Delta x \times W$
+- $Generation$ and $Consumption:$ Zero since we have no reactions taking place inside the element.
+- $Accumulation:$ Not zero since the polymer is clearly being dissolved.
+
+$$
+Accumulation =\frac {dm_A}{dt}= \frac {d(\rho_s \times W \times h(x,t) \times \Delta x)}{dt}
+$$
+
+Mass balance becomes :
+
+$$
+\frac {d(\rho_s \times W \times h(x,t) \times \Delta x)}{dt} =-N_{A,y} \times \Delta x \times W
+$$
+
+Eliminating $W$ and $\Delta x$ :
+
+$$
+\rho_s\frac {dh(x,t)}{dt} =-N_{A,y}
+$$
+
+It might be tempting to say that since we eliminated $\Delta x$, $ h$ does not depend on position. However, it does depend on $N_{A,y}$, which is a function of $x$.
+
+So I would like to remind you that his relation is actually:
+
+$$
+\rho_s\frac {dh(x,t)}{dt} =-N_{A,y}(x)
+$$
+
+set at a fixed and known $x$.
+Because we assumed that $N_{A,y} $ is independent of time, the derivative $\frac {dh}{dt}$ is constant at a given $x$. Therefore at a given $x$, film thickness $(h)$ varies linearly with time.
+
+Integrating with initial condition $h(x,0)=0.02 \ cm$ :
+
+$$
+\boxed {h(x,t)=- \frac {N_{A,y}(x)}{\rho_s}t \ + \ h(x,0)}\tag{5a}
+$$
+
+Subject to the constraint:
+
+$$
+\boxed{h(x,t) \geq 0} \tag{5b}
+$$
+
+As expected, a higher $N_{A,y}$ (mass transfer flux) means a more negative slope, causing the polymer thickness to decrease more rapidly.
+
+---
+
+### $N_{A,y}(x)$ term:
+
+Now that we know how thickness changes with time at a given $x$, we will turn our attention to how mass flux $(N_{A,y})$ changes with position.
+
+Mass flux at a given $x$ is a function of the concentration gradient at the surface:
+
+$$
+N_{A,y}(x)= -D_{AB} \frac {\partial C_A}{\partial y}(x) \bigg|_{y=0} \tag{6}
+$$
+
+The gradient term is inconvenient to find, since we don’t know the exact concentration profile in the boundary layer, $C_A(x,y)$.
+
+The mass transfer coefficient approach is more convenient.
+
+$$
+N_{A,y}(x)=k_{x}(x)[C_{As}-C_{A\infin}] \tag{7}
+$$
+
+Since $C_{A,s}$ and $C_{A \infin}$ are assumed constant, the problem is now to find the local mass transfer coefficient as a function of $x$.
+
+To calculate the mass transfer coefficient, we introduce the Sherwood number:
+
+$$
+Sh_x=\frac {k_{x}(x)x}{D_{AB}} \tag{8a}
+$$
+
+$$
+\boxed {k(x)=\frac {D_{AB}Sh_x}{x}}\tag{8b}
+$$
+
+Now sherwood number is related to other dimensionless numbers. $Re_x$ and $Sc$ that represent the hydrodynamics and fluid properties respectively.
+
+$$
+Sh_x=f(Re_x,Sc)\tag{9}
+$$
+
+$Re_x$ (Reynolds number) and $Sc$ (Schmidt number) are defined as:
+
+$$
+Sc=\frac {\nu}{D_{AB}}\tag{10}
+$$
+
+$$
+Re_x=\frac {U _\infin \  x}{\nu}\tag{11}
+$$
+
+The function $f$ is usually determined experimentally by fitting appropriate constants to the general equation :
+
+$$
+Sh_x=aRe_x^bSc^c\tag{12}
+$$
+
+### Laminar boundary layer verification :
+
+Since $Re_x$ increases with $x$, its maximum will occur at the end of the polymer film.
+
+$$
+Re_L=\frac {U_\infin L}{\nu_B} \tag{13}
+$$
+
+Substitution yields:
+
+$$
+Re_L= \frac {1.5 \ [\frac{cm}{s}]\times20 \ [cm]}{6\times 10^{-3} \ [\frac{cm^2}{s}]} = 5000
+$$
+
+Which is in laminar flow range for a flat plate.
+
+For laminar flow over a flat plate, a semi empirical Sherwood correlation is used:
+
+$$
+Sh_x=0.332 Re_x^{\frac {1}{2}} Sc^{\frac{1}{3}} \tag{14a}
+$$
+
+$$
+Re_L<2 \times 10^5\tag{14b}
+$$
+
+$$
+Sh_x=0.332 \ (\frac{U_\infin x}{\nu})^{\frac {1}{2}} Sc^{\frac {1}{3}}\tag{14c}
+$$
+
+We will keep Schmidt number in dimensionless form.
+
+Substitution yields:
+
+$$
+\boxed{k(x)=\frac {D_{AB}\times 0.332 \ U_\infin^{\frac{1}{2}} \ Sc^{\frac{1}{3}} }{x^{\frac{1}{2}}\nu^{\frac{1}{2}}}}\tag{15}
+$$
+
+Now that we have $k(x)$, we can substitute to calculate the flux $N_{A,y}(x)$:
+
+$$
+\boxed{ N_{A,y}(x)=\frac {D_{AB}\times 0.332 \ U_\infin^{\frac{1}{2}} \ Sc^{\frac{1}{3}} }{x^{\frac{1}{2}}\nu^{\frac{1}{2}}}[C_{As}-C_{A\infin}]}\tag{16}
+$$
+
+Now we know the flux at every $x$. Note as we increase the distance from the leading edge, the flux decreases:
+
+$$
+N_{A,y} \propto {x^{-\frac{1}{2}}}\tag{17}
+$$
+
+Under our assumptions, to predict the shape of the polymer as it dissolves, we need to calculate the height of the polymer **at every** $x$**,** **at a fixed time.**
+
+Remembering our assumptions that $N_{A,y} $ is independent of time and the concentration and hydrodynamic boundary layers won’t undergo significant change, its convenient to calculate the flux on the entire $x $ grid and then use equation (5a) and (5b) to calculate the thickness.
+
+---
+
+## Results
+
+The thickness of the plate was calculated after 1,5,10,50 and 100 minutes.
+
+<Figure
+  wide
+  src="~assets/polymer-dissolution/fig3-thickness-profiles.svg"
+  alt="Line plot of polymer thickness h(x,t) against distance x from 0 to 20 cm, for t = 0, 1, 5, 10, 50 and 100 minutes. Each later curve lies below the previous one and dips furthest near the leading edge, so the initially flat 0.02 cm film develops a wedge shape that reaches zero thickness upstream at the longest times."
+/>
+
+To put the scales into perspective, lets compare the thicknesses of the film with boundary layers and channel height (which is 2 cm tall)
+
+Recalling Blasius solution of boundary layer thickness:
+
+$$
+\delta_h=\frac {5x}{\sqrt{Re_x}} \tag{18}
+$$
+
+The Schmidt number term (with exponent) is approximately the ratio of hydrodynamic and concentration boundary layers:
+
+$$
+\delta_c \approx \frac {\delta_h}{Sc^\frac{1}{3}}\tag{19}
+$$
+
+Plotting yields:
+
+<Figure
+  wide
+  src="~assets/polymer-dissolution/fig4-boundary-layers.svg"
+  alt="The same thickness profiles replotted on a vertical axis running to 2 cm, the channel depth, with the hydrodynamic and concentration boundary layer thicknesses overlaid. The boundary layer curves rise well above the polymer profiles, which are compressed onto the horizontal axis."
+>
+Figure 4: Comparison of the hydrodynamic and concentration boundary layers with the polymer film.\
+Note that the hydrodynamic boundary layer and channel height are orders of magnitude thicker than the polymer film.
+</Figure>
+
+## Discussion
+
+The profiles calculated in Figure 3 reflect the effect of boundary layer growth and the subsequent decrease in mass-transfer flux in the $x$ direction.
+
+The mass transfer flux, and therefore the local dissolution rate, decreases monotonically in the $x$ direction, following
+
+$$
+N_{A,y}\propto x^{-1/2}\tag{17}
+$$
+
+Therefore, at a given time, we expect the polymer thickness to be smaller as we get closer to the leading edge. This behavior can be seen in the calculated profiles in Figure 3.
+
+---
+
+### Shifting of the Leading Edge
+
+Near the leading edge, the polymer dissolves faster. As more and more of the film is dissolved, a region where the polymer thickness is zero begins to form near the original leading edge.
+
+We can define the position of the remaining polymer by a moving location $x_l(t)$, where
+
+$$
+h(x_l(t),t)=0\tag{20}
+$$
+
+and the polymer thickness becomes nonzero immediately downstream of this point.
+
+You can think of $x_l(t)$ as a new effective leading edge for the remaining polymer. In other words, it is as if the origin used for the mass-transfer boundary layer is gradually shifting towards the right as the upstream part of the film disappears.
+
+This means that the original concentration boundary layer can no longer be assumed to remain unchanged after local depletion begins. Instead, the concentration boundary layer over the remaining polymer would have to redevelop from approximately the new leading edge.
+
+If the distance from this new leading edge is written as
+
+$$
+x^′=x−x_l(t)\tag{21}
+$$
+
+then the local mass-transfer coefficient would depend on $x'$, rather than the original distance from $x=0$.
+
+<Figure
+  src="~assets/polymer-dissolution/fig5-shifting-leading-edge.svg"
+  alt="Stacked sketches of the film at successive times. The fully dissolved region spreads from the original leading edge, and the origin of the concentration boundary layer moves downstream with it to a new effective leading edge at x sub l of t, measured by the shifted coordinate x prime."
+/>
+
+This model does not account for this shift. It calculates the mass transfer flux based on the original leading edge and simply applies the constraint:
+
+$$
+h(x,t)≥0.\tag{5b}
+$$
+
+Therefore, after part of the polymer film has completely dissolved, the calculated profile should be considered an approximation rather than a fully accurate description of the physical system.
+
+(In the future, this model will be further modified to take this effect into account)
+
+---
+
+### Validity of the Quasi-Steady Assumption
+
+One of the main assumptions of this model was that the hydrodynamic and concentration boundary layers do not change significantly with time. This allowed us to treat the mass transfer flux as constant during the dissolution
+
+This assumption can be justified by comparing the timescale of boundary-layer development with the timescale of polymer dissolution. The flow and concentration fields develop relatively quickly after the solvent starts flowing, while the polymer film requires a much longer time to undergo a noticeable change in thickness.
+
+Therefore, if
+
+$$
+t_{\text{boundary layer}} \ll t_{\text{dissolution}}
+$$
+
+the boundary layers can be approximated as reaching their steady profiles almost instantaneously compared with the rate at which the polymer surface changes.
+
+In this case, the polymer thickness is still changing with time, but the transport process at each instant can be approximated using a steady boundary layer. This is the basis of the quasi-steady approximation used in the model.
+
+---
+
+### Effect of Polymer Thickness on the Boundary Layer
+
+Another assumption was that the dissolution of the polymer does not significantly change the hydrodynamic or concentration boundary layers.
+
+Figure 4 compares the polymer thickness with the thicknesses of the hydrodynamic and concentration boundary layers. The polymer film is much thinner than the hydrodynamic boundary layer, and its change in thickness during dissolution is also small compared with the overall dimensions of the flow.
+
+Approximating the hydrodynamic boundary layer as unchanged during dissolution appears reasonable within the conditions considered here since this suggests that the recession of the polymer surface may have only a small effect on the general flow field.
+
+If the polymer layer were much thicker, changes in the surface position could have a larger effect on the velocity and concentration fields.
+
+---
+
+### Effect of F**inite Liquid Depth**
+
+The Sherwood-number correlation used in this model is based on boundary-layer development over a flat plate. However, in this problem, the liquid has a finite depth and a free surface.
+
+Figure 4 compares the hydrodynamic boundary layer thickness with the liquid depth.
+
+Near the leading edge, the boundary layer is much thinner than the liquid depth, so the flat-plate approximation seems reasonable. As $x$ increases, however, the boundary layer becomes thicker and takes up a larger portion of the liquid depth.
+
+If the boundary layer becomes comparable to the liquid depth, there may no longer be a clear free stream region above it. In that case, the flat-plate correlation may become less accurate farther downstream.
+
+For example if the film was long enough so that at one point $\delta _h (x_c) \approx 2 \ cm$ (the depth of the liquid in channel), the flat plate assumption will effectively break down for $x>x_c$ .
+
+Therefore, satisfying the $Re_L<2\times 10^5$ condition for laminar flow alone does not necessarily mean that the flat-plate correlation is valid over the entire length.
+
+---
+
+### Negligible Polymer Concentration in the Bulk Fluid
+
+In the model, the polymer concentration in the bulk fluid was assumed to be negligible. This makes the mass-transfer driving force approximately
+
+$$
+C_{A,s}-C_{A,\infty}\approx C_{A,s}
+$$
+
+In reality, however, polymer continuously dissolves into the solvent and is carried downstream. Therefore, the polymer concentration in the bulk fluid may gradually increase in the $x$ direction.
+
+If this increase becomes significant, the concentration difference between the polymer surface and the bulk fluid will decrease downstream. This would reduce the mass-transfer flux even further than what is predicted only from boundary-layer growth.
+
+A more complete model could replace the constant $C_{A,\infty} $ with a bulk concentration $C_{A,b}(x)$ and include a mass balance on the flowing solvent.
+
+For the current model, $C_{A\infin} \approx 0$ can be viewed as an approximation. This is more reasonable when the solvent flow rate is sufficiently large compared with the amount of polymer being dissolved.
+
+---
+
+### Behavior Very Close to the Leading Edge
+
+From the flat-plate correlation used in this model,
+
+$$
+N_{A,y}\propto x^{-1/2}
+$$
+
+Therefore,
+
+$$
+N_{A,y}\rightarrow\infty \qquad \text{as} \qquad x\rightarrow0.
+$$
+
+Obviously, an infinite mass-transfer flux cannot occur physically. This behavior results from the mathematical form of the local flat plate boundary layer correlation near the leading edge.
+
+Therefore, predictions extremely close to $x=0$ should be interpreted carefully. In practice, the geometry of the real leading edge and other transport effects would prevent the flux from becoming infinite.
+
+This limitation is especially important in this problem because the model predicts the fastest dissolution close to the leading edge.
+
+---
+
+### Constant Surface Concentration and Polymer Swelling
+
+The model also assumes that the polymer concentration at the polymer-solvent interface remains at a constant saturation concentration,
+
+$$
+C_{A,s}=\text{constant}
+$$
+
+and that the density of the solid polymer remains constant during dissolution. Diffusion of MEK into the polymer and any resulting swelling are therefore neglected.
+
+These assumptions simplify the dissolution process to mass transfer from a well-defined polymer surface into the solvent.
+
+A real polymer-solvent system can be more complicated. MEK may penetrate into the polymer before dissolution takes place, potentially causing swelling and changing the structure of the polymer near the interface. In that case, dissolution may not be represented only by the recession of a sharp surface.
+
+The current model therefore represents a simplified, mass-transfer-controlled description of the dissolution process. A more detailed model could include solvent diffusion into the polymer and changes in the polymer properties during dissolution.
+
+## Conclusion
+
+In this problem, a local mass balance was combined with a flat-plate mass-transfer correlation to model the polymer thickness as a function of both position and time, $h(x,t)$.
+
+Under the assumptions made in the model, the mass-transfer flux decreases with distance from the leading edge, following $N_{A,y}\propto x^{-1/2}.$ As a result, the polymer dissolves faster near the leading edge and the film does not remain uniform as dissolution continues. This behavior can be seen in the calculated thickness profiles.
+
+The model gives a relatively simple way to connect boundary-layer growth with the changing shape of the polymer film. However, it is still an approximation. Once part of the polymer completely dissolves, the effective leading edge begins to shift and the concentration boundary layer would have to redevelop from the new surface. The current model does not account for this effect. Other assumptions, such as negligible polymer concentration in the bulk fluid, constant surface concentration, and neglecting polymer swelling, may also become important in a real polymer-solvent system.
+
+For me, the most interesting part of this problem was seeing how a relatively simple mass-transfer correlation could be used to predict the changing shape of a dissolving film, while also seeing where the assumptions behind that model begin to break down.
