@@ -110,4 +110,4 @@ export const cvFile = {
  *
  */
 export const portraitAlt =
-  'Afshin Ghorbani, head and shoulders, outdoors under a wooden veranda roof with trees behind him.'
+  'Afshin Ghorbani in a white lab coat over a denim shirt, head and shoulders, standing in a laboratory corridor.'
