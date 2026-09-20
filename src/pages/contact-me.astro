@@ -26,7 +26,7 @@ const socials = site.socials.filter((social) => social.href !== '#')
 
 <PageLayout
   title="Contact"
-  description={`Get in touch with ${site.name}: graduate study, research collaboration, or questions about the simulators.`}
+  description={`Get in touch with ${site.name}: email and profiles, no form.`}
 >
   <PageHeader title="Get in touch" lede={contactPrompt.body} />
 
@@ -76,14 +76,6 @@ const socials = site.socials.filter((social) => social.href !== '#')
         Department of Chemical Engineering,<br />
         Shiraz University
       </p>
-
-      <h2 class="side-title">Good reasons to write</h2>
-      <ul class="reasons">
-        <li>Graduate admissions, and whether a group is a fit</li>
-        <li>Questions about the simulators or the models behind them</li>
-        <li>Collaboration on transport, separations, or process modelling</li>
-        <li>Teaching, tutoring, and language exchange</li>
-      </ul>
 
       <h2 class="side-title">Curriculum vitae</h2>
       <p class="side-note">The full record, as a single document.</p>
@@ -208,9 +200,34 @@ const socials = site.socials.filter((social) => social.href !== '#')
     text-transform: uppercase;
     letter-spacing: var(--tracking-widest);
     color: var(--accent);
-    padding-bottom: var(--space-2);
     border-bottom: 1px solid var(--border);
     align-self: stretch;
+
+    /*
+     * The rule under this heading has to land on the rule under the main
+     * column's first SectionHeading: both columns start at the same y (the
+     * grid is `align-items: start`), so two headings of different sizes put
+     * two hairlines 13px apart, which reads as a mistake rather than as a
+     * hierarchy.
+     *
+     * Matching SectionHeading's box instead of measuring the gap: its line box
+     * is --text-xl at --leading-tight (base.css sets that for h1–h3) and its
+     * padding-bottom is --space-3. Reproduce both and the hairlines coincide
+     * at every viewport width, which matters because --text-xl is a clamp()
+     * and any fixed offset would only be right at one size.
+     *
+     * flex-end keeps the text sitting just above the rule, the way it does in
+     * SectionHeading, rather than floating at the top of the taller box.
+     *
+     * The padding and the hairline are IN the min-height because box-sizing is
+     * border-box: without them the box only reaches 30.6px against the other
+     * column's 39.4px, which looks like the fix worked and leaves the rules
+     * 9px apart.
+     */
+    display: flex;
+    align-items: flex-end;
+    min-height: calc(var(--text-xl) * var(--leading-tight) + var(--space-3) + 1px);
+    padding-bottom: var(--space-3);
   }
   .side-title + :global(*) {
     margin-top: 0;
@@ -223,17 +240,6 @@ const socials = site.socials.filter((social) => social.href !== '#')
     color: var(--muted);
     font-size: var(--text-base);
     line-height: var(--leading-normal);
-  }
-
-  .reasons {
-    display: grid;
-    gap: var(--space-2);
-    padding-left: var(--space-4);
-    color: var(--muted);
-    font-size: var(--text-base);
-  }
-  .reasons li::marker {
-    color: var(--accent);
   }
 
   .cv-actions {

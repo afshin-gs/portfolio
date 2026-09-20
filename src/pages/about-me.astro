@@ -2,11 +2,11 @@
 import { Image } from 'astro:assets'
 import PageLayout from '../layouts/PageLayout.astro'
 import PageHeader from '../components/ui/PageHeader.astro'
-import SkillList from '../components/ui/SkillList.astro'
+import InterestList from '../components/ui/InterestList.astro'
 import Timeline from '../components/ui/Timeline.astro'
 import SectionHeading from '../components/ui/SectionHeading.astro'
 import Button from '../components/ui/Button.astro'
-import { aboutParagraphs, skills, contactPrompt, cvFile, portraitAlt } from '../data/profile'
+import { aboutParagraphs, researchInterests, contactPrompt, cvFile, portraitAlt } from '../data/profile'
 import { portrait } from '../lib/portrait'
 import { resumeSections } from '../data/resume'
 import { site } from '../data/site'
@@ -61,8 +61,8 @@ const education = resumeSections.find((section) => section.id === 'education')
         )
       }
 
-      <h2 class="side-title">Focus areas</h2>
-      <SkillList skills={skills} />
+      <h2 class="side-title">Research interests</h2>
+      <InterestList items={researchInterests} class="side-list" />
 
       <h2 class="side-title">Curriculum vitae</h2>
       <p class="side-note">
@@ -149,15 +149,48 @@ const education = resumeSections.find((section) => section.id === 'education')
     text-transform: uppercase;
     letter-spacing: var(--tracking-widest);
     color: var(--accent);
-    padding-bottom: var(--space-2);
     border-bottom: 1px solid var(--border);
     align-self: stretch;
+
+    /*
+     * The rule under this heading has to land on the rule under the main
+     * column's first SectionHeading: both columns start at the same y (the
+     * grid is `align-items: start`), so two headings of different sizes put
+     * two hairlines 13px apart, which reads as a mistake rather than as a
+     * hierarchy.
+     *
+     * Matching SectionHeading's box instead of measuring the gap: its line box
+     * is --text-xl at --leading-tight (base.css sets that for h1–h3) and its
+     * padding-bottom is --space-3. Reproduce both and the hairlines coincide
+     * at every viewport width, which matters because --text-xl is a clamp()
+     * and any fixed offset would only be right at one size.
+     *
+     * flex-end keeps the text sitting just above the rule, the way it does in
+     * SectionHeading, rather than floating at the top of the taller box.
+     *
+     * The padding and the hairline are IN the min-height because box-sizing is
+     * border-box: without them the box only reaches 30.6px against the other
+     * column's 39.4px, which looks like the fix worked and leaves the rules
+     * 9px apart.
+     */
+    display: flex;
+    align-items: flex-end;
+    min-height: calc(var(--text-xl) * var(--leading-tight) + var(--space-3) + 1px);
+    padding-bottom: var(--space-3);
   }
   .side-title + :global(*) {
     margin-top: 0;
   }
   .side-title:not(:first-child) {
     margin-top: var(--space-5);
+  }
+
+  /* .side is `align-items: flex-start`, so a flex child is only as wide as its
+   * content — the bands would stop at the longest line and the column would
+   * read as ragged. :global because the list carries InterestList's scope id,
+   * not this page's. */
+  .side :global(.side-list) {
+    align-self: stretch;
   }
 
   .side-note {

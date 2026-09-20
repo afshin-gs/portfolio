@@ -54,27 +54,29 @@ export const aboutParagraphs: readonly string[] = [
 ]
 
 /**
- * The landing page's right-hand column, beside the About prose.
+ * The research interests column, rendered on / beside the About prose and on
+ * /about-me in the sidebar. One list, two pages: the alternative was a second
+ * copy that quietly drifts, which is the whole reason copy lives in this file.
  *
- * Written as a SPACE rather than a list of specialisms: each line is one axis
- * of the same problem area, so any three of them read as a coherent research
- * programme rather than as unrelated interests. That is the point of the
- * column, and it is why these are broader than the `skills` list below, which
- * describes what is already demonstrable rather than what the work is aimed at.
- *
- * One column, no proficiency labels: a level next to an interest would claim a
- * track record that an interest does not assert.
+ * Deliberately six areas and no proficiency labels. A level next to an interest
+ * would claim a track record that an interest does not assert — that is what
+ * `skills` below is for.
  */
 export const researchInterests: readonly string[] = [
-  'Transport phenomena in chemical and biological systems',
-  'Molecular simulation and multiscale modelling',
-  'Reaction kinetics, catalysis, and enzyme engineering',
-  'Bioprocess design, separations, and downstream processing',
-  'Thermodynamics and phase behaviour of complex fluids',
-  'Data-driven modelling and machine learning for molecular design',
-  'Biomaterials, soft matter, and interfacial phenomena',
+  'Computational Systems Biology',
+  'Bioprocess Engineering & Industrial Biotechnology',
+  'Process Modeling and Control',
+  'Bioseparations & Product Recovery',
+  'Transport Modeling',
+  'Computational Chemical Engineering',
 ]
 
+/**
+ * CURRENTLY UNRENDERED. /about-me's sidebar showed these under "Focus areas"
+ * until the research interests took that slot. Kept because it is the only
+ * record of the proficiency framing, and deleting copy is easy to regret;
+ * delete it if nothing has claimed it back.
+ */
 export const skills: readonly Skill[] = [
   { name: 'Transport phenomena & separations', level: 'Primary focus' },
   { name: 'COMSOL Multiphysics', level: 'Coupled 3-D models' },
@@ -87,7 +89,7 @@ export const skills: readonly Skill[] = [
 /** Closing line above the contact block, on /, /about-me, and /contact-me. */
 export const contactPrompt = {
   heading: 'Get in touch',
-  body: 'I am applying to graduate programmes in North America. If you work on transport phenomena, separations, or computational modelling, I would be glad to hear from you.',
+  body: 'I am always glad to hear from people working on related problems. A question, an idea worth arguing about, a paper you think I should read: all of it is welcome.',
 } as const
 
 /**
