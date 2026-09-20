@@ -33,6 +33,9 @@ RUN tlmgr update --self \
       mweights \
       nfssext-cfr \
       cm-super \
+      xcharter \
+      fontaxes \
+      xstring \
  && tlmgr path add \
  && rm -rf /usr/local/texlive/*/texmf-var/web2c/*.log
 

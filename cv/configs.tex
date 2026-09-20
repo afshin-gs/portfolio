@@ -117,10 +117,72 @@
 \newcommand{\cvSkill}[2]{#1 & #2 \\[0.6mm]}
 
 %---- Masthead ----------------------------------------------------------------
-% Identity left, contact right, as in template.tex. Used once, in main.tex:
+% Identity left, contact right, as in template.tex. Used once, via \cvMasthead below:
 % tabularx cannot be split across a start/end macro pair (see the note above).
 \newcolumntype{L}{>{\raggedright\arraybackslash}X}
 
 %---- Compact two-column lists (languages, certifications) --------------------
 \newcommand{\cvPlainListStart}{\begin{itemize}[leftmargin=3.4ex, labelsep=1.4mm, topsep=0.6mm, parsep=0pt, itemsep=0.4mm]\small}
 \newcommand{\cvPlainListEnd}{\end{itemize}\vspace{0.4mm}}
+
+%==============================================================================
+% Masthead tagline, interest grid, and the one-line entry forms
+%==============================================================================
+
+%---- Draft markers -----------------------------------------------------------
+% Anything the source material does not settle is written as \cvTodo{...} so it
+% is unmissable in the PDF and greppable in the source. Nothing carrying one of
+% these leaves the building. `grep -rn cvTodo cv` lists them.
+\definecolor{cvtodo}{HTML}{B3261E}
+\newcommand{\cvTodo}[1]{\textcolor{cvtodo}{[#1]}}
+
+%---- Masthead ----------------------------------------------------------------
+% Identity left, contact right. The one argument is the positioning line that
+% Format B puts under the identity block, full width, so a long one wraps
+% instead of fighting the contact column. Pass {} for none.
+\newcommand{\cvMasthead}[1]{%
+  \begin{tabularx}{\textwidth}{@{}L r@{}}
+    {\LARGE\scshape\bfseries \name}
+      & {\small \faEnvelope\ \href{mailto:\emaila}{\emaila}} \\[0.7mm]
+    \subtitle
+      & {\small \faPhone\ \phone} \\[0.7mm]
+    \institution
+      & {\small \faGlobe\ \href{\website}{\websitelabel}} \\[0.7mm]
+    \location
+      & {\small \faGithub\ \href{\githuburl}{\githublabel}} \\[0.7mm]
+      & {\small \faLinkedin\ \href{\linkedinurl}{\linkedinlabel}}
+  \end{tabularx}%
+  \ifx\\#1\\\else
+    \par\vspace{1.0mm}{\small\itshape\color{cvmuted}#1\par}%
+  \fi
+  \vspace{1.5mm}%
+}
+
+%---- Research interests ------------------------------------------------------
+% Normal-size bullets (not \small): this block is the hook and is read first.
+\newcommand{\cvInterestsStart}{\begin{justify}\begin{itemize}[leftmargin=3.4ex, rightmargin=0.5ex, labelsep=1.4mm, topsep=0.4mm, parsep=0pt, itemsep=0.5mm]}
+\newcommand{\cvInterestsEnd}{\end{itemize}\end{justify}\vspace{-0.8mm}}
+
+%---- References --------------------------------------------------------------
+% {name}{title and department}{institution}{email}. One line each; a referee
+% is a pointer, not an entry.
+\newcommand{\cvRef}[4]{\item \textbf{#1}, #2, #3. \href{mailto:#4}{#4}}
+
+%---- Full-width one-line entries ---------------------------------------------
+% \cvLine reserves a date column on the right; for an entry that has no date
+% (software, reports) that column is dead space and the text wraps early.
+% {lead}{detail}: bold lead, detail runs on, full text width.
+\newcommand{\cvItem}[2]{\item \textbf{#1}#2}
+
+%---- Research interests as a keyword grid -------------------------------------
+% Three columns by two rows, for the generic (untailored) supervisor CV. Six
+% short phrases scan faster than three sentences; a tailored variant swaps the
+% six cells or goes back to \cvInterestsStart bullets.
+% {a}{b}{c}{d}{e}{f} fills row 1 then row 2.
+\newcommand{\cvInterestCell}[1]{{\color{cvlink}\raisebox{0.25ex}{\rule{0.8ex}{0.8ex}}}\hspace{1.6mm}{\small #1}}
+\newcommand{\cvInterestGrid}[6]{%
+  \begin{tabularx}{\textwidth}{@{}L@{\hspace{3mm}}L@{\hspace{3mm}}L@{}}
+    \cvInterestCell{#1} & \cvInterestCell{#2} & \cvInterestCell{#3} \\[0.9mm]
+    \cvInterestCell{#4} & \cvInterestCell{#5} & \cvInterestCell{#6}
+  \end{tabularx}\par\vspace{0.6mm}%
+}

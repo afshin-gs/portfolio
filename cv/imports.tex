@@ -4,10 +4,13 @@
 % Adding one means adding it to the tlmgr list there and running `bun run cv:image`.
 
 \usepackage[T1]{fontenc}
-% cfr-lm = Latin Modern with real small caps. It defaults to oldstyle figures,
-% which put "17.93 / 20.00" and "2027" below the x-height, wrong for a document
-% whose numbers are the point. rm/lining etc. force lining figures throughout.
-\usepackage[rm/lining, sf/lining, tt/lining]{cfr-lm}
+% XCharter: Bitstream Charter extended with real small caps in every weight.
+% Chosen over Latin Modern (cfr-lm) because its italics are wide, upright and
+% low-contrast, so the italic role and date lines stay readable at \small;
+% Latin Modern's thin, steeply slanted italic was the hard part of the old CV.
+% Lining figures are XCharter's default. scaled=.98 matches the x-height the
+% layout was tuned for. Needs xcharter, fontaxes and xstring in the Dockerfile.
+\usepackage[scaled=.98]{XCharter}
 \usepackage{microtype}    % margin kerning + protrusion; the single biggest
                           % typographic win for a dense one-column document
 

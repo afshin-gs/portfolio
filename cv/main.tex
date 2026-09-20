@@ -1,6 +1,7 @@
 %-------------------------
 % Curriculum Vitae - Afshin Ghorbani
-% Target: MS/PhD admission, North American programmes.
+% Supervisor-first academic CV ("Format B"): the variant maintained in
+% afshin_cv/afshin_ghorbani_supervisor.tex, published here as /cv.pdf.
 %
 % Structure:
 %   imports.tex  - \usepackage lines (mirror them in cv/Dockerfile)
@@ -15,8 +16,12 @@
 %   1. No em-dashes (---). Use a comma, a colon, a semicolon, or parentheses.
 %      En-dashes (--) stay: they are ranges and compounds (I--II, A2--B1,
 %      vapour--liquid, McCabe--Thiele), not punctuation.
-%   2. Every claim traces to __temp_cv.md. No invented dates, cohort sizes,
-%      or figures.
+%   2. Every claim traces to afshin_cv/source_of_truth/opus.md. No invented
+%      dates, cohort sizes, or figures.
+%
+% DELIBERATELY ABSENT until the open questions close (opus.md section 15):
+% the internship supervisor's name, referees, and links to the two MATLAB
+% libraries. Nothing in this file is a placeholder.
 %-------------------------
 
 \documentclass[a4paper,11pt]{article}
@@ -38,188 +43,140 @@
 \newcommand{\linkedinurl}{https://www.linkedin.com/in/afshin-ghorbani-479455362/}
 \newcommand{\linkedinlabel}{LinkedIn}
 
-% TODO: the source draft had this bracketed. Replace with the institution's
-% registered English name before sending this anywhere.
-\newcommand{\lab}{Sturgeon Research Facility}
+% Public, verifiable links used under Research Software.
+\newcommand{\mccabeAppUrl}{https://iamafshin.me/apps/mccabe-thiele}
+\newcommand{\mccabeAppLabel}{iamafshin.me/apps/mccabe-thiele}
+\newcommand{\mccabeRepoUrl}{https://github.com/afshin-gs/McCabe-Thiele}
+\newcommand{\mccabeRepoLabel}{github.com/afshin-gs/McCabe-Thiele}
+
+% Confirmed by the user on 2026-09-16 (afshin_cv/source_of_truth/opus.md, question 9).
+\newcommand{\lab}{International Sturgeon Research Institute}
 
 \hypersetup{
   pdftitle={\name, Curriculum Vitae},
   pdfauthor={\name},
-  pdfsubject={Curriculum Vitae},
-  pdfkeywords={chemical engineering, transport phenomena, computational modelling, COMSOL, MATLAB},
+  pdfsubject={Academic CV, graduate research applications in chemical engineering},
+  pdfkeywords={chemical engineering, process modelling, separations, transport phenomena, phase equilibria, bioprocess engineering, COMSOL, MATLAB},
 }
 
 \begin{document}
 
-%----------MASTHEAD-----------------
-% Identity left, contact right, as in template.tex. Baselines align row by row,
-% so the name and the email address sit on the same line.
-\begin{tabularx}{\textwidth}{@{}L r@{}}
-  {\LARGE\scshape\bfseries \name}
-    & {\small \faEnvelope\ \href{mailto:\emaila}{\emaila}} \\[0.7mm]
-  \subtitle
-    & {\small \faPhone\ \phone} \\[0.7mm]
-  \institution
-    & {\small \faGlobe\ \href{\website}{\websitelabel}} \\[0.7mm]
-  \location
-    & {\small \faGithub\ \href{\githuburl}{\githublabel}} \\[0.7mm]
-    & {\small \faLinkedin\ \href{\linkedinurl}{\linkedinlabel}}
-\end{tabularx}
-\vspace{1.5mm}
+\cvMasthead{Prospective graduate researcher for Fall 2027 or Winter 2028, open to M.Sc. and Ph.D. positions}
+
+%-----------RESEARCH INTERESTS-----------
+% Generic on purpose: six phrases that cover both the process-systems and the
+% bioprocess reader. Replace per supervisor.
+\section{Research Interests}
+\cvInterestGrid
+  {Separation process design}
+  {Multiphysics transport modelling}
+  {Phase-equilibrium modelling}
+  {Numerical methods and computing}
+  {Bioprocess engineering}
+  {Metabolic and systems modelling}
 
 %-----------EDUCATION-----------
 \section{Education}
 \cvListStart
   \cvEntry
     {\institution}{\location}
-    {B.Sc. in Chemical Engineering}{Fall 2023 -- Summer 2027}
+    {B.Sc. in Chemical Engineering (expected Spring 2027)}{Fall 2023 -- Present}
     \cvBulletsStart
-      \item \textbf{Cumulative GPA: 17.93 / 20.00} (last two years: \textbf{18.52 / 20.00}, estimated). Ranked \textbf{3rd} in class to date; consistently among the top three of the cohort by semester.
-      \item Perfect \textbf{20.00 / 20.00} in six core courses: Mass Transfer, Unit Operations I, the Heat Transfer and Fluid Mechanics laboratories, Numerical Methods, and Introduction to Biological Sciences.
+      \item \textbf{GPA 17.93 / 20.00}; \textbf{18.52 / 20.00} over the last two years (Iranian 0--20 scale, on which 17 and above is equivalent to an A and 18 and above to an A+). Ranked \textbf{3rd of 41}, and among the top three of the cohort in every semester.
+      \item \textbf{Perfect 20.00 / 20.00 in six core courses:} Mass Transfer, Unit Operations I, Numerical Methods, Introduction to Biological Sciences, and the Heat Transfer and Fluid Mechanics laboratories.
+      \item Thermodynamics I (19.50) and II (19.30), Engineering Mathematics (19.40), Organic Chemistry (19.30), Computer Programming (19.00), Fluid Mechanics II (18.90), Heat Transfer I (18.90). Every semester since Fall 2024 above 18 / 20.
     \cvBulletsEnd
 \cvListEnd
-
-%-----------NOTABLE COURSEWORK-----------
-% The six 20.00 courses are named under Education; these are the rest, with
-% grades, so the transcript is legible without the transcript.
-\section{Notable Coursework}
-\cvSkillsStart
-  \cvSkill{Transport \& Separations}{Fluid Mechanics II (18.90), Heat Transfer I (18.90), Combustion (18.00), Heat Transfer II (16.55)}
-  \cvSkill{Thermodynamics \& Kinetics}{Thermodynamics I (19.50), Thermodynamics II (19.30), Chemical Kinetics and Reactor Design (16.96)}
-  \cvSkill{Computation \& Mathematics}{Engineering Mathematics (19.40), Computer Programming (19.00)}
-  \cvSkill{Chemistry}{General Chemistry II (19.50), Organic Chemistry (19.30), Physical Chemistry (18.83), Analytical Chemistry (18.75)}
-\cvSkillsEnd
 
 %-----------RESEARCH EXPERIENCE-----------
+% Supervised, course-based, and self-directed work in one section. The
+% supervised internship leads; the rest follow by strength of evidence. The second line of every entry says which kind it is.
 \section{Research Experience}
 \cvListStart
+
   \cvEntry
     {\lab}{Rasht, Iran}
-    {Biochemistry Laboratory Intern}{Summer 2026 -- Present}
+    {Research Intern, Biochemistry Laboratory (supervised)}{Jul 2026 -- Sep 2026}
     \cvBulletsStart
-      \item Perform biochemical assays on tissue samples, including \textbf{catalase activity} and \textbf{malondialdehyde (MDA) quantification}, following standardised assay protocols.
-      \item Prepare tissue homogenates, buffers, reagents, and calibration standards by micropipetting; process samples through \textbf{homogenisation and centrifugation}.
-      \item Measure absorbance by \textbf{spectrophotometry} and determine biochemical quantities from experimentally generated \textbf{standard curves}.
+      \item Carried out quantitative \textbf{oxidative-stress biomarker assays} on tissue samples (\textbf{catalase activity} and \textbf{malondialdehyde}, MDA) under standardised protocols.
+      \item Owned the full bench workflow: tissue homogenisation, preparation of buffers, reagents, and calibration standards, centrifugation, and \textbf{spectrophotometric quantification} against self-generated standard curves, through to data interpretation.
     \cvBulletsEnd
+
+  \cvProject
+    {Computational Framework for McCabe--Thiele Distillation Design}
+    {Self-directed research project, initiated alongside Unit Operations I}
+    {Spring 2026 -- Present}{MATLAB, TypeScript}
+    \cvBulletsStart
+      \item Designed and implemented from first principles a modular solver for binary distillation: spline fitting of experimental \textbf{vapour--liquid equilibrium} data, operating and $q$-lines, curve-intersection detection, a \textbf{minimum-reflux pinch search} that resolves tangent pinches in non-ideal systems, automated stage stepping, and \textbf{Murphree efficiency} via a pseudo-equilibrium curve against which stages and minimum reflux are recomputed.
+      \item Generalised the model (version 2, MATLAB) beyond the textbook case to \textbf{multi-section columns with multiple arbitrary feeds, side streams, and subcooled reflux}.
+      \item Re-engineered version 1 as a \textbf{public interactive design tool} with a standalone numerical engine, verified by a 21-case regression suite that reproduces the reference results to within $10^{-9}$ (see Research Software).
+    \cvBulletsEnd
+
+  \cvProject
+    {Multiphysics Modelling of Evaporative Cooling}
+    {Individual course project, Mass Transfer (instructors: Dr.\ Setoodeh, Ms.\ Sepahi)}
+    {Fall 2025}{COMSOL Multiphysics}
+    \cvBulletsStart
+      \item Built a \textbf{three-dimensional COMSOL model} coupling turbulent airflow, heat transfer, and evaporative mass transfer for the cooling of a liquid-filled ceramic vessel, solving a stationary turbulent-flow field followed by transient heat and moisture transport.
+      \item Ran a parametric sensitivity study over ambient temperature, relative humidity, and latent heat of vaporisation, and \textbf{quantified the role of evaporation}: neglecting latent heat shifts the predicted 10-minute liquid temperature by roughly \textbf{14\%}, whereas humidity is a second-order effect.
+      \item Sole author of the model and the technical report, on a project scoped for a team of two; course grade \textbf{20 / 20}.
+    \cvBulletsEnd
+
+  \cvProject
+    {Nonlinear Material-Balance Modelling of a Crystallisation Process}
+    {Course project, Numerical Methods}
+    {Fall 2024}{MATLAB \textperiodcentered\ 20 / 20}
+    \cvBulletsStart
+      \item Formulated a \textbf{six-variable nonlinear material-balance model} of purification by crystallisation and implemented a Newton-based solver; diagnosed why the Newton formulation failed to converge, recovered the solution set symbolically, and verified it independently by re-deriving the balances around alternative process boundaries with component-level conservation checks.
+    \cvBulletsEnd
+
 \cvListEnd
 
-%-----------RESEARCH & COURSE PROJECTS-----------
-\section{Research \& Course Projects}
+%-----------RESEARCH SOFTWARE-----------
+\section{Research Software}
 \cvListStart
-
-  \cvProject
-    {Computational McCabe--Thiele Distillation Simulator}
-    {Self-directed project, Unit Operations}
-    {MATLAB, JavaScript}{}
-    \cvBulletsStart
-      \item Developed a modular implementation of the \textbf{McCabe--Thiele method} for multi-section distillation columns with arbitrary feeds, side streams, and subcooled reflux.
-      \item Implemented section-wise material balances, $q$-lines and operating lines, vapour--liquid equilibrium fitting and interpolation, curve-intersection detection, Murphree efficiency with pseudo-equilibrium correction, and automated stage stepping.
-      \item Structured the solver as reusable functions behind a single execution script so it applies across a range of Unit Operations problems, then ported the validated model to a browser-based \textbf{JavaScript/HTML} implementation.
-    \cvBulletsEnd
-
-  \cvProject
-    {Coupled Transport Modelling of Evaporative Cooling}
-    {Mass Transfer course project}
-    {COMSOL Multiphysics}{}
-    \cvBulletsStart
-      \item Built a \textbf{three-dimensional COMSOL model} coupling turbulent airflow, heat transfer, and evaporative mass transfer for cooling of a liquid-filled ceramic vessel.
-      \item Solved a stationary turbulent-flow field followed by transient heat and moisture transport, then investigated the effects of \textbf{ambient temperature, relative humidity, and latent heat of vaporisation}.
-      \item Quantified the contribution of evaporation: neglecting latent heat shifted the predicted 10-minute liquid temperature by roughly \textbf{14\%}, while relative humidity produced a substantially smaller effect.
-    \cvBulletsEnd
-
-  \cvProject
-    {Nonlinear Material-Balance Modelling of Crystallisation}
-    {Numerical Methods course project}
-    {MATLAB}{Grade: 20 / 20}
-    \cvBulletsStart
-      \item Formulated a \textbf{six-variable nonlinear material-balance model} for purification by crystallisation and implemented a Newton-based solution scheme.
-      \item Investigated the convergence limitations of the nonlinear system and, once the Newton formulation failed to converge, recovered candidate solutions through symbolic solution instead.
-      \item Validated the result independently by reformulating the balances around different process boundaries and running component-level conservation checks.
-    \cvBulletsEnd
-
-  \cvProject
-    {Biological Sorption: Biosorption and Bioaccumulation}
-    {Introduction to Biological Sciences}
-    {Literature review}{Grade: 20 / 20}
-    \cvBulletsStart
-      \item Surveyed the literature on \textbf{biosorption and bioaccumulation}, connecting biological sorption mechanisms to the adsorption and separation framework used in chemical engineering.
-      \item Examined adsorption equilibria, isotherm modelling, batch material balances, and the roles of equilibrium and kinetics in adsorption dynamics.
-    \cvBulletsEnd
-
+  \cvItem{McCabe--Thiele Distillation Designer}{ (TypeScript, React; open source, live). Interactive column design in the browser: stage count, feed stage, minimum reflux, Murphree efficiency, user-supplied equilibrium data, and a mass-balanced column schematic; every control documents its governing equations. \href{\mccabeAppUrl}{\mccabeAppLabel} \textperiodcentered\ \href{\mccabeRepoUrl}{\faGithub\ source}}
+  \cvItem{\texttt{cheme-thermo-solvers}}{ (MATLAB; open source, public release in preparation). Iterative solvers for multicomponent \textbf{vapour--liquid equilibrium}, bubble- and dew-point calculations, and non-ideal liquid-phase activity coefficients by the \textbf{UNIFAC} group-contribution method.}
+  \cvItem{\texttt{numerical-methods-cheme}}{ (MATLAB; open source, public release in preparation). \texttt{LCInterpol}, a multi-variable \textbf{nonlinear regression engine}, applied to parameter estimation for Arrhenius rate expressions and growth-kinetics models.}
 \cvListEnd
 
-%-----------OPEN-SOURCE SOFTWARE-----------
-\section{Open-Source Scientific Software}
-\cvListStart
-
-  \cvProject
-    {\texttt{cheme-thermo-solvers}: Phase Equilibrium Library}
-    {Independent open-source project}
-    {MATLAB}{\href{\githuburl}{\faGithub\ GitHub}}
-    \cvBulletsStart
-      \item Wrote a suite of iterative solvers for multicomponent \textbf{vapour--liquid equilibrium}, bubble- and dew-point calculations, and non-ideal liquid-phase activity via the \textbf{UNIFAC group-contribution method}.
-    \cvBulletsEnd
-
-  \cvProject
-    {\texttt{numerical-methods-cheme}: Regression Engine}
-    {Independent open-source project}
-    {MATLAB}{\href{\githuburl}{\faGithub\ GitHub}}
-    \cvBulletsStart
-      \item Built \texttt{LCInterpol}, a multi-variable nonlinear regression engine, and applied it to parameter estimation for \textbf{Arrhenius} rate expressions and growth-kinetics models.
-    \cvBulletsEnd
-
-\cvListEnd
-
-%-----------TEACHING & OUTREACH-----------
-\section{Teaching \& Outreach}
-\cvListStart
-
-  \cvEntry
-    {\institution}{\location}
-    {Teaching Assistant, Thermodynamics I}{Fall 2025}
-    \cvBulletsStart
-      \item Led problem-solving sessions on assigned homework and supplementary examination-preparation problems, explaining solution strategies and core thermodynamic concepts to support student understanding.
-    \cvBulletsEnd
-
-  \cvEntry
-    {Student Learning Centre for Accessible Learning}{\location}
-    {Volunteer Peer Instructor}{}
-    \cvBulletsStart
-      \item Taught material balances, thermodynamics, and fluid mechanics to groups of petroleum engineering students.
-    \cvBulletsEnd
-
-  \cvEntry
-    {Free Discussions in Foreign Languages}{\location}
-    {Coordinator \& Session Leader}{Summer 2024}
-    \cvBulletsStart
-      \item Coordinated and led \textbf{12 free discussion sessions} in English and German, open to all participants.
-    \cvBulletsEnd
-
-\cvListEnd
-
-%-----------SKILLS-----------
+%-----------TECHNICAL SKILLS-----------
 \section{Technical Skills}
 \cvSkillsStart
-  \cvSkill{Multiphysics \& CFD}{COMSOL Multiphysics: turbulent flow, heat transfer, transient moisture transport, parametric studies}
-  \cvSkill{Programming \& Numerics}{MATLAB (nonlinear systems, symbolic computation, regression and curve fitting, interpolation); JavaScript/HTML; \LaTeX}
-  \cvSkill{Process Engineering}{McCabe--Thiele distillation analysis, vapour--liquid equilibrium and UNIFAC, crystallisation material balances, transport-phenomena modelling}
-  \cvSkill{Biochemical Laboratory}{Tissue homogenisation, micropipetting, buffer and standard preparation, centrifugation, spectrophotometry, catalase and MDA assays, standard-curve quantification}
-  \cvSkill{Research \& Communication}{Literature review, technical report writing, scientific presentation, experimental data interpretation, technical documentation}
+  \cvSkill{Modelling \& Simulation}{COMSOL Multiphysics (turbulent flow, coupled transient heat and mass transfer, parametric studies); stage-wise separation design; phase equilibria and UNIFAC; nonlinear material balances}
+  \cvSkill{Scientific Computing}{MATLAB (nonlinear systems, Newton and iterative schemes, symbolic computation, regression, spline interpolation); TypeScript/JavaScript (React, automated regression testing); \LaTeX; Git}
+  \cvSkill{Laboratory}{Catalase and MDA assays, spectrophotometry, standard-curve quantification, tissue homogenisation, centrifugation, buffer and standard preparation, micropipetting}
+  \cvSkill{Currently Developing}{Constraint-based metabolic modelling (\textbf{COBRA Toolbox}) for a systems-biology project; Python; Simulink}
 \cvSkillsEnd
 
 %-----------HONOURS-----------
 \section{Honours \& Awards}
 \cvListStart
-  \cvLine{Top 1\%}{ of 136,000 participants, Iranian National University Entrance Examination (\textit{Konkur})}{2023}
-  \cvLine{Qualified past the first round}{, Iranian National Chemistry Olympiad}{Summer 2021}
+  \cvLine{``Exceptional Talent'' status}{, \institution\ (105 of 142 credits before the final year)}{2026}
+  \cvLine{Top 1\% of 136,000}{, Iranian University Entrance Exam (\textit{Konkur}), Maths and Physics group}{2023}
+  \cvLine{Full government tuition waiver}{ for the B.Sc. degree, \institution}{2023 -- 2027}
+  \cvLine{Advanced past the first stage}{, Iranian National Chemistry Olympiad}{2021}
 \cvListEnd
 
-%-----------CERTIFICATIONS, LANGUAGES-----------
-\section{Certifications, Languages \& Professional Development}
+%-----------TEACHING-----------
+\section{Teaching \& Mentoring}
+\cvListStart
+  \cvLine{Teaching Assistant, Thermodynamics I}{, Department of Chemical Engineering, \institution\ (instructor: Dr.\ Shariati). Led weekly problem-solving sessions (2--4 hours per week) for a class of \textbf{more than 40 undergraduates}.}{Fall 2025}
+  \cvLine{Volunteer Peer Instructor}{, Student Learning Centre for Accessible Learning, Shiraz. Taught material balances, thermodynamics, and fluid mechanics to groups of petroleum engineering students in pre-examination sessions.}{2024}
+\cvListEnd
+
+%-----------REPORTS & PRESENTATIONS-----------
+\section{Technical Reports \& Presentations}
+\cvListStart
+  \cvLine{Multiphysics Modelling of Evaporative Cooling}{. Technical report, Mass Transfer.}{Fall 2025}
+  \cvLine{Biological Sorption: Biosorption and Bioaccumulation}{. Literature review and oral presentation linking biological uptake to adsorption equilibria and isotherms; graded \mbox{20 / 20}.}{Spring 2025}
+\cvListEnd
+
+%-----------LEADERSHIP, LANGUAGES, CERTIFICATIONS-----------
+\section{Leadership, Languages \& Certifications}
 \cvPlainListStart
-  \item \textbf{Health, Safety and Environment (HSE) Certificate}, \institution.
-  \item \textbf{Languages:} Persian (native) \textperiodcentered\ English (advanced/fluent) \textperiodcentered\ German (intermediate, A2--B1).
-  \item \textbf{Seminar on floating solar photovoltaic systems}, \institution, Fall 2023; attended alongside Ministry of Energy representatives.
+  \item \textbf{Coordinator and session leader}, Free Discussions in Foreign Languages, \institution, Summer 2024: organised and led 12 open sessions in English and German.
+  \item \textbf{Languages:} Persian (native) \textperiodcentered\ English (fluent) \textperiodcentered\ German (advanced). \textbf{Certification:} HSE (Health, Safety and Environment), June 2024.
 \cvPlainListEnd
 
 \end{document}

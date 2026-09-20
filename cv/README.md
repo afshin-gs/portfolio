@@ -9,7 +9,7 @@ installed on the host.
 | -------------- | ----------------------------------------------------------- |
 | `main.tex`     | Root document: identity macros + content. **Edit this one.** |
 | `imports.tex`  | `\usepackage` lines                                          |
-| `configs.tex`  | Page setup, section styling, the `\resume*` commands         |
+| `configs.tex`  | Page setup, section styling, the `\cv*` commands             |
 | `template.tex` | The original upstream template, kept for reference only      |
 | `Dockerfile`   | scheme-basic TeX Live + exactly the packages above           |
 | `build.sh`     | Runs `latexmk` in the container                              |
@@ -28,17 +28,21 @@ bun run cv:build   # compile -> cv/output/cv.pdf and public/cv.pdf
 is always current when Astro copies it into `dist/`. It is served at
 [`/cv.pdf`](https://iamafshin.me/cv.pdf).
 
-## Before sending it anywhere
+## Where the content comes from
 
-Two values in `main.tex` still need checking:
+`main.tex` is the **supervisor-first academic CV** ("Format B"), kept in sync
+with `afshin_cv/afshin_ghorbani_supervisor.tex`. That repository is the source
+of truth for the wording; this one is where the PDF gets published. Editing the
+content means editing it there and re-porting the body here, or editing here and
+carrying the change back.
 
-- `\lab`: the sturgeon facility's registered English name (marked `TODO`; the
-  source draft had it bracketed)
-- `\location`: set to Shiraz (term-time); the internship entry says Rasht
+Everything in the document traces to `afshin_cv/source_of_truth/opus.md`.
+Nothing is embellished with dates, cohort sizes, or figures that were not in
+that source. Keep it that way when you edit, and avoid em-dashes.
 
-Everything else traces to `__temp_cv.md`. Nothing in the document is
-embellished with dates, cohort sizes, or figures that were not in that source.
-Keep it that way when you edit, and avoid em-dashes.
+Deliberately absent until the open questions in `opus.md` close: the
+internship supervisor's name, referees, and links to the two MATLAB libraries.
+Nothing in the file is a placeholder.
 
 ## Four ways to build, one script
 
