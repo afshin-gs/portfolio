@@ -1,6 +1,10 @@
 ---
 // One thin entrypoint per internal app. See AppShell.astro for why this cannot
 // be auto-generated. Adding an app = this file + src/apps/<slug>/.
+//
+// This app is `devOnly`, so this route exists in dev and is deleted from the
+// production output by plugins/dev-only-apps.mjs — a page under src/pages is a
+// route unconditionally, and that is the only place it can be undone.
 import AppShell from '../../layouts/AppShell.astro'
 import App from '../../apps/shiny-calculator/App'
 import { meta } from '../../apps/shiny-calculator/meta'

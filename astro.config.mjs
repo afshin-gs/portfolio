@@ -13,6 +13,15 @@ import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 import rehypeUnwrapImages from 'rehype-unwrap-images'
 
 import { assetsResolver } from './plugins/assets-resolver.mjs'
+import {
+  devOnlyApps,
+  devOnlyAppSlugs,
+  isDevOnlyAppUrl,
+} from './plugins/dev-only-apps.mjs'
+
+// Resolved once, here, so the sitemap filter and the cleanup hook below are
+// answering from the same list. See plugins/dev-only-apps.mjs.
+const DEV_ONLY_APPS = await devOnlyAppSlugs()
 
 // docs/architecture.md — D3 (static output), D4 (MDX/remark), §8 (pipeline)
 export default defineConfig({
@@ -23,7 +32,12 @@ export default defineConfig({
   // /apps/<slug>/ diverge and relative assets break.
   trailingSlash: 'never',
 
-  integrations: [mdx(), react(), sitemap()],
+  integrations: [
+    mdx(),
+    react(),
+    sitemap({ filter: (page) => !isDevOnlyAppUrl(page, DEV_ONLY_APPS) }),
+    devOnlyApps(DEV_ONLY_APPS),
+  ],
 
   image: {
     // JPEG instead of Astro's hardcoded WebP default — see the reasoning in

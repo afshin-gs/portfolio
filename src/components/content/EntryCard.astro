@@ -4,6 +4,7 @@ import Card from '../ui/Card.astro'
 import Tag from '../ui/Tag.astro'
 import Badge from '../ui/Badge.astro'
 import Button from '../ui/Button.astro'
+import DevRibbon from '../dev/DevRibbon.astro'
 import type { ContentCollection, Item } from '../../lib/content'
 
 /**
@@ -64,6 +65,9 @@ const dateKey = data.date.toISOString().slice(0, 10)
   data-tags={data.tags.join(',')}
   data-date={dateKey}
 >
+  {/* First child so it paints over the media when the card has one. */}
+  {data.devOnly && <DevRibbon />}
+
   {
     banner && (
       <div class="media">

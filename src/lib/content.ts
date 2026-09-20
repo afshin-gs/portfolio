@@ -49,7 +49,8 @@ export type Item<C extends ContentCollection> = {
 /**
  * The single read path for both collections.
  *
- * - `draft` entries are excluded from production builds, visible in dev.
+ * - `draft` and `devOnly` entries are excluded from production builds, visible
+ *   in dev. `includeInactive` does not override either.
  * - `isActive: false` entries are excluded from LISTS (and RSS/search) but must
  *   still build their detail route, so previously-shared links never 404.
  *   Pass `includeInactive` when generating routes.
@@ -60,6 +61,11 @@ export async function getItems<C extends ContentCollection>(
 ): Promise<Item<C>[]> {
   const entries = await getCollection(collection, ({ data }) => {
     if (data.draft && import.meta.env.PROD) return false
+    // Not folded into the line above: `includeInactive` deliberately does NOT
+    // rescue these. An inactive entry keeps its route because someone may hold
+    // a link to it; a dev-only fixture was never public, so there is no link to
+    // honour and no reason to build the page.
+    if (data.devOnly && import.meta.env.PROD) return false
     if (!opts.includeInactive && !data.isActive) return false
     return true
   })

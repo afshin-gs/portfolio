@@ -12,4 +12,7 @@ export const meta: AppMeta = {
   tags: ['react', 'internal'],
   status: 'live',
   accent: '#1d4ed8',
+  // Its whole purpose is proving the internal-app path works, which is a fact
+  // about this repository and not something a visitor came here to use.
+  devOnly: true,
 }

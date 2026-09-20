@@ -2,13 +2,14 @@
 import PageLayout from '../layouts/PageLayout.astro'
 import Hero from '../components/home/Hero.astro'
 import Section from '../components/ui/Section.astro'
+import Eyebrow from '../components/ui/Eyebrow.astro'
 import Button from '../components/ui/Button.astro'
-import SkillList from '../components/ui/SkillList.astro'
+import InterestList from '../components/ui/InterestList.astro'
 import EntryList from '../components/EntryList.astro'
 import AppList from '../components/content/AppList.astro'
 import { getItems } from '../lib/content'
 import { getApps } from '../lib/apps'
-import { aboutParagraphs, skills, contactPrompt } from '../data/profile'
+import { aboutParagraphs, researchInterests, contactPrompt } from '../data/profile'
 import { site } from '../data/site'
 
 /**
@@ -29,15 +30,31 @@ const apps = getApps()
 <PageLayout width="full">
   <Hero />
 
-  <Section id="about" eyebrow="About" title="About" divider>
+  {/*
+    The only Section on the page that renders its own header instead of passing
+    `eyebrow`/`title`. Both columns are headed, and the two headings have to sit
+    on one line — which Section's full-width `.head` cannot do, because it
+    closes before the grid opens. The eyebrow and the "About" heading therefore
+    move INTO the left column, and the columns are stitched back together with
+    `grid-template-rows: subgrid` below.
+  */}
+  <Section id="about" divider>
     <div class="about">
-      <div class="prose-block">
-        {aboutParagraphs.map((paragraph) => <p>{paragraph}</p>)}
-        <Button href="/about-me" variant="secondary" size="sm" icon="→" class="more">
-          More about me
-        </Button>
+      <div class="column">
+        <Eyebrow>About</Eyebrow>
+        <h2 class="column-title">About</h2>
+        <div class="prose-block">
+          {aboutParagraphs.map((paragraph) => <p>{paragraph}</p>)}
+          <Button href="/about-me" variant="secondary" size="sm" icon="→" class="more">
+            More about me
+          </Button>
+        </div>
       </div>
-      <SkillList skills={skills} />
+
+      <div class="column interests-col">
+        <h2 class="column-title">Research interests</h2>
+        <InterestList items={researchInterests} />
+      </div>
     </div>
   </Section>
 
@@ -111,10 +128,66 @@ const apps = getApps()
     display: grid;
     gap: var(--space-7);
   }
+
+  /* Mobile: each column is a plain stack, and DOM order IS reading order —
+   * eyebrow, About, prose, then Research interests and its list. */
+  .column {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-4);
+    min-width: 0;
+  }
+
+  /* --text-2xl is Section's own `.title` size, so a column heading here and a
+   * section title elsewhere on the page are the same size as well as the same
+   * level in the outline. */
+  .column-title {
+    font-size: var(--text-2xl);
+  }
+
   @media (min-width: 56rem) {
     .about {
       grid-template-columns: 1.35fr 1fr;
-      gap: var(--space-9);
+      grid-template-rows: auto auto 1fr; /* eyebrow · heading · body */
+      column-gap: var(--space-9);
+      row-gap: 0;
+    }
+
+    /*
+     * SUBGRID is what aligns the two headings, rather than a hand-measured
+     * offset on the right column. The eyebrow's height depends on the font,
+     * the fluid type scale, and the reader's zoom, so any number written here
+     * would be right at exactly one size. Instead both columns adopt the
+     * parent's three rows and the right column simply starts on row 2, so
+     * "Research interests" lands on the same line as "About" by construction.
+     *
+     * Falls back gracefully: without subgrid each column is an ordinary grid
+     * and stacks as it does on mobile, losing the alignment and nothing else.
+     */
+    .column {
+      display: grid;
+      grid-row: 1 / -1;
+      grid-template-rows: subgrid;
+      align-content: start;
+      gap: var(--space-4);
+    }
+    /*
+     * BOTH children are placed explicitly. Placing only the heading leaves row
+     * 1 free, and sparse auto-placement then drops the list INTO it — which
+     * put the whole list level with the eyebrow and stretched row 1 to the
+     * list's height.
+     *
+     * :global on the second rule because the list is rendered by InterestList
+     * and carries THAT component's scope id, not this page's, so a plain
+     * `> :nth-child(2)` silently matches nothing. That is exactly how the bug
+     * above survived the first fix.
+     */
+    .interests-col > .column-title {
+      grid-row: 2;
+    }
+    .interests-col > :global(ul) {
+      grid-row: 3;
     }
   }
 

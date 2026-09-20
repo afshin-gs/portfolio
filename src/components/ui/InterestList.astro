@@ -1,0 +1,52 @@
+---
+/**
+ * A single-column list of plain strings, banded so consecutive rows separate
+ * without a rule between them.
+ *
+ * NOT a variant of SkillList: that component's whole structure is the
+ * name/level pair, and the second column is what its baseline-aligned flex row
+ * and mono accent text exist to serve. Dropping the column and swapping the
+ * hairlines for bands leaves none of it, which per AGENTS.md makes this a new
+ * component rather than a flag.
+ *
+ * The band is --surface-raised, which is derived from --fg over --bg (3%), so
+ * it stays a hair off the page in either theme instead of being a second
+ * hardcoded grey that only works in one of them.
+ */
+interface Props {
+  items: readonly string[]
+  class?: string
+}
+
+const { items, class: className } = Astro.props
+---
+
+<ul class:list={['interests', className]}>
+  {items.map((item) => <li>{item}</li>)}
+</ul>
+
+<style>
+  /* The bands bleed one step past the text on both sides so the text itself
+   * stays flush with the heading above it. --gutter never resolves below
+   * 1.25rem, so the bleed cannot reach the viewport edge on a phone. */
+  .interests {
+    list-style: none;
+    margin-inline: calc(var(--space-4) * -1);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+
+  .interests li {
+    padding: var(--space-4);
+    font-size: var(--text-base);
+    font-weight: 500;
+    /* --leading-normal, not --leading-snug: two of these lines wrap, and a
+     * wrapped row has to stay taller than an unwrapped one by a whole line
+     * rather than by a squeezed one, or the band rhythm reads as an accident. */
+    line-height: var(--leading-normal);
+  }
+
+  .interests li:nth-child(odd) {
+    background: var(--surface-raised);
+  }
+</style>

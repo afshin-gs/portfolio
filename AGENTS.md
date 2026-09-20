@@ -71,6 +71,23 @@ derives the right `wss://` socket from the page URL, and it admits
 `*.localhost` hosts by default, so the old `hmr.clientPort: 443` recipe is not
 needed — and it would break HMR in plain `bun dev` (§14).
 
+**`devOnly: true` removes something from production in THREE places, and all
+three are needed.** `src/lib/content.ts` and `src/lib/apps.ts` drop the entry
+from every list; `plugins/dev-only-apps.mjs` deletes the emitted `/apps/<slug>`
+page and filters it out of the sitemap. The third exists because a file under
+`src/pages` is a route unconditionally — `output: 'static'` has no per-page
+opt-out — so before it, a dev-only app still shipped as a real, indexed URL.
+The integration imports the same `meta.ts` files `apps.ts` reads, so the flag
+has one home; that is also why `meta.ts` must stay free of runtime imports.
+
+**`DevRibbon.astro` styles itself with `is:inline` + `set:html`, not a scoped
+`<style>`.** Scoped CSS is collected from the module graph, not from what
+actually rendered, so a component that returns nothing in production still
+ships its rules — measured inlined into every page's `<head>`. `is:inline`
+stays where it is written, so when the markup is gone the CSS is gone too. The
+cost is that the rules are global and repeat per ribbon, which is why both
+class names are prefixed.
+
 **Never put `slug`, `uri`, `fullUrl`, or `readingTime` in frontmatter.** They
 are derived in `src/lib/content.ts`. Stored URLs drift from their own files.
 

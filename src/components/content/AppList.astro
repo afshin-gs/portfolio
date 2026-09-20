@@ -4,6 +4,7 @@ import Grid from '../ui/Grid.astro'
 import Card from '../ui/Card.astro'
 import Tag from '../ui/Tag.astro'
 import Badge from '../ui/Badge.astro'
+import DevRibbon from '../dev/DevRibbon.astro'
 import type { AppRecord } from '../../lib/apps'
 
 /**
@@ -49,6 +50,8 @@ const IMAGE_SIZES = '(min-width: 40rem) 24rem, 100vw'
   {
     apps.map((app) => (
       <Card as="li" interactive padding="none" class:list={['app', { 'has-media': !!app.image }]}>
+        {app.devOnly && <DevRibbon />}
+
         {app.image && (
           <div class="media">
             {/* PNG stays PNG: an app thumbnail is almost always a screenshot,

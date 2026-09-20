@@ -1,0 +1,95 @@
+---
+/**
+ * A corner ribbon marking a card that exists only in the development build:
+ * an entry with `devOnly: true` in its frontmatter, or an app whose meta.ts
+ * sets it. Renders NOTHING in a production build, so the flag and the marker
+ * can never disagree about what is about to ship.
+ *
+ * Static, like everything else on the site: the marker is carried by position
+ * and colour, which is the motion policy in base.css and needs no exception.
+ * A red band across a card corner is already the only thing in a list of
+ * content that is neither text nor image.
+ *
+ * THE STYLES ARE `is:inline`, AND THAT IS THE POINT. A scoped <style> is
+ * collected from the module graph rather than from what actually rendered, so
+ * a component that returns nothing in production still ships its CSS — this
+ * block was measured doing exactly that, inlined into every page's <head>.
+ * is:inline is left where it is written, so when the markup is gone the CSS is
+ * gone with it. The cost is that the rules repeat per ribbon and are global,
+ * which is why both class names are prefixed rather than something like
+ * `.band` that could collide.
+ *
+ * Positioning assumes an ancestor with `position: relative` and
+ * `overflow: hidden`. Card provides the first; .entry and .app provide the
+ * second, which is what clips the band into a triangle at the card's radius.
+ */
+interface Props {
+  /** Shown on the band. Keep it to two short words — the diagonal is narrow. */
+  label?: string
+}
+
+const { label = 'dev only' } = Astro.props
+
+// set:html, NOT `<style>{`...`}</style>`: inside a <style> element Astro
+// treats the body as raw text, so the braces and backticks were emitted
+// literally and the whole block was dead CSS that silently did nothing.
+const CSS = `
+        .dev-ribbon {
+          /* space-9, not space-10: on a card with no thumbnail the band
+             crosses the body's own top-left corner, and one step larger put it
+             through the first line of the title. */
+          --ribbon-size: var(--space-9);
+
+          position: absolute;
+          inset-block-start: 0;
+          inset-inline-start: 0;
+          width: var(--ribbon-size);
+          aspect-ratio: 1;
+          overflow: hidden;
+          /* Above Card's .card-link::after overlay, so the band is not painted
+             under the click target. pointer-events keeps the card clickable. */
+          z-index: var(--z-base);
+          pointer-events: none;
+        }
+
+        /* The band is twice the box wide and offset by half of it, which centres
+           it on the box; rotating about that centre lays it across the corner at
+           45 degrees with both ends outside, where the parent clips them. Every
+           length is a multiple of one token, so the geometry follows the space
+           scale instead of being three numbers tuned against one font size. */
+        .dev-ribbon-band {
+          position: absolute;
+          inset-block-start: calc(var(--ribbon-size) * 0.3);
+          inset-inline-start: calc(var(--ribbon-size) * -0.5);
+          width: calc(var(--ribbon-size) * 2);
+          transform: rotate(-45deg);
+
+          background: var(--danger);
+          color: var(--bg);
+          text-align: center;
+          padding-block: var(--space-1);
+
+          font-family: var(--font-mono);
+          font-size: var(--text-2xs);
+          font-weight: 500;
+          line-height: var(--leading-tight);
+          text-transform: uppercase;
+          letter-spacing: var(--tracking-wide);
+          white-space: nowrap;
+        }
+      `
+---
+
+{
+  import.meta.env.DEV && (
+    <>
+      {/* aria-hidden: this is a note to whoever is building the site, not part
+          of the card's content, and the card's accessible name is its title. */}
+      <span class="dev-ribbon" aria-hidden="true">
+        <span class="dev-ribbon-band">{label}</span>
+      </span>
+
+      <style is:inline set:html={CSS} />
+    </>
+  )
+}

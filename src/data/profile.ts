@@ -38,10 +38,10 @@ export const hero: Hero = {
   // The headline is three fragments, one per line, so the badge carries the
   // context the words no longer do. The gradient falls on the middle line.
   badge: 'B.Sc. candidate, Shiraz University',
-  headlineLead: 'Chemistry,',
+  headlineLead: 'Engineering,',
   headlineAccent: 'Biology,',
-  headlineTail: 'Technology',
-  lede: 'The questions worth answering rarely respect a department boundary. I like working at the seams between fields, where a real answer needs more than one of them to hold together.',
+  headlineTail: 'Chemistry',
+  lede: "I'm interested in bringing engineering practice and computational methods to problems that sit across biology and chemistry",
   primaryCta: { label: 'See the work', href: '/projects' },
   secondaryCta: { label: 'Resume', href: '/resume' },
 }
@@ -51,6 +51,28 @@ export const aboutParagraphs: readonly string[] = [
   'I am an undergraduate chemical engineer at Shiraz University, expecting a B.Sc. in 2027. Most of what interests me sits where transport phenomena meet numerical methods: distillation and separations, coupled heat and mass transfer, phase equilibrium, and the models that claim to describe them.',
   'In practice that means writing the simulator rather than only solving the problem set. A McCabe–Thiele solver for multi-section columns with side streams and subcooled reflux. A UNIFAC-based vapour–liquid equilibrium library. A regression engine for Arrhenius and growth kinetics. A three-dimensional COMSOL model of evaporative cooling that put a number on how much the latent-heat term actually matters, which turned out to be about 14 percent of the predicted ten-minute temperature. The code is open source.',
   'Alongside the modelling I work in a biochemistry laboratory in Rasht, running catalase and malondialdehyde assays on tissue samples. I also teach: a term as teaching assistant for Thermodynamics I, volunteer sessions on material balances and fluid mechanics for petroleum engineering students, and twelve free English and German discussion sessions I organised and ran. I am applying to graduate programmes in North America.',
+]
+
+/**
+ * The landing page's right-hand column, beside the About prose.
+ *
+ * Written as a SPACE rather than a list of specialisms: each line is one axis
+ * of the same problem area, so any three of them read as a coherent research
+ * programme rather than as unrelated interests. That is the point of the
+ * column, and it is why these are broader than the `skills` list below, which
+ * describes what is already demonstrable rather than what the work is aimed at.
+ *
+ * One column, no proficiency labels: a level next to an interest would claim a
+ * track record that an interest does not assert.
+ */
+export const researchInterests: readonly string[] = [
+  'Transport phenomena in chemical and biological systems',
+  'Molecular simulation and multiscale modelling',
+  'Reaction kinetics, catalysis, and enzyme engineering',
+  'Bioprocess design, separations, and downstream processing',
+  'Thermodynamics and phase behaviour of complex fluids',
+  'Data-driven modelling and machine learning for molecular design',
+  'Biomaterials, soft matter, and interfacial phenomena',
 ]
 
 export const skills: readonly Skill[] = [

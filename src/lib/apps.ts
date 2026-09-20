@@ -46,6 +46,11 @@ export interface AppMeta {
    *  (decorative), because the card title sits directly below it and a screen
    *  reader would otherwise announce the app twice. */
   thumbnailAlt?: string
+
+  /** A fixture or proof-of-path rather than something to launch: listed in dev,
+   *  absent from production. Mirrors `devOnly` in the content schema, and dev
+   *  builds mark the card with the same corner ribbon. */
+  devOnly?: boolean
 }
 
 export interface AppRecord extends AppMeta {
@@ -173,7 +178,12 @@ export function getApps(): AppRecord[] {
     verifiable: true,
   }))
 
-  const all = [...internal, ...external, ...bundled]
+  // Dropped before the checks below, not after: a dev-only app is absent from
+  // production, so production must not then fail the build over its missing
+  // route or its slug colliding with a real app's.
+  const all = [...internal, ...external, ...bundled].filter(
+    (app) => !(app.devOnly && import.meta.env.PROD),
+  )
 
   for (const app of all) {
     if (!SLUG_RE.test(app.slug)) {
@@ -182,7 +192,7 @@ export function getApps(): AppRecord[] {
     app.image = resolveThumbnail(app)
   }
   assertNoPrefixCollisions(all.map((a) => a.slug))
-  assertRoutesExist(internal)
+  assertRoutesExist(all.filter((a) => a.source === 'internal'))
 
   // live first, then wip, then archived. Within each, apps WITH a thumbnail
   // come first: image cards are taller, so grouping them keeps each grid row

@@ -27,6 +27,15 @@ const base = z.object({
 
   /** Not written yet. Excluded from production builds entirely; visible in dev. */
   draft: z.boolean().default(false),
+
+  /** A fixture, demo, or smoke test: something that exercises the site rather
+   *  than something anyone should read. Same build behaviour as `draft` —
+   *  excluded from production, visible in dev — but a separate flag because
+   *  the two mean opposite things about the entry's future. A draft is meant
+   *  to ship one day; this is meant never to. Dev builds mark these with a
+   *  corner ribbon (DevRibbon.astro) so the difference between what is on the
+   *  screen and what is on the live site is visible at a glance. */
+  devOnly: z.boolean().default(false),
 })
 
 const blog = defineCollection({
