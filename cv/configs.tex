@@ -140,17 +140,44 @@
 % Identity left, contact right. The one argument is the positioning line that
 % Format B puts under the identity block, full width, so a long one wraps
 % instead of fighting the contact column. Pass {} for none.
+%
+% The contact column has five lines to the identity column's four, so the
+% LinkedIn line normally sits on a fifth row with an empty cell beside it.
+% Leaving \phone EMPTY drops the phone row and closes the remaining four up
+% against the four identity lines, with no widow row: that is what the public
+% web copy of this CV does, because a file anyone can download is the wrong
+% place for a phone number. Defining \phone restores the five-row form, so a
+% variant that keeps it renders exactly as before.
+%
+% \cvContactLast expands to a whole row, starting with \\. It is built OUTSIDE
+% the tabularx on purpose: macro expansion is transparent to the alignment
+% scanner, whereas a \\ emitted from inside a conditional in the body is not
+% reliably seen, least of all by tabularx, which trial-typesets its body twice.
+\newcommand{\cvContactEmail}{\faEnvelope\ \href{mailto:\emaila}{\emaila}}
+\newcommand{\cvContactPhone}{\faPhone\ \phone}
+\newcommand{\cvContactWeb}{\faGlobe\ \href{\website}{\websitelabel}}
+\newcommand{\cvContactGitHub}{\faGithub\ \href{\githuburl}{\githublabel}}
+\newcommand{\cvContactLinkedIn}{\faLinkedin\ \href{\linkedinurl}{\linkedinlabel}}
+
 \newcommand{\cvMasthead}[1]{%
+  \ifdefempty{\phone}
+    {\def\cvContactTwo{\cvContactWeb}%
+     \def\cvContactThree{\cvContactGitHub}%
+     \def\cvContactFour{\cvContactLinkedIn}%
+     \def\cvContactLast{}}
+    {\def\cvContactTwo{\cvContactPhone}%
+     \def\cvContactThree{\cvContactWeb}%
+     \def\cvContactFour{\cvContactGitHub}%
+     \def\cvContactLast{\\[0.7mm] & {\small \cvContactLinkedIn}}}%
   \begin{tabularx}{\textwidth}{@{}L r@{}}
     {\LARGE\scshape\bfseries \name}
-      & {\small \faEnvelope\ \href{mailto:\emaila}{\emaila}} \\[0.7mm]
+      & {\small \cvContactEmail} \\[0.7mm]
     \subtitle
-      & {\small \faPhone\ \phone} \\[0.7mm]
+      & {\small \cvContactTwo} \\[0.7mm]
     \institution
-      & {\small \faGlobe\ \href{\website}{\websitelabel}} \\[0.7mm]
+      & {\small \cvContactThree} \\[0.7mm]
     \location
-      & {\small \faGithub\ \href{\githuburl}{\githublabel}} \\[0.7mm]
-      & {\small \faLinkedin\ \href{\linkedinurl}{\linkedinlabel}}
+      & {\small \cvContactFour}\cvContactLast
   \end{tabularx}%
   \ifx\\#1\\\else
     \par\vspace{1.0mm}{\small\itshape\color{cvmuted}#1\par}%

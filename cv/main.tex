@@ -22,6 +22,14 @@
 % DELIBERATELY ABSENT until the open questions close (opus.md section 15):
 % the internship supervisor's name, referees, and links to the two MATLAB
 % libraries. Nothing in this file is a placeholder.
+%
+% REDACTED RELATIVE TO THE afshin_cv VARIANT, because this copy is served
+% publicly at /cv.pdf rather than sent to one supervisor:
+%   - \phone is blank, which drops the masthead's phone row;
+%   - the instructors named on the Mass Transfer project and the
+%     Thermodynamics I teaching entry are dropped. They are other people's
+%     names, and they did not choose to be on a public web page.
+% Everything else is word-for-word the supervisor variant.
 %-------------------------
 
 \documentclass[a4paper,11pt]{article}
@@ -35,7 +43,12 @@
 \newcommand{\institution}{Shiraz University}
 \newcommand{\location}{Shiraz, Iran}
 \newcommand{\emaila}{afshin.gs@proton.me}
-\newcommand{\phone}{+98 911 431 8377}
+% Blank on purpose. This copy of the CV is downloadable by anyone at
+% /cv.pdf, and a phone number is the one contact detail here that is not
+% already public elsewhere on the site. An empty \phone drops the masthead's
+% phone row (see \cvMasthead in configs.tex); the number stays in
+% afshin_cv, which is what gets sent to a supervisor directly.
+\newcommand{\phone}{}
 \newcommand{\website}{https://iamafshin.me}
 \newcommand{\websitelabel}{iamafshin.me}
 \newcommand{\githuburl}{https://github.com/afshin-gs}
@@ -114,7 +127,7 @@
 
   \cvProject
     {Multiphysics Modelling of Evaporative Cooling}
-    {Individual course project, Mass Transfer (instructors: Dr.\ Setoodeh, Ms.\ Sepahi)}
+    {Individual course project, Mass Transfer}
     {Fall 2025}{COMSOL Multiphysics}
     \cvBulletsStart
       \item Built a \textbf{three-dimensional COMSOL model} coupling turbulent airflow, heat transfer, and evaporative mass transfer for the cooling of a liquid-filled ceramic vessel, solving a stationary turbulent-flow field followed by transient heat and moisture transport.
@@ -161,7 +174,7 @@
 %-----------TEACHING-----------
 \section{Teaching \& Mentoring}
 \cvListStart
-  \cvLine{Teaching Assistant, Thermodynamics I}{, Department of Chemical Engineering, \institution\ (instructor: Dr.\ Shariati). Led weekly problem-solving sessions (2--4 hours per week) for a class of \textbf{more than 40 undergraduates}.}{Fall 2025}
+  \cvLine{Teaching Assistant, Thermodynamics I}{, Department of Chemical Engineering, \institution. Led weekly problem-solving sessions (2--4 hours per week) for a class of \textbf{more than 40 undergraduates}.}{Fall 2025}
   \cvLine{Volunteer Peer Instructor}{, Student Learning Centre for Accessible Learning, Shiraz. Taught material balances, thermodynamics, and fluid mechanics to groups of petroleum engineering students in pre-examination sessions.}{2024}
 \cvListEnd
 

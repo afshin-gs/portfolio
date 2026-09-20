@@ -40,6 +40,20 @@ Everything in the document traces to `afshin_cv/source_of_truth/opus.md`.
 Nothing is embellished with dates, cohort sizes, or figures that were not in
 that source. Keep it that way when you edit, and avoid em-dashes.
 
+**This copy is redacted**, because `/cv.pdf` is downloadable by anyone while
+the `afshin_cv` variant is sent to one supervisor:
+
+- `\phone` is blank, which drops the masthead's phone row. The number is the
+  one contact detail on the CV that is not already public elsewhere on the
+  site. `\cvMasthead` closes the remaining four contact lines up against the
+  four identity lines; defining `\phone` again restores the five-row form
+  byte for byte.
+- The instructors named on the Mass Transfer project and the Thermodynamics I
+  teaching entry are dropped. They are other people's names, and they did not
+  choose to appear on a public web page.
+
+Everything else is word-for-word the supervisor variant.
+
 Deliberately absent until the open questions in `opus.md` close: the
 internship supervisor's name, referees, and links to the two MATLAB libraries.
 Nothing in the file is a placeholder.
