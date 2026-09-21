@@ -206,3 +206,29 @@ export function getApps(): AppRecord[] {
       a.title.localeCompare(b.title),
   )
 }
+
+/**
+ * A project's `app` slug, resolved to the route that app is served at.
+ *
+ * D6 keeps this link one-directional and MANUAL: a project names an app, never
+ * the reverse, and nothing checks the two agree. Manual means a typo is a
+ * question of when, so a slug that matches no registered app fails the build
+ * here rather than shipping a card that links into a 404 — the same contract
+ * assertRoutesExist enforces for internal apps.
+ *
+ * A devOnly app is absent from getApps() in production, so a project linking
+ * one fails the production build. That is the intended reading: a page the
+ * public can reach must not advertise an app the public cannot.
+ */
+export function appHref(slug: string): string {
+  const app = getApps().find((a) => a.slug === slug)
+  if (!app) {
+    throw new Error(
+      `[apps] A project declares app: "${slug}", which is not a registered app. ` +
+        `Check the slug against src/data/apps.json, src/data/bundled-apps.json ` +
+        `and src/apps/*/meta.ts — and note that a devOnly app is not registered ` +
+        `in a production build.`,
+    )
+  }
+  return app.href
+}

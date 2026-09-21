@@ -6,6 +6,7 @@ import Badge from '../ui/Badge.astro'
 import Button from '../ui/Button.astro'
 import DevRibbon from '../dev/DevRibbon.astro'
 import type { ContentCollection, Item } from '../../lib/content'
+import { appHref } from '../../lib/apps'
 
 /**
  * One entry from either collection. D5 — blog and projects differ in metadata,
@@ -41,6 +42,11 @@ const Heading = `h${level}` as 'h2' | 'h3'
 
 const banner = 'banner' in data ? data.banner : undefined
 const bannerAlt = ('bannerAlt' in data ? data.bannerAlt : undefined) ?? ''
+
+// D6 — a project that ships as a live app links to it. Resolved here rather
+// than written as a literal `/apps/<slug>` so a stale slug fails the build
+// instead of becoming a dead pill on the card.
+const liveApp = 'app' in data && data.app ? appHref(data.app) : undefined
 
 // timeZone: 'UTC' is REQUIRED, not cosmetic. Frontmatter dates are date-only,
 // which zod coerces to midnight UTC. Formatting that in a timezone west of UTC
@@ -124,6 +130,13 @@ const dateKey = data.date.toISOString().slice(0, 10)
     <div class="foot">
       <p class="tags">
         {data.tags.map((tag) => <Tag href={`/${collection}/tag/${tag}`}>{tag}</Tag>)}
+        {
+          liveApp && (
+            <Tag href={liveApp} tone="accent">
+              open app →
+            </Tag>
+          )
+        }
         {
           'repo' in data && data.repo && (
             <Tag href={data.repo} tone="accent">

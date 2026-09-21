@@ -7,7 +7,7 @@
  *
  * House rule inherited from the CV: no em-dashes in reader-facing prose. Use a
  * comma, a colon, a semicolon, or parentheses. En-dashes stay where they are
- * compounds or ranges (McCabe–Thiele, vapour–liquid, A1–B1).
+ * compounds or ranges (McCabe–Thiele, vapour–liquid, A2–B1).
  */
 
 export interface Stat {

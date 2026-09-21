@@ -141,7 +141,7 @@ export const resumeSections: readonly ResumeSection[] = [
     entries: [
       { title: 'Persian', org: 'Native' },
       { title: 'English', org: 'Advanced / fluent' },
-      { title: 'German', org: 'Intermediate (A1–B1)' },
+      { title: 'German', org: 'Intermediate (A2–B1)' },
     ],
   },
 ]
