@@ -71,11 +71,25 @@ const dateKey = data.date.toISOString().slice(0, 10)
   {
     banner && (
       <div class="media">
+        {/*
+          `sizes` describes the INTRINSIC width the thumbnail needs, which is
+          not the width of its box. Above 40rem the media column is 30% of the
+          card and the image is cropped to a square, so a 16:9 source is scaled
+          to match the box HEIGHT and about 44% of its width is thrown away:
+          the pixels that survive come from a region 16/9 as wide as the box.
+          Hence 55vw (30vw x 16/9), capped at 37rem, which is that figure once
+          the card stops growing at --container (72rem).
+
+          Describing the box instead (the old 12rem) understated it by a factor
+          of three, and a `sizes` that small is not a hint the browser rounds
+          up: it picked the 640w candidate on a 2x display that wanted 1280,
+          which is what made the thumbnail look soft.
+        */}
         <Image
           src={banner}
           alt={bannerAlt}
-          widths={[320, 640]}
-          sizes="(min-width: 48rem) 12rem, 100vw"
+          widths={[320, 640, 960, 1280]}
+          sizes="(min-width: 40rem) min(37rem, 55vw), 100vw"
           loading="lazy"
           decoding="async"
         />
