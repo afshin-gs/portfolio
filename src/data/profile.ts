@@ -48,9 +48,9 @@ export const hero: Hero = {
 
 /** Paragraphs for /about-me. Plain strings — no markup, no markdown. */
 export const aboutParagraphs: readonly string[] = [
-  'I am a Chemical Engineering undergraduate at Shiraz University. I like applying engineering principles to describe phenomena and optimize processes whose application is meaningful. From production of therapeutics to optimizing reactor setups and separation processes.',
-  'During my undergrad years I’ve developed a taste for computational methods & computer programming and used it throughout my semesters in various projects. I also have hands on lab experience in a biochemistry laboratory in Rasht, working with biological samples; particularly enzymes and bio-markers. I also have research experience in the fields of bioprocess/systems biology and a little bit on CO2 capture.',
-  'My interests sit at the intersection of process design and control and biology. More specifically, I like systems biology, synthetic biology and their intersection with process engineering. From novel ways to separate a desired metabolite to applying system theory for equipment control, my interests are growing in the direction of using micro-organisms as tools for reaching a desired purpose.',
+  'I am a Chemical Engineering undergraduate at Shiraz University. I like applying engineering principles to describe phenomena and optimize processes whose application is meaningful, from producing therapeutics to optimizing reactor setups and separation processes.',
+  'During my undergrad years I’ve developed a taste for computational methods and computer programming, and I have used them throughout my semesters in various projects. I also have hands-on lab experience in a biochemistry laboratory in Rasht, working with biological samples, particularly enzymes and biomarkers. My research experience is in the fields of bioprocess and systems biology, with a little in CO2 capture.',
+  'My interests sit at the intersection of biology with process design and control. More specifically, I like systems biology, synthetic biology, and where they meet process engineering. From finding novel ways to separate a desired metabolite to applying system theory for equipment control, my interests are growing in the direction of using micro-organisms as tools for reaching a desired outcome.',
 ]
 
 /**
