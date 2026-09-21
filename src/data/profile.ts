@@ -7,7 +7,7 @@
  *
  * House rule inherited from the CV: no em-dashes in reader-facing prose. Use a
  * comma, a colon, a semicolon, or parentheses. En-dashes stay where they are
- * compounds or ranges (McCabe–Thiele, vapour–liquid, A2–B1).
+ * compounds or ranges (McCabe–Thiele, vapour–liquid, A1–B1).
  */
 
 export interface Stat {
@@ -48,9 +48,9 @@ export const hero: Hero = {
 
 /** Paragraphs for /about-me. Plain strings — no markup, no markdown. */
 export const aboutParagraphs: readonly string[] = [
-  'I am an undergraduate chemical engineer at Shiraz University, expecting a B.Sc. in 2027. Most of what interests me sits where transport phenomena meet numerical methods: distillation and separations, coupled heat and mass transfer, phase equilibrium, and the models that claim to describe them.',
-  'In practice that means writing the simulator rather than only solving the problem set. A McCabe–Thiele solver for multi-section columns with side streams and subcooled reflux. A UNIFAC-based vapour–liquid equilibrium library. A regression engine for Arrhenius and growth kinetics. A three-dimensional COMSOL model of evaporative cooling that put a number on how much the latent-heat term actually matters, which turned out to be about 14 percent of the predicted ten-minute temperature. The code is open source.',
-  'Alongside the modelling I work in a biochemistry laboratory in Rasht, running catalase and malondialdehyde assays on tissue samples. I also teach: a term as teaching assistant for Thermodynamics I, volunteer sessions on material balances and fluid mechanics for petroleum engineering students, and twelve free English and German discussion sessions I organised and ran. I am applying to graduate programmes in North America.',
+  'I am a Chemical Engineering undergraduate at Shiraz University. I like applying engineering principles to describe phenomena and optimize processes whose application is meaningful. From production of therapeutics to optimizing reactor setups and separation processes.',
+  'During my undergrad years I’ve developed a taste for computational methods & computer programming and used it throughout my semesters in various projects. I also have hands on lab experience in a biochemistry laboratory in Rasht, working with biological samples; particularly enzymes and bio-markers. I also have research experience in the fields of bioprocess/systems biology and a little bit on CO2 capture.',
+  'My interests sit at the intersection of process design and control and biology. More specifically, I like systems biology, synthetic biology and their intersection with process engineering. From novel ways to separate a desired metabolite to applying system theory for equipment control, my interests are growing in the direction of using micro-organisms as tools for reaching a desired purpose.',
 ]
 
 /**
