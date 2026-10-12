@@ -49,7 +49,7 @@ export const site: SiteConfig = {
   title: 'Afshin Ghorbani',
   description:
     'Undergraduate chemical engineer at Shiraz University. Transport phenomena, numerical modelling, and biochemistry.',
-  email: 'afshin.gs@proton.me',
+  email: 'afshin.gs@yahoo.com',
   location: 'Shiraz, Iran',
   locale: 'en_US',
 
